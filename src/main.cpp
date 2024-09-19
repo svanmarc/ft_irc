@@ -2,7 +2,7 @@
 
 int main()
 {
-	start_server(54000);
+	start_server(6667);
 
 	return 0;
 }
