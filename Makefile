@@ -1,18 +1,23 @@
 CC = g++
-CFLAGS = -Wall -Wextra -std=c++98
-SRC = src/main.cpp
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./include
+SRC = $(wildcard src/*.cpp)
 OBJ = $(SRC:.cpp=.o)
 NAME = ircserv
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-    $(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-    rm -f $(OBJ)
+	rm -f $(OBJ)
 
 fclean: clean
-    rm -f $(NAME)
+	rm -f $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re
