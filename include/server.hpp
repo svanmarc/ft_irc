@@ -1,4 +1,4 @@
-#ifndef SERVER_HPP
+#pragma once
 #define SERVER_HPP
 
 #include <iostream>
@@ -10,17 +10,23 @@
 #include <sstream>
 #include <iostream>
 #include <cerrno>
+#include <vector>
+#include "ClientHandler.hpp"
 
-// server.cpp
-void start_server(int port);
-int setup_server_socket(int port);
-void handle_client(int clientSocket);
-void handle_command(const std::string &command, int clientSocket);
+class Server
+{
+	public:
+		Server(int port);
+		~Server();
+		void start();
+		void stop();
 
-// serverTools.cpp
-int error_setup_socket_serv(const char *msg);
+	private:
+		int serverSocket;
+		sockaddr_in serverAddress;
+		std::vector<ClientHandler*> clients;
+		int port;
 
-// serverCmds.cpp
-void nick_command(const std::string &command, int clientSocket);
-
-#endif
+		void setupSocket(int port);
+		void acceptClient();
+};
