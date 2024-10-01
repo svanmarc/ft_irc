@@ -1,0 +1,60 @@
+# Fichiers objets
+*.o
+
+# Fichiers de débogage
+*.d
+
+# Fichiers de journalisation
+*.log
+
+# Fichiers de configuration de l'éditeur
+*.swp
+*~
+.vscode/
+.idea/
+
+# Fichiers de compilation
+ircserv
+
+# Dossiers de build
+build/
+bin/
+obj/
+
+# Fichiers générés par CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Fichiers de configuration de l'environnement
+.env
+.env.local
+.env.*.local
+
+# Fichiers de dépendances
+*.d
+
+# Fichiers de sortie
+*.out
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Fichiers de sauvegarde
+*.bak
+*.old
+
+# Fichiers de documentation générés
+docs/
+*.html
+*.pdf
+
+# Fichiers de test
+test-results/
+coverage/
+
+# Fichiers temporaires
+tmp/
+temp/
