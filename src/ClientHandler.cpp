@@ -37,24 +37,7 @@ void ClientHandler::sendResponse(const std::string& response)
 {
     send(clientSocket, response.c_str(), response.length(), 0);
 }
-void ClientHandler::setNickname(const std::string& nickname)
-{
-	this->nickname = nickname;
-}
-void ClientHandler::setUserMode(const std::string& userNode)
-{
-	this->userMode = userNode;
-}
 
-const std::string& ClientHandler::getNickname() const
-{
-	return nickname;
-}
-
-const std::string& ClientHandler::getUserMode() const
-{
-	return userMode;
-}
 
 void ClientHandler::joinChannel(const std::string& channel)
 {
