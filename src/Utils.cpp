@@ -28,3 +28,29 @@ std::string trim(const std::string& str) {
     // Return the trimmed substring
     return str.substr(start, end - start + 1);
 }
+
+void splitCommand(const std::string& command, std::vector<std::string> &parts){
+    std::string::size_type start = 0;
+    std::string::size_type end = 0;
+
+    while (start < command.length() && command[start] == ' '){
+        start++;
+    }
+    while (start < command.length()) {
+        if (command[start] == ':'){
+            parts.push_back(command.substr(start + 1));
+            break;
+        }
+
+        end = command.find(' ', start);
+        if (end == std::string::npos){
+            parts.push_back(command.substr(start));
+            break;
+        }
+        parts.push_back(command.substr(start, end - start));
+        start = end + 1;
+        while (start < command.length() && command[start] == ' '){
+            start++;
+        }
+    }
+};

@@ -103,3 +103,57 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
         response += " " + message + "\r\n";
         send(clientSocket, response.c_str(), response.length(), 0);
     }
+
+       void CommandHandler::handleUser(const std::string& command, int clientSocket, ClientHandler* clientHandler) {
+        std::vector<std::string> parts;
+        splitCommand(command, parts);
+        
+        // Vérifier qu'on a assez de parties
+        // On a besoin de : USER username hostname servername :realname
+        if (parts.size() < 5) {
+            sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Not enough parameters");
+            return;
+        }
+        
+        // Vérifier si l'utilisateur est déjà enregistré
+        if (clientHandler->m_user.isRegistered()) {
+            sendResponse(clientSocket, ERR_ALREADYREGISTRED, "You may not re-register once registered, sorry. kiss kiss");
+            return;
+        }
+        
+        // parts[0] est "USER", on l'ignore
+        std::string username = parts[1];
+        std::string hostname = parts[2];
+        std::string servername = parts[3];
+        std::string realname = parts[4];
+        
+        // Mettre à jour les informations de l'utilisateur
+        clientHandler->m_user.setUsername(username);
+        clientHandler->m_user.setHostname(hostname);
+        clientHandler->m_user.setRealname(realname);
+        
+        // Vérifier si on a maintenant assez d'informations pour terminer l'enregistrement
+        if (!clientHandler->m_user.getNickname().empty()) {
+            completeRegistration(clientSocket, clientHandler);
+        }
+    }
+
+    void completeRegistration(int clientSocket, ClientHandler* clientHandler) {
+        // Create welcome messages
+        std::string welcomeMsg = ":";
+        welcomeMsg += clientHandler->m_user.getServerName();
+        welcomeMsg += " 001 ";
+        welcomeMsg += clientHandler->m_user.getNickname();
+        welcomeMsg += " :Welcome to the Internet Relay Network ";
+        welcomeMsg += clientHandler->m_user.getNickname();
+        welcomeMsg += "!";
+        welcomeMsg += clientHandler->m_user.getUsername();
+        welcomeMsg += "@";
+        welcomeMsg += clientHandler->m_user.getHostname();
+        
+        sendResponse(clientSocket, welcomeMsg);
+        
+        // Similaire pour les autres messages...
+        
+        clientHandler->setRegistered(true);
+    }

@@ -73,3 +73,7 @@ void User::setConnected(const bool isConnected)
 	m_isConnected = isConnected;
 }
 
+void User::setIsRegistered(const bool isRegistered)
+{
+	m_isRegistered = isRegistered;
+}

@@ -24,6 +24,8 @@ class User
 		const std::string& getHostname() const;
 		void setHostname(const std::string& hostname);
 
+		void setIsRegistered(const bool isRegistered);
+
 		bool isConnected() const;
 		void setConnected(const bool isConnected);
 
@@ -35,5 +37,6 @@ class User
 		std::string m_hostname;
 		std::time_t m_connectionTime;
 		std::time_t m_lastActivityTime;
+		bool m_isRegistered;
 		bool m_isConnected;
 };
