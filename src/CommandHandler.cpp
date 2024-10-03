@@ -18,6 +18,13 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
             else if (cmd == "NICK") {
                 handleNick(command, clientSocket, clientHandler);
             }
+            else if (cmd == "USER") {
+                handleUser(command, clientSocket, clientHandler);
+            }
+            else if (cmd == "USERHOST") {
+                std::cout << "USERHOST command received" << std::endl;
+                handleUser(command, clientSocket, clientHandler);
+            }
             else if (cmd == "MODE") {
                 handleMode(command, clientSocket, clientHandler);
             }
@@ -101,23 +108,29 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
         oss << code;
         response += oss.str();
         response += " " + message + "\r\n";
+        std::cout << "Sending response: " << response << std::endl;
+        send(clientSocket, response.c_str(), response.length(), 0);
+    }
+
+      void CommandHandler::sendResponse(int clientSocket, const std::string& message) {
+        std::string response = ":localhost ";
+        std::ostringstream oss;
+        response += oss.str();
+        response += " " + message + "\r\n";
         send(clientSocket, response.c_str(), response.length(), 0);
     }
 
        void CommandHandler::handleUser(const std::string& command, int clientSocket, ClientHandler* clientHandler) {
         std::vector<std::string> parts;
         splitCommand(command, parts);
-        
-        // Vérifier qu'on a assez de parties
-        // On a besoin de : USER username hostname servername :realname
         if (parts.size() < 5) {
-            sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Not enough parameters");
+            sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Manque des paramètres : USER username hostname servername :realname");
             return;
         }
         
         // Vérifier si l'utilisateur est déjà enregistré
         if (clientHandler->m_user.isRegistered()) {
-            sendResponse(clientSocket, ERR_ALREADYREGISTRED, "You may not re-register once registered, sorry. kiss kiss");
+            sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré petit coquin !");
             return;
         }
         
@@ -126,22 +139,25 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
         std::string hostname = parts[2];
         std::string servername = parts[3];
         std::string realname = parts[4];
+        std::string nickName = clientHandler->m_user.getNickname();
         
         // Mettre à jour les informations de l'utilisateur
         clientHandler->m_user.setUsername(username);
         clientHandler->m_user.setHostname(hostname);
         clientHandler->m_user.setRealname(realname);
         
-        // Vérifier si on a maintenant assez d'informations pour terminer l'enregistrement
         if (!clientHandler->m_user.getNickname().empty()) {
             completeRegistration(clientSocket, clientHandler);
         }
+        else {
+            sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Vous devez d'abord choisir un pseudo avec la commande NICK");
+        }
     }
 
-    void completeRegistration(int clientSocket, ClientHandler* clientHandler) {
+    void CommandHandler::completeRegistration(int clientSocket, ClientHandler* clientHandler) {
         // Create welcome messages
         std::string welcomeMsg = ":";
-        welcomeMsg += clientHandler->m_user.getServerName();
+        welcomeMsg += clientHandler->m_user.getServername();
         welcomeMsg += " 001 ";
         welcomeMsg += clientHandler->m_user.getNickname();
         welcomeMsg += " :Welcome to the Internet Relay Network ";
@@ -150,10 +166,8 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
         welcomeMsg += clientHandler->m_user.getUsername();
         welcomeMsg += "@";
         welcomeMsg += clientHandler->m_user.getHostname();
-        
+        welcomeMsg += "\r\n";
+        std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
         sendResponse(clientSocket, welcomeMsg);
-        
-        // Similaire pour les autres messages...
-        
-        clientHandler->setRegistered(true);
+        clientHandler->m_user.setIsRegistered(true);
     }

@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <string.h>
 #include <iostream>
+#include <vector>
 
 
 class CommandHandler
@@ -30,12 +31,12 @@ private:
     static const std::string WELCOME_MESSAGE;
 
     static void sendResponse(int clientSocket, int code, const std::string& message);
+    static void sendResponse(int clientSocket, const std::string& message);
     static std::string parseCommand(const std::string& fullCommand);
     static void handleCap(const std::string& command,int clientSocket);
     static void handleNick(const std::string& command, int clientSocket, ClientHandler* clientHandler);
     static void handleMode(const std::string& command, int clientSocket, ClientHandler* clientHandler);
     static void handleWhois(int clientSocket, ClientHandler* clientHandler);
     static void handleUser(const std::string& command, int clientSocket, ClientHandler* clientHandler);
-
-
+    static void completeRegistration(int clientSocket, ClientHandler* clientHandler);
 };

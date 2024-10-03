@@ -6,6 +6,8 @@
 #include <sstream>
 #include <algorithm>
 #include <cstring>
+#include <sys/socket.h>
+#include <vector>
 
 
 std::string trim(const std::string& str);

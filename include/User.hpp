@@ -24,7 +24,10 @@ class User
 		const std::string& getHostname() const;
 		void setHostname(const std::string& hostname);
 
+		const std::string& getServername() const;
+		void setServername(const std::string& servername);
 		void setIsRegistered(const bool isRegistered);
+		bool isRegistered() const;
 
 		bool isConnected() const;
 		void setConnected(const bool isConnected);
@@ -35,6 +38,7 @@ class User
 		std::string m_username;
 		std::string m_realname;
 		std::string m_hostname;
+		std::string m_servername;
 		std::time_t m_connectionTime;
 		std::time_t m_lastActivityTime;
 		bool m_isRegistered;

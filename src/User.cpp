@@ -77,3 +77,17 @@ void User::setIsRegistered(const bool isRegistered)
 {
 	m_isRegistered = isRegistered;
 }
+bool User::isRegistered() const
+{
+	return m_isRegistered;
+}
+
+const std::string& User::getServername() const
+{
+	return m_servername;
+}
+
+void User::setServername(const std::string& servername)
+{
+	m_servername = servername;
+}
