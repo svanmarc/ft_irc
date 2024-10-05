@@ -70,6 +70,8 @@ bool User::isConnected() const
 
 void User::setConnected(const bool isConnected)
 {
+	m_connectionTime = std::time(0);
+	m_lastActivityTime = std::time(0);
 	m_isConnected = isConnected;
 }
 
