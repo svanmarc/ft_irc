@@ -1,25 +1,36 @@
 #include "server.hpp"
-#include <csignal>
-#include <cstdlib>
 
-Server *serverInstance = NULL;
-
-void handleSignal(int signal)
+int main(int argc, char *argv[])
 {
-	if(signal == SIGINT)
+	if (argc != 3)
 	{
-		serverInstance->stop();
-		exit(0);
+		std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
+		return 1;
 	}
-}
 
+	int port = std::atoi(argv[1]);
+	if (port <= 0 || port > 65535)
+	{
+		std::cerr << "Invalid port number. Must be between 1 and 65535." << std::endl;
+		return 1;
+	}
 
-int main()
-{
-	Server server(12345);
-	serverInstance = &server;
-	
-	std::signal(SIGINT, handleSignal);
-	server.start();
+	std::string serverPassword = argv[2];
+
+	try
+	{
+		// Créer le serveur avec le port et le mot de passe
+		Server server(port, serverPassword);
+		std::cout << "Password set to: " << serverPassword << std::endl;
+
+		// Démarrer le serveur
+		server.start();
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << "Server error: " << e.what() << std::endl;
+		return 1;
+	}
+
 	return 0;
 }

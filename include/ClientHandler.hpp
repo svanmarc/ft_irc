@@ -1,4 +1,4 @@
-#pragma once
+#ifndef CLIENT_HPP
 #define CLIENT_HPP
 
 #include <iostream>
@@ -11,18 +11,20 @@
 
 class ClientHandler
 {
-	public:
-		ClientHandler(int socket);
-		~ClientHandler();
+public:
+	ClientHandler(int socket);
+	~ClientHandler();
 
-		void joinChannel(const std::string& channel);
-		void leaveChannel(const std::string& channel);
-		void handlerClient();
-		User m_user;
-	
-	private:
-		int clientSocket;
-		std::vector<std::string> channels;
-		void readCommand(const std::string &command);
-		void sendResponse(const std::string& response);
+	void joinChannel(const std::string &channel);
+	void leaveChannel(const std::string &channel);
+	void handlerClient();
+	User m_user;
+
+private:
+	int clientSocket;
+	std::vector<std::string> channels;
+	void readCommand(const std::string &command);
+	void sendResponse(const std::string &response);
 };
+
+#endif
