@@ -12,6 +12,7 @@
 #include <cerrno>
 #include <algorithm>
 #include <poll.h>
+#include <sstream>
 #include "ClientHandler.hpp"
 #include "CommandHandler.hpp"
 
@@ -22,6 +23,7 @@ public:
 	~Server();
 	void start();
 	void stop();
+	bool authenticate(const std::string &clientPassword);
 
 private:
 	int serverSocket;
@@ -37,6 +39,7 @@ private:
 	int createSocket();
 	int setSocketOptions();
 	int bindSocket(int port);
+	bool checkPassword(const std::string &clientPassword);
 
 	void removeClient(int clientSocket);
 	ClientHandler *findClient(int clientSocket);

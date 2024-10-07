@@ -1,4 +1,5 @@
 #include "CommandHandler.hpp"
+#include "Server.hpp"
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
@@ -8,7 +9,7 @@
 
 const std::string CommandHandler::WELCOME_MESSAGE = "Welcome to the Internet Relay Network 2024 ";
 
-void CommandHandler::handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler)
+void CommandHandler::handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server)
 {
 	try
 	{
@@ -31,7 +32,7 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		}
 		else if (cmd == "PASS")
 		{
-			handlePass(command, clientSocket, clientHandler);
+			handlePass(command, clientSocket, clientHandler, server);
 		}
 		else
 		{
@@ -127,23 +128,37 @@ void CommandHandler::handleUser(const std::string &command, int clientSocket, Cl
 	}
 }
 
-void CommandHandler::handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler)
+#include <sstream> // Assurez-vous d'inclure cette bibliothèque
+
+// ...
+
+void CommandHandler::handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server)
 {
 	size_t pos = command.find("PASS ");
 	if (pos != std::string::npos && pos + 5 < command.length())
 	{
 		std::string clientPassword = trim(command.substr(pos + 5));
-		clientHandler->m_user.setPassword("pw2"); // Définir un mot de passe par défaut pour l'exemple
 
-		if (clientPassword == clientHandler->m_user.getPassword())
-		{ // Compare avec le mot de passe défini pour l'utilisateur
-			clientHandler->m_user.setAuthenticated(true);
+		if (server.authenticate(clientPassword))
+		{
+			clientHandler->setAuthenticated(true);
+			clientHandler->resetAttempts(); // Réinitialisez les tentatives en cas de succès
 			sendResponse(clientSocket, "Authentication successful! Welcome.");
 		}
 		else
 		{
-			sendResponse(clientSocket, "Incorrect password!");
-			close(clientSocket); // Ferme le client si le mot de passe est incorrect
+			clientHandler->incrementAttempts(); // Incrémentez les tentatives
+			if (clientHandler->getAttempts() >= 3)
+			{
+				sendResponse(clientSocket, "Too many failed attempts. Disconnecting...");
+				close(clientSocket); // Fermez la connexion après 3 échecs
+			}
+			else
+			{
+				std::ostringstream oss; // Utilisez un ostringstream pour la conversion
+				oss << (3 - clientHandler->getAttempts());
+				sendResponse(clientSocket, "Incorrect password! Please try again. Attempts left: " + oss.str());
+			}
 		}
 	}
 	else

@@ -14,12 +14,16 @@
 #include <vector>
 #include <unistd.h>
 
+class Server;
+
 class CommandHandler
 {
 public:
-	static void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+	CommandHandler(Server &server) : server(server) {}
+	static void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
 
 private:
+	Server &server;
 	static const int RPL_WELCOME = 1;
 	static const int RPL_CAPLS = 375;
 	static const int RPL_CHANNELMODEIS = 324;
@@ -32,13 +36,13 @@ private:
 	static void sendResponse(int clientSocket, int code, const std::string &message);
 	static void sendResponse(int clientSocket, const std::string &message);
 	static std::string parseCommand(const std::string &fullCommand);
-	static void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void handleCap(const std::string &command, int clientSocket);
 	static void handleNick(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void handleWhois(int clientSocket, ClientHandler *clientHandler);
 	static void handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void completeRegistration(int clientSocket, ClientHandler *clientHandler);
+	static void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
 };
 
 #endif

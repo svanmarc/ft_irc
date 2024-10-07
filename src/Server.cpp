@@ -1,7 +1,7 @@
-#include "server.hpp"
+#include "Server.hpp"
 #include "CommandHandler.hpp"
 
-Server::Server(int port, const std::string &password) : password(password)
+Server::Server(int port, const std::string &password) : password(password), commandHandler(*this)
 {
 	setupSocket(port);
 
@@ -196,7 +196,7 @@ void Server::handleClient(int clientSocket)
 	{
 		if (clients[i]->getSocket() == clientSocket)
 		{
-			commandHandler.handleCommand(message, clientSocket, clients[i]);
+			commandHandler.handleCommand(message, clientSocket, clients[i], *this);
 			break;
 		}
 	}
@@ -242,4 +242,15 @@ void Server::sendResponse(int clientSocket, const std::string &message)
 {
 	std::string response = ":localhost " + message + "\r\n";
 	send(clientSocket, response.c_str(), response.length(), 0);
+}
+
+// Vérifier le mot de passe du client
+bool Server::checkPassword(const std::string &clientPassword)
+{
+	return clientPassword == password;
+}
+
+bool Server::authenticate(const std::string &clientPassword)
+{
+	return checkPassword(clientPassword);
 }

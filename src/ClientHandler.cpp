@@ -4,14 +4,14 @@
 #include <unistd.h>
 #include <cstring>
 
-ClientHandler::ClientHandler(int socket) : clientSocket(socket) {}
+ClientHandler::ClientHandler(int socket) : clientSocket(socket), attempts(0) {}
 
 ClientHandler::~ClientHandler()
 {
 	close(clientSocket);
 }
 
-void ClientHandler::handlerClient()
+void ClientHandler::handlerClient(Server &server)
 {
 	char buffer[1024];
 	while (true)
@@ -25,14 +25,14 @@ void ClientHandler::handlerClient()
 		}
 		std::string command(buffer);
 		std::cout << "Received command: " << command << std::endl;
-		readCommand(command);
+		readCommand(command, server);
 	}
 }
 
-void ClientHandler::readCommand(const std::string &command)
+void ClientHandler::readCommand(const std::string &command, Server &server)
 {
-	CommandHandler commandHandler;
-	commandHandler.handleCommand(command, clientSocket, this);
+	CommandHandler commandHandler(server);
+	commandHandler.handleCommand(command, clientSocket, this, server);
 }
 
 void ClientHandler::sendResponse(const std::string &response)
@@ -70,4 +70,19 @@ bool ClientHandler::isAuthenticated() const
 void ClientHandler::setAuthenticated(bool isAuthenticated)
 {
 	m_user.setAuthenticated(isAuthenticated);
+}
+
+int ClientHandler::getAttempts() const
+{
+	return attempts;
+}
+
+void ClientHandler::incrementAttempts()
+{
+	attempts++;
+}
+
+void ClientHandler::resetAttempts()
+{
+	attempts = 0;
 }
