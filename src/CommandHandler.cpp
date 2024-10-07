@@ -15,9 +15,13 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		std::cout << "Received command: " << command << std::endl;
 
 		std::string cmd = parseCommand(command);
-		std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
+		std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
 
-		if (cmd == "NICK")
+		if (cmd == "CAP")
+		{
+			handleCap(command, clientSocket);
+		}
+		else if (cmd == "NICK")
 		{
 			handleNick(command, clientSocket, clientHandler);
 		}
@@ -51,29 +55,15 @@ std::string CommandHandler::parseCommand(const std::string &fullCommand)
 	return cmd;
 }
 
-void CommandHandler::handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler)
+void CommandHandler::handleCap(const std::string &command, int clientSocket)
 {
-	size_t pos = command.find("PASS ");
-	if (pos != std::string::npos && pos + 5 < command.length())
+	if (command.find("LS") != std::string::npos)
 	{
-		std::string clientPassword = trim(command.substr(pos + 5));
-		clientHandler->m_user.setPassword("pw2");
+		sendResponse(clientSocket, RPL_CAPLS,
+					 "CAP * LS :multi-prefix extended-join account-notify");
 
-		if (clientPassword == clientHandler->m_user.getPassword()) // Compare avec le mot de passe défini pour l'utilisateur
-		{
-			clientHandler->m_user.setAuthenticated(true);
-			sendResponse(clientSocket, "Authentication successful! Welcome.");
-		}
-		else
-		{
-			sendResponse(clientSocket, "Incorrect password!");
-			close(clientSocket); // Ferme le client si le mot de passe est incorrect
-		}
-	}
-	else
-	{
-		sendResponse(clientSocket, "Error: No password provided.");
-		close(clientSocket);
+		sendResponse(clientSocket, RPL_CAPLS,
+					 "Ready to accept commands");
 	}
 }
 
@@ -110,17 +100,18 @@ void CommandHandler::handleUser(const std::string &command, int clientSocket, Cl
 		return;
 	}
 
+	// Vérifier si l'utilisateur est déjà enregistré
 	if (clientHandler->m_user.isRegistered())
 	{
-		sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré petit coquin !");
+		sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré !");
 		return;
 	}
 
+	// parts[0] est "USER", on l'ignore
 	std::string username = parts[1];
 	std::string hostname = parts[2];
 	std::string servername = parts[3];
 	std::string realname = parts[4];
-	std::string nickName = clientHandler->m_user.getNickname();
 
 	clientHandler->m_user.setUsername(username);
 	clientHandler->m_user.setHostname(hostname);
@@ -133,6 +124,32 @@ void CommandHandler::handleUser(const std::string &command, int clientSocket, Cl
 	else
 	{
 		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Vous devez d'abord choisir un pseudo avec la commande NICK");
+	}
+}
+
+void CommandHandler::handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler)
+{
+	size_t pos = command.find("PASS ");
+	if (pos != std::string::npos && pos + 5 < command.length())
+	{
+		std::string clientPassword = trim(command.substr(pos + 5));
+		clientHandler->m_user.setPassword("pw2"); // Définir un mot de passe par défaut pour l'exemple
+
+		if (clientPassword == clientHandler->m_user.getPassword())
+		{ // Compare avec le mot de passe défini pour l'utilisateur
+			clientHandler->m_user.setAuthenticated(true);
+			sendResponse(clientSocket, "Authentication successful! Welcome.");
+		}
+		else
+		{
+			sendResponse(clientSocket, "Incorrect password!");
+			close(clientSocket); // Ferme le client si le mot de passe est incorrect
+		}
+	}
+	else
+	{
+		sendResponse(clientSocket, "Error: No password provided.");
+		close(clientSocket);
 	}
 }
 
@@ -171,8 +188,6 @@ void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clien
 	welcomeMsg += "\r\n";
 
 	std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
-
 	sendResponse(clientSocket, welcomeMsg);
-
 	clientHandler->m_user.setIsRegistered(true);
 }
