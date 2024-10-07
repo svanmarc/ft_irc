@@ -4,7 +4,6 @@
 #include "ClientHandler.hpp"
 #include "Utils.hpp"
 #include <string>
-#include <string>
 #include <map>
 #include <iostream>
 #include <sstream>
@@ -12,12 +11,13 @@
 #include <cstring>
 #include <sys/socket.h>
 #include <string.h>
-#include <iostream>
 #include <vector>
+#include <unistd.h>
 
 class CommandHandler
 {
 public:
+	// Rendre handlePass publique pour être utilisée par `Server`
 	static void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 
 private:
@@ -33,6 +33,7 @@ private:
 	static void sendResponse(int clientSocket, int code, const std::string &message);
 	static void sendResponse(int clientSocket, const std::string &message);
 	static std::string parseCommand(const std::string &fullCommand);
+	static void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void handleCap(const std::string &command, int clientSocket);
 	static void handleNick(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler);

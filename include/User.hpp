@@ -3,6 +3,7 @@
 
 #include <string>
 #include <ctime>
+
 class User
 {
 public:
@@ -33,6 +34,12 @@ public:
 	bool isConnected() const;
 	void setConnected(const bool isConnected);
 
+	// Nouvelles méthodes pour gérer le mot de passe et l'authentification
+	const std::string &getPassword() const;
+	void setPassword(const std::string &password);
+	bool isAuthenticated() const;
+	void setAuthenticated(bool authenticated);
+
 private:
 	std::string m_nickname;
 	std::string m_userMode;
@@ -40,6 +47,8 @@ private:
 	std::string m_realname;
 	std::string m_hostname;
 	std::string m_servername;
+	std::string m_password; // Nouveau champ pour le mot de passe
+	bool m_isAuthenticated; // Nouveau champ pour indiquer si l'utilisateur est authentifié
 	std::time_t m_connectionTime;
 	std::time_t m_lastActivityTime;
 	bool m_isRegistered;

@@ -11,7 +11,9 @@
 #include <stdexcept>
 #include <cerrno>
 #include <algorithm>
+#include <poll.h>
 #include "ClientHandler.hpp"
+#include "CommandHandler.hpp"
 
 class Server
 {
@@ -25,14 +27,21 @@ private:
 	int serverSocket;
 	sockaddr_in serverAddress;
 	std::vector<ClientHandler *> clients;
-	int port;
 	std::string password;
+	std::vector<struct pollfd> fds;
+	CommandHandler commandHandler;
 
 	void setupSocket(int port);
 	void acceptClient();
+	void handleClient(int clientSocket);
 	int createSocket();
 	int setSocketOptions();
-	int bindSocket();
+	int bindSocket(int port);
+
+	// Ajoutez ces trois méthodes pour corriger les erreurs de compilation
+	void removeClient(int clientSocket);
+	ClientHandler *findClient(int clientSocket);
+	void sendResponse(int clientSocket, const std::string &message);
 };
 
 #endif

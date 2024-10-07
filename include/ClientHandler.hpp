@@ -1,5 +1,5 @@
-#ifndef CLIENT_HPP
-#define CLIENT_HPP
+#ifndef CLIENTHANDLER_HPP
+#define CLIENTHANDLER_HPP
 
 #include <iostream>
 #include <sys/socket.h>
@@ -18,6 +18,12 @@ public:
 	void joinChannel(const std::string &channel);
 	void leaveChannel(const std::string &channel);
 	void handlerClient();
+	int getSocket() const;
+
+	// Déclarations des nouvelles méthodes
+	bool isAuthenticated() const;
+	void setAuthenticated(bool isAuthenticated);
+
 	User m_user;
 
 private:

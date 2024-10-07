@@ -1,44 +1,81 @@
 #include "server.hpp"
+#include "CommandHandler.hpp"
 
-Server::Server(int port, const std::string &password) : port(port), password(password)
+// Constructeur du serveur avec mot de passe et port
+Server::Server(int port, const std::string &password) : password(password)
 {
 	setupSocket(port);
+
+	// Ajouter le socket d'écoute à la liste des descripteurs surveillés par `poll`
+	struct pollfd serverPollFD;
+	serverPollFD.fd = serverSocket; // Socket du serveur
+	serverPollFD.events = POLLIN;	// Surveiller les événements de lecture
+	serverPollFD.revents = 0;		// Initialisation de l'état
+	fds.push_back(serverPollFD);	// Ajouter au vecteur `fds`
 }
 
+// Destructeur du serveur
 Server::~Server()
 {
 	stop();
 }
 
+// Méthode principale pour démarrer le serveur
 void Server::start()
 {
+	std::cout << "Server is running. Waiting for connections..." << std::endl;
+
+	// Boucle principale du serveur
 	while (true)
 	{
-		acceptClient();
+		// Appeler `poll` pour surveiller les sockets
+		int pollCount = poll(&fds[0], fds.size(), -1); // &fds[0] pour compatibilité C++98
+		if (pollCount < 0)
+		{
+			std::cerr << "Error in poll: " << std::strerror(errno) << std::endl;
+			break;
+		}
+
+		// Parcourir les descripteurs de fichier surveillés par `poll`
+		for (unsigned int i = 0; i < fds.size(); ++i) // Utiliser `unsigned int` au lieu de `size_t`
+		{
+			// Si le socket surveillé est le socket d'écoute, accepter une nouvelle connexion
+			if (fds[i].fd == serverSocket && fds[i].revents & POLLIN)
+			{
+				acceptClient(); // Accepter la nouvelle connexion
+			}
+			// Si un client envoie un message
+			else if (fds[i].revents & POLLIN)
+			{
+				handleClient(fds[i].fd); // Gérer les données d'un client existant
+			}
+		}
 	}
 }
 
+// Arrêter le serveur
 void Server::stop()
 {
-	for (size_t i = 0; i < clients.size(); i++)
+	for (unsigned int i = 0; i < fds.size(); ++i)
 	{
-		delete clients[i];
+		close(fds[i].fd); // Fermer chaque socket
 	}
+
 	close(serverSocket);
-	std::cout << "Server stopped --- Welcome to the real world " << std::endl;
+	std::cout << "Server stopped --- Welcome to the real world." << std::endl;
 }
 
-// Configuration du socket du serveur
+// Initialisation du socket avec le port fourni
 void Server::setupSocket(int port)
 {
-	serverSocket = createSocket();
+	serverSocket = createSocket(); // Créer le socket d'écoute
 	if (serverSocket < 0)
 		throw std::runtime_error("Failed to create server socket");
 
 	if (setSocketOptions() < 0)
 		throw std::runtime_error("Failed to set socket options");
 
-	if (bindSocket() < 0)
+	if (bindSocket(port) < 0) // Utiliser le port pour attacher le socket
 		throw std::runtime_error("Failed to bind server socket to port");
 
 	if (listen(serverSocket, 10) < 0)
@@ -86,13 +123,12 @@ int Server::setSocketOptions()
 }
 
 // Attacher le socket à l'adresse et au port
-int Server::bindSocket()
+int Server::bindSocket(int port)
 {
 	serverAddress.sin_family = AF_INET;			// Protocole IPv4
-	serverAddress.sin_addr.s_addr = INADDR_ANY; // Ecoute sur toutes les interfaces
+	serverAddress.sin_addr.s_addr = INADDR_ANY; // Écoute sur toutes les interfaces
 	serverAddress.sin_port = htons(port);		// Convertir le port en format réseau
 
-	// Appeler bind() pour attacher le socket
 	if (bind(serverSocket, (sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
 	{
 		std::cerr << "Failed to bind socket to port: " << std::strerror(errno) << std::endl;
@@ -102,7 +138,7 @@ int Server::bindSocket()
 	return 0;
 }
 
-// Accepter les connexions entrantes et gérer les commandes
+// Accepter un nouveau client
 void Server::acceptClient()
 {
 	int clientSocket = accept(serverSocket, NULL, NULL);
@@ -112,52 +148,104 @@ void Server::acceptClient()
 		return;
 	}
 
-	std::cout << "New client connected. Awaiting password verification..." << std::endl;
+	std::cout << "New client connected." << std::endl;
 
-	// Lire la commande envoyée par le client
+	// Ajouter le nouveau client au vecteur `fds` pour que `poll` le surveille
+	struct pollfd newClientPollFD;
+	newClientPollFD.fd = clientSocket; // Socket du client
+	newClientPollFD.events = POLLIN;   // Surveiller les événements de lecture
+	newClientPollFD.revents = 0;	   // Initialisation de l'état
+	fds.push_back(newClientPollFD);	   // Ajouter au vecteur des descripteurs
+
+	// Ajouter le client à la liste des clients avec un `ClientHandler`
+	ClientHandler *newClient = new ClientHandler(clientSocket);
+	clients.push_back(newClient);
+}
+
+// Gérer les messages d'un client existant
+void Server::handleClient(int clientSocket)
+{
 	char buffer[1024];
 	memset(buffer, 0, sizeof(buffer));
 	int bytesRead = read(clientSocket, buffer, sizeof(buffer) - 1);
 	if (bytesRead <= 0)
 	{
-		std::cerr << "Failed to read from client: " << std::strerror(errno) << std::endl;
+		std::cerr << "Client disconnected or error reading: " << std::strerror(errno) << std::endl;
 		close(clientSocket);
+
+		for (unsigned int i = 0; i < fds.size(); ++i)
+		{
+			if (fds[i].fd == clientSocket)
+			{
+				fds.erase(fds.begin() + i);
+				break;
+			}
+		}
+
+		for (unsigned int i = 0; i < clients.size(); ++i)
+		{
+			if (clients[i]->getSocket() == clientSocket)
+			{
+				delete clients[i];
+				clients.erase(clients.begin() + i);
+				break;
+			}
+		}
 		return;
 	}
 
-	// Extraire la commande envoyée par le client
-	std::string command(buffer);
-	command.erase(std::remove(command.begin(), command.end(), '\n'), command.end());
-	command.erase(std::remove(command.begin(), command.end(), '\r'), command.end());
+	std::string message(buffer);
+	std::cout << "Client command: " << message << std::endl;
 
-	// Vérifier si la commande est une commande `PASS`
-	if (command.find("PASS") == 0)
+	for (unsigned int i = 0; i < clients.size(); ++i)
 	{
-		// Extraire le mot de passe après "PASS "
-		std::string clientPassword = command.substr(5);
-
-		std::cout << "Client sent password: [" << clientPassword << "]" << std::endl;
-
-		// Comparer avec le mot de passe du serveur
-		if (clientPassword != password)
+		if (clients[i]->getSocket() == clientSocket)
 		{
-			std::cerr << "Incorrect password from client. Closing connection." << std::endl;
-			close(clientSocket);
-			return;
+			// Utiliser `handleCommand` pour toutes les commandes
+			commandHandler.handleCommand(message, clientSocket, clients[i]);
+			break;
 		}
-
-		std::cout << "Client authenticated successfully!" << std::endl;
-
-		// Stocker le client et gérer la connexion
-		ClientHandler *newClient = new ClientHandler(clientSocket);
-		clients.push_back(newClient);
-
-		// Gérer le client (pour l'instant, fermer immédiatement)
-		newClient->handlerClient();
 	}
-	else
+}
+
+// Retirer un client du vecteur `clients`
+void Server::removeClient(int clientSocket)
+{
+	for (size_t i = 0; i < clients.size(); ++i)
 	{
-		std::cerr << "Invalid command. Expected PASS. Closing connection." << std::endl;
-		close(clientSocket);
+		if (clients[i]->getSocket() == clientSocket)
+		{
+			delete clients[i]; // Libérer la mémoire allouée pour le client
+			clients.erase(clients.begin() + i);
+			break;
+		}
 	}
+
+	// Retirer également le client de `fds`
+	for (size_t i = 0; i < fds.size(); ++i)
+	{
+		if (fds[i].fd == clientSocket)
+		{
+			fds.erase(fds.begin() + i);
+			break;
+		}
+	}
+}
+
+// Trouver un client par son socket
+ClientHandler *Server::findClient(int clientSocket)
+{
+	for (size_t i = 0; i < clients.size(); ++i)
+	{
+		if (clients[i]->getSocket() == clientSocket)
+			return clients[i];
+	}
+	return NULL;
+}
+
+// Envoyer un message de réponse au client
+void Server::sendResponse(int clientSocket, const std::string &message)
+{
+	std::string response = ":localhost " + message + "\r\n";
+	send(clientSocket, response.c_str(), response.length(), 0);
 }

@@ -1,4 +1,10 @@
 #include "CommandHandler.hpp"
+#include <unistd.h> // Inclusion de la bibliothèque pour utiliser close()
+#include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <sys/socket.h>
+#include <string.h>
 
 const std::string CommandHandler::WELCOME_MESSAGE = "Welcome to the Internet Relay Network 2024 ";
 
@@ -9,15 +15,9 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		std::cout << "Received command: " << command << std::endl;
 
 		std::string cmd = parseCommand(command);
-
-		// Convert command to uppercase for case-insensitive comparison
 		std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::toupper);
 
-		if (cmd == "CAP")
-		{
-			handleCap(command, clientSocket);
-		}
-		else if (cmd == "NICK")
+		if (cmd == "NICK")
 		{
 			handleNick(command, clientSocket, clientHandler);
 		}
@@ -25,18 +25,9 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		{
 			handleUser(command, clientSocket, clientHandler);
 		}
-		else if (cmd == "USERHOST")
+		else if (cmd == "PASS")
 		{
-			std::cout << "USERHOST command received" << std::endl;
-			handleUser(command, clientSocket, clientHandler);
-		}
-		else if (cmd == "MODE")
-		{
-			handleMode(command, clientSocket, clientHandler);
-		}
-		else if (cmd == "WHOIS")
-		{
-			handleWhois(clientSocket, clientHandler);
+			handlePass(command, clientSocket, clientHandler);
 		}
 		else
 		{
@@ -60,15 +51,29 @@ std::string CommandHandler::parseCommand(const std::string &fullCommand)
 	return cmd;
 }
 
-void CommandHandler::handleCap(const std::string &command, int clientSocket)
+void CommandHandler::handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler)
 {
-	if (command.find("LS") != std::string::npos)
+	size_t pos = command.find("PASS ");
+	if (pos != std::string::npos && pos + 5 < command.length())
 	{
-		sendResponse(clientSocket, RPL_CAPLS,
-					 "CAP * LS :multi-prefix extended-join account-notify");
+		std::string clientPassword = trim(command.substr(pos + 5));
+		clientHandler->m_user.setPassword("pw2");
 
-		sendResponse(clientSocket, RPL_CAPLS,
-					 "Ready to accept commands");
+		if (clientPassword == clientHandler->m_user.getPassword()) // Compare avec le mot de passe défini pour l'utilisateur
+		{
+			clientHandler->m_user.setAuthenticated(true);
+			sendResponse(clientSocket, "Authentication successful! Welcome.");
+		}
+		else
+		{
+			sendResponse(clientSocket, "Incorrect password!");
+			close(clientSocket); // Ferme le client si le mot de passe est incorrect
+		}
+	}
+	else
+	{
+		sendResponse(clientSocket, "Error: No password provided.");
+		close(clientSocket);
 	}
 }
 
@@ -95,28 +100,40 @@ void CommandHandler::handleNick(const std::string &command, int clientSocket, Cl
 	sendResponse(clientSocket, RPL_WELCOME, welcomeMessage);
 }
 
-void CommandHandler::handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler)
+void CommandHandler::handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler)
 {
-	std::string mode;
-	size_t pos = command.find("MODE");
-	if (pos != std::string::npos && pos + 5 < command.length())
+	std::vector<std::string> parts;
+	splitCommand(command, parts);
+	if (parts.size() < 5)
 	{
-		mode = trim(command.substr(pos + 5));
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Manque des paramètres : USER username hostname servername :realname");
+		return;
 	}
 
-	clientHandler->m_user.setUserMode(mode);
+	if (clientHandler->m_user.isRegistered())
+	{
+		sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré petit coquin !");
+		return;
+	}
 
-	std::string response = clientHandler->m_user.getNickname();
-	response += " +";
-	response += mode;
-	sendResponse(clientSocket, RPL_CHANNELMODEIS, response);
-}
+	std::string username = parts[1];
+	std::string hostname = parts[2];
+	std::string servername = parts[3];
+	std::string realname = parts[4];
+	std::string nickName = clientHandler->m_user.getNickname();
 
-void CommandHandler::handleWhois(int clientSocket, ClientHandler *clientHandler)
-{
-	std::string response = "NICK ";
-	response += clientHandler->m_user.getNickname();
-	sendResponse(clientSocket, RPL_WELCOME, response);
+	clientHandler->m_user.setUsername(username);
+	clientHandler->m_user.setHostname(hostname);
+	clientHandler->m_user.setRealname(realname);
+
+	if (!clientHandler->m_user.getNickname().empty())
+	{
+		completeRegistration(clientSocket, clientHandler);
+	}
+	else
+	{
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Vous devez d'abord choisir un pseudo avec la commande NICK");
+	}
 }
 
 void CommandHandler::sendResponse(int clientSocket, int code, const std::string &message)
@@ -139,48 +156,9 @@ void CommandHandler::sendResponse(int clientSocket, const std::string &message)
 	send(clientSocket, response.c_str(), response.length(), 0);
 }
 
-void CommandHandler::handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler)
-{
-	std::vector<std::string> parts;
-	splitCommand(command, parts);
-	if (parts.size() < 5)
-	{
-		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Manque des paramètres : USER username hostname servername :realname");
-		return;
-	}
-
-	// Vérifier si l'utilisateur est déjà enregistré
-	if (clientHandler->m_user.isRegistered())
-	{
-		sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré petit coquin !");
-		return;
-	}
-
-	// parts[0] est "USER", on l'ignore
-	std::string username = parts[1];
-	std::string hostname = parts[2];
-	std::string servername = parts[3];
-	std::string realname = parts[4];
-	std::string nickName = clientHandler->m_user.getNickname();
-
-	// Mettre à jour les informations de l'utilisateur
-	clientHandler->m_user.setUsername(username);
-	clientHandler->m_user.setHostname(hostname);
-	clientHandler->m_user.setRealname(realname);
-
-	if (!clientHandler->m_user.getNickname().empty())
-	{
-		completeRegistration(clientSocket, clientHandler);
-	}
-	else
-	{
-		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Vous devez d'abord choisir un pseudo avec la commande NICK");
-	}
-}
-
 void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clientHandler)
 {
-	// Create welcome messages
+	// Créer le message de bienvenue
 	std::string welcomeMsg = ":";
 	welcomeMsg += clientHandler->m_user.getServername();
 	welcomeMsg += " 001 ";
@@ -192,7 +170,12 @@ void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clien
 	welcomeMsg += "@";
 	welcomeMsg += clientHandler->m_user.getHostname();
 	welcomeMsg += "\r\n";
+
 	std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
+
+	// Envoyer le message de bienvenue
 	sendResponse(clientSocket, welcomeMsg);
+
+	// Marquer l'utilisateur comme enregistré
 	clientHandler->m_user.setIsRegistered(true);
 }
