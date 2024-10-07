@@ -93,3 +93,14 @@ void User::setServername(const std::string& servername)
 {
 	m_servername = servername;
 }
+
+bool User::operator==(const User& other) const {
+    return m_nickname == other.m_nickname &&
+           m_userMode == other.m_userMode &&
+           m_username == other.m_username &&
+           m_realname == other.m_realname &&
+           m_hostname == other.m_hostname &&
+           m_servername == other.m_servername &&
+           m_isRegistered == other.m_isRegistered &&
+           m_isConnected == other.m_isConnected;
+}

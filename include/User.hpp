@@ -32,6 +32,9 @@ class User
 		bool isConnected() const;
 		void setConnected(const bool isConnected);
 
+		bool operator==(const User& other) const;
+
+
 	private:
 		std::string m_nickname;
 		std::string m_userMode;

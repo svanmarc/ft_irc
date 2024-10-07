@@ -9,19 +9,22 @@
 #include <ctime>
 #include "User.hpp"
 
+class Server;
+
 class ClientHandler
 {
 	public:
-		ClientHandler(int socket);
+		ClientHandler(int socket, Server* serverRef);
 		~ClientHandler();
 
 		void joinChannel(const std::string& channel);
 		void leaveChannel(const std::string& channel);
 		void handlerClient();
-		User m_user;
+		User user;
 	
 	private:
-		int clientSocket;
+		int m_clientSocket;
+		Server* m_server;
 		std::vector<std::string> channels;
 		void readCommand(const std::string &command);
 		void sendResponse(const std::string& response);

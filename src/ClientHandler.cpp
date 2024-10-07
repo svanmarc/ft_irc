@@ -4,11 +4,11 @@
 #include <unistd.h>
 #include <cstring>
 
-ClientHandler::ClientHandler(int socket) : clientSocket(socket) {}
-
+ClientHandler::ClientHandler(int socket, Server* serverRef) : m_clientSocket(socket) , m_server(serverRef)
+{}
 ClientHandler::~ClientHandler()
 {
-    close(clientSocket);
+    close(m_clientSocket);
 }
 
 void ClientHandler::handlerClient()
@@ -16,7 +16,7 @@ void ClientHandler::handlerClient()
     char buffer[1024];
     while (true) {
         memset(buffer, 0, sizeof(buffer));
-        int bytesRead = read(clientSocket, buffer, sizeof(buffer) - 1);
+        int bytesRead = read(m_clientSocket, buffer, sizeof(buffer) - 1);
         if (bytesRead <= 0) {
             std::cerr << "Client disconnected or error reading" << std::endl;
             break;
@@ -30,12 +30,12 @@ void ClientHandler::handlerClient()
 void ClientHandler::readCommand(const std::string &command)
 {
 	CommandHandler commandHandler;
-	commandHandler.handleCommand(command, clientSocket, this);
+	commandHandler.handleCommand(command, m_clientSocket, this);
 }
 
 void ClientHandler::sendResponse(const std::string& response)
 {
-    send(clientSocket, response.c_str(), response.length(), 0);
+    send(m_clientSocket, response.c_str(), response.length(), 0);
 }
 
 

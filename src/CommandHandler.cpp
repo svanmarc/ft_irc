@@ -74,7 +74,7 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
             return;
         }
         
-        clientHandler->m_user.setNickname(nickname);
+        clientHandler->user.setNickname(nickname);
         
         std::string welcomeMessage = "Welcome to the Internet Relay Network 2024 ";
         welcomeMessage += nickname;
@@ -88,9 +88,9 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
             mode = trim(command.substr(pos + 5));
         }
         
-        clientHandler->m_user.setUserMode(mode);
+        clientHandler->user.setUserMode(mode);
         
-        std::string response = clientHandler->m_user.getNickname();
+        std::string response = clientHandler->user.getNickname();
         response += " +";
         response += mode;
         sendResponse(clientSocket, RPL_CHANNELMODEIS, response);
@@ -98,7 +98,7 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
     
     void CommandHandler::handleWhois(int clientSocket, ClientHandler* clientHandler) {
         std::string response = "NICK ";
-        response += clientHandler->m_user.getNickname();
+        response += clientHandler->user.getNickname();
         sendResponse(clientSocket, RPL_WELCOME, response);
     }
     
@@ -129,7 +129,7 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
         }
         
         // Vérifier si l'utilisateur est déjà enregistré
-        if (clientHandler->m_user.isRegistered()) {
+        if (clientHandler->user.isRegistered()) {
             sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré petit coquin !");
             return;
         }
@@ -139,14 +139,14 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
         std::string hostname = parts[2];
         std::string servername = parts[3];
         std::string realname = parts[4];
-        std::string nickName = clientHandler->m_user.getNickname();
+        std::string nickName = clientHandler->user.getNickname();
         
         // Mettre à jour les informations de l'utilisateur
-        clientHandler->m_user.setUsername(username);
-        clientHandler->m_user.setHostname(hostname);
-        clientHandler->m_user.setRealname(realname);
+        clientHandler->user.setUsername(username);
+        clientHandler->user.setHostname(hostname);
+        clientHandler->user.setRealname(realname);
         
-        if (!clientHandler->m_user.getNickname().empty()) {
+        if (!clientHandler->user.getNickname().empty()) {
             completeRegistration(clientSocket, clientHandler);
         }
         else {
@@ -157,17 +157,17 @@ void CommandHandler::handleCommand(const std::string& command, int clientSocket,
     void CommandHandler::completeRegistration(int clientSocket, ClientHandler* clientHandler) {
         // Create welcome messages
         std::string welcomeMsg = ":";
-        welcomeMsg += clientHandler->m_user.getServername();
+        welcomeMsg += clientHandler->user.getServername();
         welcomeMsg += " 001 ";
-        welcomeMsg += clientHandler->m_user.getNickname();
+        welcomeMsg += clientHandler->user.getNickname();
         welcomeMsg += " :Welcome to the Internet Relay Network ";
-        welcomeMsg += clientHandler->m_user.getNickname();
+        welcomeMsg += clientHandler->user.getNickname();
         welcomeMsg += "!";
-        welcomeMsg += clientHandler->m_user.getUsername();
+        welcomeMsg += clientHandler->user.getUsername();
         welcomeMsg += "@";
-        welcomeMsg += clientHandler->m_user.getHostname();
+        welcomeMsg += clientHandler->user.getHostname();
         welcomeMsg += "\r\n";
         std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
         sendResponse(clientSocket, welcomeMsg);
-        clientHandler->m_user.setIsRegistered(true);
+        clientHandler->user.setIsRegistered(true);
     }
