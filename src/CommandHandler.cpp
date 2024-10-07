@@ -1,11 +1,4 @@
 #include "CommandHandler.hpp"
-#include "Server.hpp"
-#include <unistd.h>
-#include <iostream>
-#include <sstream>
-#include <algorithm>
-#include <sys/socket.h>
-#include <string.h>
 
 const std::string CommandHandler::WELCOME_MESSAGE = "Welcome to the Internet Relay Network 2024 ";
 
@@ -33,6 +26,19 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		else if (cmd == "PASS")
 		{
 			handlePass(command, clientSocket, clientHandler, server);
+		}
+		else if (cmd == "USERHOST")
+		{
+			std::cout << "USERHOST command received" << std::endl;
+			handleUser(command, clientSocket, clientHandler);
+		}
+		else if (cmd == "MODE")
+		{
+			handleMode(command, clientSocket, clientHandler);
+		}
+		else if (cmd == "WHOIS")
+		{
+			handleWhois(clientSocket, clientHandler);
 		}
 		else
 		{
@@ -128,10 +134,6 @@ void CommandHandler::handleUser(const std::string &command, int clientSocket, Cl
 	}
 }
 
-#include <sstream> // Assurez-vous d'inclure cette bibliothèque
-
-// ...
-
 void CommandHandler::handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server)
 {
 	size_t pos = command.find("PASS ");
@@ -168,6 +170,30 @@ void CommandHandler::handlePass(const std::string &command, int clientSocket, Cl
 	}
 }
 
+void CommandHandler::handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler)
+{
+	std::string mode;
+	size_t pos = command.find("MODE");
+	if (pos != std::string::npos && pos + 5 < command.length())
+	{
+		mode = trim(command.substr(pos + 5));
+	}
+
+	clientHandler->m_user.setUserMode(mode);
+
+	std::string response = clientHandler->m_user.getNickname();
+	response += " +";
+	response += mode;
+	sendResponse(clientSocket, RPL_CHANNELMODEIS, response);
+}
+
+void CommandHandler::handleWhois(int clientSocket, ClientHandler *clientHandler)
+{
+	std::string response = "NICK ";
+	response += clientHandler->m_user.getNickname();
+	sendResponse(clientSocket, RPL_WELCOME, response);
+}
+
 void CommandHandler::sendResponse(int clientSocket, int code, const std::string &message)
 {
 	std::string response = ":localhost ";
@@ -181,11 +207,7 @@ void CommandHandler::sendResponse(int clientSocket, int code, const std::string 
 
 void CommandHandler::sendResponse(int clientSocket, const std::string &message)
 {
-	std::string response = ":localhost ";
-	std::ostringstream oss;
-	response += oss.str();
-	response += " " + message + "\r\n";
-	send(clientSocket, response.c_str(), response.length(), 0);
+	sendResponse(clientSocket, 0, message);
 }
 
 void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clientHandler)

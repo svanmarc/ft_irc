@@ -7,6 +7,8 @@
 #include <string.h>
 #include <vector>
 #include <ctime>
+#include <unistd.h>
+#include <cstring>
 #include "User.hpp"
 
 class Server;

@@ -1,8 +1,5 @@
 #include "ClientHandler.hpp"
 #include "CommandHandler.hpp"
-#include <iostream>
-#include <unistd.h>
-#include <cstring>
 
 ClientHandler::ClientHandler(int socket) : clientSocket(socket), attempts(0) {}
 

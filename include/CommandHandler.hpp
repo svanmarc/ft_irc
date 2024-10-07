@@ -13,6 +13,7 @@
 #include <string.h>
 #include <vector>
 #include <unistd.h>
+#include "Server.hpp"
 
 class Server;
 

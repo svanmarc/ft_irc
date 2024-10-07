@@ -1,7 +1,7 @@
 #include "Server.hpp"
 #include "CommandHandler.hpp"
 
-Server::Server(int port, const std::string &password) : password(password), commandHandler(*this)
+Server::Server(int port, const std::string &password) : password(password), commandHandler(new CommandHandler(*this))
 {
 	setupSocket(port);
 
@@ -16,6 +16,7 @@ Server::Server(int port, const std::string &password) : password(password), comm
 Server::~Server()
 {
 	stop();
+	delete commandHandler;
 }
 
 void Server::start()
@@ -196,7 +197,7 @@ void Server::handleClient(int clientSocket)
 	{
 		if (clients[i]->getSocket() == clientSocket)
 		{
-			commandHandler.handleCommand(message, clientSocket, clients[i], *this);
+			commandHandler->handleCommand(message, clientSocket, clients[i], *this);
 			break;
 		}
 	}

@@ -14,8 +14,8 @@
 #include <poll.h>
 #include <sstream>
 #include "ClientHandler.hpp"
-#include "CommandHandler.hpp"
 
+class CommandHandler;
 class Server
 {
 public:
@@ -31,7 +31,7 @@ private:
 	std::vector<ClientHandler *> clients;
 	std::string password;
 	std::vector<struct pollfd> fds;
-	CommandHandler commandHandler;
+	CommandHandler *commandHandler;
 
 	void setupSocket(int port);
 	void acceptClient();
