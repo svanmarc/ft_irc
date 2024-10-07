@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <cstring>
 
-// Mise à jour du constructeur sans le champ `authenticated`
 ClientHandler::ClientHandler(int socket) : clientSocket(socket) {}
 
 ClientHandler::~ClientHandler()
@@ -63,7 +62,6 @@ int ClientHandler::getSocket() const
 	return clientSocket;
 }
 
-// Implémentation des méthodes d'authentification
 bool ClientHandler::isAuthenticated() const
 {
 	return m_user.isAuthenticated();

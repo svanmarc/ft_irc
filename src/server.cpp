@@ -1,7 +1,6 @@
 #include "server.hpp"
 #include "CommandHandler.hpp"
 
-// Constructeur du serveur avec mot de passe et port
 Server::Server(int port, const std::string &password) : password(password)
 {
 	setupSocket(port);
@@ -14,22 +13,19 @@ Server::Server(int port, const std::string &password) : password(password)
 	fds.push_back(serverPollFD);	// Ajouter au vecteur `fds`
 }
 
-// Destructeur du serveur
 Server::~Server()
 {
 	stop();
 }
 
-// Méthode principale pour démarrer le serveur
 void Server::start()
 {
 	std::cout << "Server is running. Waiting for connections..." << std::endl;
 
-	// Boucle principale du serveur
 	while (true)
 	{
 		// Appeler `poll` pour surveiller les sockets
-		int pollCount = poll(&fds[0], fds.size(), -1); // &fds[0] pour compatibilité C++98
+		int pollCount = poll(&fds[0], fds.size(), -1);
 		if (pollCount < 0)
 		{
 			std::cerr << "Error in poll: " << std::strerror(errno) << std::endl;
@@ -37,7 +33,7 @@ void Server::start()
 		}
 
 		// Parcourir les descripteurs de fichier surveillés par `poll`
-		for (unsigned int i = 0; i < fds.size(); ++i) // Utiliser `unsigned int` au lieu de `size_t`
+		for (unsigned int i = 0; i < fds.size(); ++i)
 		{
 			// Si le socket surveillé est le socket d'écoute, accepter une nouvelle connexion
 			if (fds[i].fd == serverSocket && fds[i].revents & POLLIN)
@@ -53,12 +49,11 @@ void Server::start()
 	}
 }
 
-// Arrêter le serveur
 void Server::stop()
 {
 	for (unsigned int i = 0; i < fds.size(); ++i)
 	{
-		close(fds[i].fd); // Fermer chaque socket
+		close(fds[i].fd);
 	}
 
 	close(serverSocket);
@@ -152,10 +147,10 @@ void Server::acceptClient()
 
 	// Ajouter le nouveau client au vecteur `fds` pour que `poll` le surveille
 	struct pollfd newClientPollFD;
-	newClientPollFD.fd = clientSocket; // Socket du client
-	newClientPollFD.events = POLLIN;   // Surveiller les événements de lecture
-	newClientPollFD.revents = 0;	   // Initialisation de l'état
-	fds.push_back(newClientPollFD);	   // Ajouter au vecteur des descripteurs
+	newClientPollFD.fd = clientSocket;
+	newClientPollFD.events = POLLIN;
+	newClientPollFD.revents = 0;
+	fds.push_back(newClientPollFD);
 
 	// Ajouter le client à la liste des clients avec un `ClientHandler`
 	ClientHandler *newClient = new ClientHandler(clientSocket);
@@ -201,7 +196,6 @@ void Server::handleClient(int clientSocket)
 	{
 		if (clients[i]->getSocket() == clientSocket)
 		{
-			// Utiliser `handleCommand` pour toutes les commandes
 			commandHandler.handleCommand(message, clientSocket, clients[i]);
 			break;
 		}

@@ -20,7 +20,6 @@ public:
 	void handlerClient();
 	int getSocket() const;
 
-	// Déclarations des nouvelles méthodes
 	bool isAuthenticated() const;
 	void setAuthenticated(bool isAuthenticated);
 

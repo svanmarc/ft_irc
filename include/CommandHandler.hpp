@@ -17,7 +17,6 @@
 class CommandHandler
 {
 public:
-	// Rendre handlePass publique pour être utilisée par `Server`
 	static void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 
 private:

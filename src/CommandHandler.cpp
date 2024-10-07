@@ -1,5 +1,5 @@
 #include "CommandHandler.hpp"
-#include <unistd.h> // Inclusion de la bibliothèque pour utiliser close()
+#include <unistd.h>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -158,7 +158,6 @@ void CommandHandler::sendResponse(int clientSocket, const std::string &message)
 
 void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clientHandler)
 {
-	// Créer le message de bienvenue
 	std::string welcomeMsg = ":";
 	welcomeMsg += clientHandler->m_user.getServername();
 	welcomeMsg += " 001 ";
@@ -173,9 +172,7 @@ void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clien
 
 	std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
 
-	// Envoyer le message de bienvenue
 	sendResponse(clientSocket, welcomeMsg);
 
-	// Marquer l'utilisateur comme enregistré
 	clientHandler->m_user.setIsRegistered(true);
 }

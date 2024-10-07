@@ -38,7 +38,6 @@ private:
 	int setSocketOptions();
 	int bindSocket(int port);
 
-	// Ajoutez ces trois méthodes pour corriger les erreurs de compilation
 	void removeClient(int clientSocket);
 	ClientHandler *findClient(int clientSocket);
 	void sendResponse(int clientSocket, const std::string &message);

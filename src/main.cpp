@@ -19,11 +19,9 @@ int main(int argc, char *argv[])
 
 	try
 	{
-		// Créer le serveur avec le port et le mot de passe
 		Server server(port, serverPassword);
 		std::cout << "Password set to: " << serverPassword << std::endl;
 
-		// Démarrer le serveur
 		server.start();
 	}
 	catch (const std::exception &e)
