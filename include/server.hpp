@@ -20,7 +20,6 @@ class Server
 		~Server();
 		void start();
 		void stop();
-		void setupPassword(const std::string& password);
 		void joinChannel(const User& newUser,const std::string& name);
 		bool checkIfChannelExists(const std::vector<Channel> channels, const std::string& name);
 		Channel getChannel(const std::string& name);
@@ -31,7 +30,6 @@ class Server
 		sockaddr_in m_serverAddress;
 		std::vector<ClientHandler*> m_clients;
 		std::vector<Channel> m_channels;
-		std::string m_password;
 
 		void setupSocket(int port);
 		void acceptClient();
