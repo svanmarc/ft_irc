@@ -68,12 +68,18 @@ bool Server::checkIfChannelExists(const std::vector<Channel> channels, const std
     return false;
 }
 
-void Server::joinChannel(const User &newUser, const std::string &name) {
-    if (checkIfChannelExists(m_channels, name)) {
-        std::cout << "Channel already exists add user in" << std::endl;
-        getChannel(name).addUser(newUser);
-        return;
+bool Server::joinChannel(const User &newUser, const std::string &name) {
+    try {
+        if (checkIfChannelExists(m_channels, name)) {
+            std::cout << "Channel already exists add user in" << std::endl;
+            getChannel(name).addUser(newUser);
+            return true;
+        }
+        Channel newChannel(name, newUser);
+        m_channels.push_back(newChannel);
+        return true;
+    } catch (const std::exception &e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
+        return false;
     }
-    Channel newChannel(name, newUser);
-    m_channels.push_back(newChannel);
 }

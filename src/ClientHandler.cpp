@@ -1,18 +1,13 @@
 #include "ClientHandler.hpp"
-#include "CommandHandler.hpp"
+#include <cstring>
 #include <iostream>
 #include <unistd.h>
-#include <cstring>
+#include "CommandHandler.hpp"
 
-ClientHandler::ClientHandler(int socket, Server* serverRef) : m_clientSocket(socket) , m_server(serverRef)
-{}
-ClientHandler::~ClientHandler()
-{
-    close(m_clientSocket);
-}
+ClientHandler::ClientHandler(int socket, Server *serverRef) : m_clientSocket(socket), m_server(serverRef) {}
+ClientHandler::~ClientHandler() { close(m_clientSocket); }
 
-void ClientHandler::handlerClient()
-{
+void ClientHandler::handlerClient() {
     char buffer[1024];
     while (true) {
         memset(buffer, 0, sizeof(buffer));
@@ -27,31 +22,23 @@ void ClientHandler::handlerClient()
     }
 }
 
-void ClientHandler::readCommand(const std::string &command)
-{
-	CommandHandler commandHandler;
-	commandHandler.handleCommand(command, m_clientSocket, this);
+void ClientHandler::readCommand(const std::string &command) {
+    CommandHandler commandHandler;
+    commandHandler.handleCommand(command, m_clientSocket, this);
 }
 
-void ClientHandler::sendResponse(const std::string& response)
-{
+void ClientHandler::sendResponse(const std::string &response) {
     send(m_clientSocket, response.c_str(), response.length(), 0);
 }
 
 
-void ClientHandler::joinChannel(const std::string& channel)
-{
-	channels.push_back(channel);
-}
+bool ClientHandler::joinChannel(const std::string &channel) { return (m_server->joinChannel(this->user, channel)); }
 
-void ClientHandler::leaveChannel(const std::string& channel)
-{
-	for (size_t i = 0; i < channels.size(); i++)
-	{
-		if (channels[i] == channel)
-		{
-			channels.erase(channels.begin() + i);
-			break;
-		}
-	}
+void ClientHandler::leaveChannel(const std::string &channel) {
+    for (size_t i = 0; i < channels.size(); i++) {
+        if (channels[i] == channel) {
+            channels.erase(channels.begin() + i);
+            break;
+        }
+    }
 }

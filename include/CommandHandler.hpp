@@ -5,11 +5,11 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <string.h>
 #include <string>
 #include <sys/socket.h>
 #include <vector>
 #include "ClientHandler.hpp"
+#include "Server.hpp"
 #include "Utils.hpp"
 
 class CommandHandler {
@@ -18,7 +18,7 @@ public:
 
 private:
     static const int RPL_WELCOME = 1;
-    static const int RPL_LISTSTART = 321
+    static const int RPL_LISTSTART = 321;
     static const int RPL_CAPLS = 375;
     static const int RPL_CHANNELMODEIS = 324;
     static const int ERR_UNKNOWNCOMMAND = 421;
