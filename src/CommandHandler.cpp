@@ -40,6 +40,10 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		{
 			handleWhois(clientSocket, clientHandler);
 		}
+		else if (cmd == "QUIT")
+		{
+			handleQuit(clientSocket, clientHandler, server);
+		}
 		else
 		{
 			sendResponse(clientSocket, ERR_UNKNOWNCOMMAND,
@@ -229,4 +233,11 @@ void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clien
 	std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
 	sendResponse(clientSocket, welcomeMsg);
 	clientHandler->m_user.setIsRegistered(true);
+}
+
+void CommandHandler::handleQuit(int clientSocket, ClientHandler *clientHandler, Server &server)
+{
+	sendResponse(clientSocket, "Goodbye!");
+	std::cout << "Client " << clientHandler->m_user.getNickname() << " has quit." << std::endl;
+	server.handleClientDisconnect(clientSocket);
 }

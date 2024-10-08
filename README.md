@@ -101,7 +101,7 @@ The right syntax for the listed commands is explained in the [protocol](https://
 - [ ] `TOPIC`: Show the topic of a channel
 - [ ] `JOIN`: Join a channel
 - [ ] `PART`: Leave a channel
-- [ ] `QUIT`: Leave the server
+- [X] `QUIT`: Leave the server
 - [ ] `SHOWTIME BOT`: Activates the bot
 
 ##### Channel Operator Commands

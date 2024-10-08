@@ -44,6 +44,7 @@ private:
 	static void handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void completeRegistration(int clientSocket, ClientHandler *clientHandler);
 	static void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
+	static void handleQuit(int clientSocket, ClientHandler *clientHandler, Server &server);
 };
 
 #endif

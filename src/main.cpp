@@ -50,8 +50,6 @@ int main(int argc, char *argv[])
 	try
 	{
 		// Créer l'instance locale du serveur
-		// Server server(port, serverPassword);
-		// serverInstance = &server; // Associer l'instance locale au pointeur global
 		serverInstance = new Server(port, serverPassword);
 		std::cout << "Password set to: " << serverPassword << std::endl;
 
@@ -62,7 +60,6 @@ int main(int argc, char *argv[])
 		std::cout << "Server started on port " << port << ". Press Ctrl+C to stop." << std::endl;
 
 		// Démarrer le serveur
-		// server.start();
 		serverInstance->start();
 	}
 	catch (const std::exception &e)
