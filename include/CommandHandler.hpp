@@ -1,47 +1,51 @@
 #ifndef COMMANDHANDLER_HPP
 #define COMMANDHANDLER_HPP
 
+#include <algorithm>
 #include <iostream>
-#include <vector>
-#include <string>
 #include <map>
 #include <sstream>
-#include <algorithm>
+#include <string>
+#include <vector>
 #include "ClientHandler.hpp"
 #include "Server.hpp"
 #include "Utils.hpp"
 
 class Server;
 
-class CommandHandler
-{
+class CommandHandler {
 public:
-	CommandHandler(Server &server) : server(server) {}
-	static void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
+    CommandHandler(Server &server);
+    void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 
 private:
-	Server &server;
-	static const int RPL_WELCOME = 1;
-	static const int RPL_CAPLS = 375;
-	static const int RPL_CHANNELMODEIS = 324;
-	static const int ERR_UNKNOWNCOMMAND = 421;
-	static const int RPL_WHOISUSER = 311;
-	static const int ERR_NEEDMOREPARAMS = 461;
-	static const int ERR_ALREADYREGISTRED = 462;
-	static const std::string WELCOME_MESSAGE;
+    Server &m_server;
+    static const std::string WELCOME_MESSAGE;
+    static const int RPL_WELCOME = 1;
+    static const int RPL_LISTSTART = 321;
+    static const int RPL_LIST = 322;
+    static const int RPL_LISTEND = 323;
+    static const int RPL_WHOISSERVER = 312;
+    static const int RPL_ENDOFWHOIS = 318;
+    static const int RPL_CAPLS = 375;
+    static const int RPL_CHANNELMODEIS = 324;
+    static const int ERR_UNKNOWNCOMMAND = 421;
+    static const int RPL_WHOISUSER = 311;
+    static const int ERR_NEEDMOREPARAMS = 461;
+    static const int ERR_ALREADYREGISTRED = 462;
 
-	static void sendResponse(int clientSocket, int code, const std::string &message);
-	static void sendResponse(int clientSocket, const std::string &message);
-	static std::string parseCommand(const std::string &fullCommand);
-	static void handleCap(const std::string &command, int clientSocket);
-	static void handleNick(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-	static void handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-	static void handleWhois(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
-	static void handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-	static void completeRegistration(int clientSocket, ClientHandler *clientHandler);
-	static void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
-	static void handleQuit(int clientSocket, ClientHandler *clientHandler, Server &server);
-	static void handlePrivMsg(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
+    void sendResponse(int clientSocket, int code, const std::string &message);
+    void sendResponse(int clientSocket, const std::string &message);
+    std::string parseCommand(const std::string &fullCommand);
+    void handleCap(const std::string &command, int clientSocket);
+    void handleNick(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+    void handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+    void handleWhois(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+    void handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+    void completeRegistration(int clientSocket, ClientHandler *clientHandler);
+    void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+    void handleQuit(int clientSocket, ClientHandler *clientHandler);
+    void handlePrivMsg(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 };
 
 #endif

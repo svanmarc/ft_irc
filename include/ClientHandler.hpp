@@ -1,53 +1,51 @@
 #ifndef CLIENTHANDLER_HPP
 #define CLIENTHANDLER_HPP
 
-#include <iostream>
-#include <vector>
-#include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
 #include <cerrno>
+#include <iostream>
+#include <string>
+#include <unistd.h>
+#include <vector>
 #include "User.hpp"
+
 
 class Server;
 
-class ClientHandler
-{
+class ClientHandler {
 public:
-	ClientHandler(int socket);
-	~ClientHandler();
+    ClientHandler(int socket, Server *serverRef);
+    ~ClientHandler();
 
-	void handlerClient(Server &server);
+    void handlerClient(Server &server);
 
-	// Gestion de l'authentification et des tentatives
-	bool isAuthenticated() const;
-	void setAuthenticated(bool isAuthenticated);
-	int getAttempts() const;
-	void incrementAttempts();
-	void resetAttempts();
+    // Gestion de l'authentification et des tentatives
+    bool isAuthenticated() const;
+    void setAuthenticated(bool isAuthenticated);
+    int getAttempts() const;
+    void incrementAttempts();
+    void resetAttempts();
 
-	// Gestion des informations de l'utilisateur
-	User &getUser();
-	const std::string &getNickname() const;
-	void setNickname(const std::string &nickname);
+    // Gestion des informations de l'utilisateur
+    User &getUser();
+    const std::string &getNickname() const;
+    void setNickname(const std::string &nickname);
 
-	// Communication avec le client
-	int getSocket() const;
-	void sendResponse(const std::string &response);
+    // Communication avec le client
+    int getSocket() const;
+    void sendResponse(const std::string &response) const;
+    void readCommand(const std::string &command);
 
-	// Gestion des canaux
-	void joinChannel(const std::string &channel);
-	void leaveChannel(const std::string &channel);
+    bool joinChannel(const std::string &channel) const;
+    void leaveChannel(const std::string &channel);
+    Server *getServer() const;
 
 private:
-	int clientSocket;
-	int attempts;
-	bool authenticated;
-	User m_user;
-	std::vector<std::string> channels;
-
-	void readCommand(const std::string &command, Server &server);
+    int m_clientSocket;
+    Server *m_server;
+    int m_attempts;
+    User m_user;
+    std::vector<std::string> channels;
+    void readCommand(const std::string &command, Server &server);
 };
 
 #endif

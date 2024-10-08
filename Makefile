@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./include -g
-SRC = $(wildcard src/*.cpp)
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./include
+SRC = $(shell find src -name '*.cpp')
 OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 NAME = build/ircserv
 
@@ -11,7 +11,7 @@ $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
 obj/%.o: src/%.cpp
-	@mkdir -p obj
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
@@ -24,4 +24,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+run: re
+	./$(NAME) 6668 pw
+
+.PHONY: all clean fclean re run
