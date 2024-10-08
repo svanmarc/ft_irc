@@ -6,7 +6,6 @@ void CommandHandler::handlePrivMsg(const std::string &command, int clientSocket,
         sendResponse(clientSocket, ERR_UNKNOWNCOMMAND, "Unknown command: " + command);
         return;
     }
-
     // Extraire le `target`
     start += 8; // Sauter "PRIVMSG "
     std::string::size_type spacePos = command.find(' ', start);

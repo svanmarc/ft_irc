@@ -30,45 +30,30 @@ void ClientHandler::handlerClient(Server &server) {
     }
 }
 
-
 void ClientHandler::readCommand(const std::string &command, Server &server) {
     CommandHandler commandHandler(server);
     commandHandler.handleCommand(command, m_clientSocket, this);
 }
-
 int ClientHandler::getSocket() const { return m_clientSocket; }
-
 bool ClientHandler::isAuthenticated() const { return m_user.isAuthenticated(); }
-
 void ClientHandler::setAuthenticated(bool isAuthenticated) { m_user.setAuthenticated(isAuthenticated); }
-
 int ClientHandler::getAttempts() const { return m_attempts; }
-
 void ClientHandler::incrementAttempts() { m_attempts++; }
-
 void ClientHandler::resetAttempts() { m_attempts = 0; }
-
 const std::string &ClientHandler::getNickname() const { return m_user.getNickname(); }
-
 void ClientHandler::setNickname(const std::string &nickname) { m_user.setNickname(nickname); }
-
 User &ClientHandler::getUser() { return m_user; }
-
-bool ClientHandler::joinChannel(const std::string &channel) const {
-    return (m_server->joinChannel(this->m_user, channel));
-}
-
 Server *ClientHandler::getServer() const { return m_server; }
-
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
     commandHandler.handleCommand(command, m_clientSocket, this);
 }
-
 void ClientHandler::sendResponse(const std::string &response) const {
     send(m_clientSocket, response.c_str(), response.length(), 0);
 }
-
+bool ClientHandler::joinChannel(const std::string &channel) const {
+    return (m_server->joinChannel(this->m_user, channel));
+}
 void ClientHandler::leaveChannel(const std::string &channel) {
     for (size_t i = 0; i < channels.size(); i++) {
         if (channels[i] == channel) {

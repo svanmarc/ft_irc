@@ -8,7 +8,8 @@ This is a group-project for [42Perpignan](https://42perpignan.fr/) school's curr
 
 Created by [mrabat](https://github.com/rabatm) and [svanmarc](https://github.com/svanmarc)
 
-It is about implementing a IRC-server, designed to handle multiple clients without hanging and uses non-blocking I/O operations,
+It is about implementing a IRC-server, designed to handle multiple clients without hanging and uses non-blocking I/O
+operations,
 following the [Internet Relay Chat Protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-1.1).
 
 ### Requirements
@@ -38,7 +39,8 @@ make
 
 ### Commands
 
-the right syntax for the listed commands is explained in the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
+the right syntax for the listed commands is explained in
+the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
 
 #### Registration Commands
 
@@ -65,25 +67,26 @@ the right syntax for the listed commands is explained in the [protocol](https://
 - `INVITE`: Invite a client to a channel
 - `TOPIC`: Change or view the channel topic
 - `MODE`: Change the channel's mode
-  - `i`: Set/remove Invite-only channel
-  - `t`: Set/remove the restrictions of the TOPIC command to channel operators
-  - `k`: Set/remove the channel key (password)
-  - `o`: Give/take channel operator privilege
-  - `l`: Set/remove the user limit to the channel
+    - `i`: Set/remove Invite-only channel
+    - `t`: Set/remove the restrictions of the TOPIC command to channel operators
+    - `k`: Set/remove the channel key (password)
+    - `o`: Give/take channel operator privilege
+    - `l`: Set/remove the user limit to the channel
 
 ### To-Do List
 
 #### Basic Features
 
 - [x] Authenticate, set a nickname, and a username
-- [ ] Join a channel
-- [ ] Send and receive private messages
+- [x] Join a channel
+- [x] Send and receive private messages
 - [ ] Forward messages from one client to all other clients in the channel
 - [ ] Support for operators and regular users
 
 #### Commands
 
-The right syntax for the listed commands is explained in the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
+The right syntax for the listed commands is explained in
+the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
 
 ##### Registration Commands
 
@@ -110,11 +113,11 @@ The right syntax for the listed commands is explained in the [protocol](https://
 - [ ] `INVITE`: Invite a client to a channel
 - [ ] `TOPIC`: Change or view the channel topic
 - [ ] `MODE`: Change the channel's mode
-  - [ ] `i`: Set/remove Invite-only channel
-  - [ ] `t`: Set/remove the restrictions of the TOPIC command to channel operators
-  - [ ] `k`: Set/remove the channel key (password)
-  - [ ] `o`: Give/take channel operator privilege
-  - [ ] `l`: Set/remove the user limit to the channel
+    - [ ] `i`: Set/remove Invite-only channel
+    - [ ] `t`: Set/remove the restrictions of the TOPIC command to channel operators
+    - [ ] `k`: Set/remove the channel key (password)
+    - [ ] `o`: Give/take channel operator privilege
+    - [ ] `l`: Set/remove the user limit to the channel
 
 ##### Server Operator Commands
 
