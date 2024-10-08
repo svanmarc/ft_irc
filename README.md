@@ -87,7 +87,7 @@ The right syntax for the listed commands is explained in the [protocol](https://
 
 ##### Registration Commands
 
-- [ ] `PASS`: Requires password
+- [X] `PASS`: Requires password
 - [x] `NICK`: Set nickname
 - [x] `USER`: Set Username
 

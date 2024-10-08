@@ -31,7 +31,6 @@ void User::setConnected(const bool isConnected) { m_isConnected = isConnected; }
 void User::setIsRegistered(const bool isRegistered) { m_isRegistered = isRegistered; }
 bool User::isRegistered() const { return m_isRegistered; }
 
-// Nouvelles méthodes pour la gestion du mot de passe et de l'authentification
 const std::string &User::getPassword() const { return m_password; }
 void User::setPassword(const std::string &password) { m_password = password; }
 

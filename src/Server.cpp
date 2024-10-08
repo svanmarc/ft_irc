@@ -1,9 +1,10 @@
 #include "Server.hpp"
 #include "CommandHandler.hpp"
 
-Server::Server(int port, const std::string &password) : password(password), commandHandler(new CommandHandler(*this))
+Server::Server(int port, const std::string &password) : password(password)
 {
 	setupSocket(port);
+	commandHandler = new CommandHandler(*this);
 
 	// Ajouter le socket d'écoute à la liste des descripteurs surveillés par `poll`
 	struct pollfd serverPollFD;
@@ -13,11 +14,42 @@ Server::Server(int port, const std::string &password) : password(password), comm
 	fds.push_back(serverPollFD);	// Ajouter au vecteur `fds`
 }
 
-Server::~Server()
-{
-	stop();
-	delete commandHandler;
-}
+// Server::~Server()
+// {
+// 	stop();
+// 	delete commandHandler;
+// }
+
+// void Server::start()
+// {
+// 	std::cout << "Server is running. Waiting for connections..." << std::endl;
+
+// 	while (true)
+// 	{
+// 		// Appeler `poll` pour surveiller les sockets
+// 		int pollCount = poll(&fds[0], fds.size(), -1);
+// 		if (pollCount < 0)
+// 		{
+// 			std::cerr << "Error in poll: " << std::strerror(errno) << std::endl;
+// 			break;
+// 		}
+
+// 		// Parcourir les descripteurs de fichier surveillés par `poll`
+// 		for (unsigned int i = 0; i < fds.size(); ++i)
+// 		{
+// 			// Si le socket surveillé est le socket d'écoute, accepter une nouvelle connexion
+// 			if (fds[i].fd == serverSocket && fds[i].revents & POLLIN)
+// 			{
+// 				acceptClient(); // Accepter la nouvelle connexion
+// 			}
+// 			// Si un client envoie un message
+// 			else if (fds[i].revents & POLLIN)
+// 			{
+// 				handleClient(fds[i].fd); // Gérer les données d'un client existant
+// 			}
+// 		}
+// 	}
+// }
 
 void Server::start()
 {
@@ -25,7 +57,7 @@ void Server::start()
 
 	while (true)
 	{
-		// Appeler `poll` pour surveiller les sockets
+		// Appeler `poll` pour surveiller les sockets de tous les clients
 		int pollCount = poll(&fds[0], fds.size(), -1);
 		if (pollCount < 0)
 		{
@@ -33,7 +65,6 @@ void Server::start()
 			break;
 		}
 
-		// Parcourir les descripteurs de fichier surveillés par `poll`
 		for (unsigned int i = 0; i < fds.size(); ++i)
 		{
 			// Si le socket surveillé est le socket d'écoute, accepter une nouvelle connexion
@@ -44,20 +75,90 @@ void Server::start()
 			// Si un client envoie un message
 			else if (fds[i].revents & POLLIN)
 			{
-				handleClient(fds[i].fd); // Gérer les données d'un client existant
+				// Appelle `handlerClient` pour chaque client mais sans bloquer le reste du serveur
+				ClientHandler *client = findClient(fds[i].fd);
+				if (client)
+					client->handlerClient(*this); // Traitement d'un seul message à la fois
 			}
 		}
 	}
 }
 
+// void Server::stop()
+// {
+// 	for (unsigned int i = 0; i < fds.size(); ++i)
+// 	{
+// 		close(fds[i].fd);
+// 	}
+
+// 	close(serverSocket);
+// 	std::cout << "Server stopped --- Welcome to the real world." << std::endl;
+// }
+
+// void Server::stop()
+// {
+// 	std::cout << "Stopping server..." << std::endl;
+
+// 	// Fermer chaque client proprement
+// 	for (size_t i = 0; i < clients.size(); ++i)
+// 	{
+// 		if (clients[i] != NULL)
+// 		{
+// 			delete clients[i]; // Libérer la mémoire allouée pour chaque client
+// 			clients[i] = NULL;
+// 		}
+// 	}
+// 	clients.clear(); // Vider le vecteur des clients
+
+// 	// Vider le vecteur des fds
+// 	fds.clear();
+
+// 	// Fermer le socket du serveur
+// 	if (serverSocket >= 0)
+// 	{
+// 		close(serverSocket);
+// 		serverSocket = -1; // mettre à jour pour indiquer que le socket est fermé
+// 	}
+
+// 	std::cout << "Server stopped --- Welcome to the real world." << std::endl;
+// }
+
+Server::~Server()
+{
+	stop();
+	if (commandHandler != 0)
+	{
+		delete commandHandler;
+		commandHandler = 0;
+	}
+}
+
 void Server::stop()
 {
-	for (unsigned int i = 0; i < fds.size(); ++i)
+	std::cout << "Stopping server..." << std::endl;
+
+	for (size_t i = 0; i < clients.size(); ++i)
 	{
-		close(fds[i].fd);
+		if (clients[i] != 0)
+		{
+			delete clients[i];
+			clients[i] = 0;
+		}
+	}
+	clients.clear();
+
+	std::vector<ClientHandler *>().swap(clients);
+
+	fds.clear();
+
+	std::vector<pollfd>().swap(fds);
+
+	if (serverSocket >= 0)
+	{
+		close(serverSocket);
+		serverSocket = -1; // Mettre à jour pour indiquer qu'il est fermé
 	}
 
-	close(serverSocket);
 	std::cout << "Server stopped --- Welcome to the real world." << std::endl;
 }
 
@@ -254,4 +355,10 @@ bool Server::checkPassword(const std::string &clientPassword)
 bool Server::authenticate(const std::string &clientPassword)
 {
 	return checkPassword(clientPassword);
+}
+
+void Server::handleClientDisconnect(int clientSocket)
+{
+	std::cout << "Handing disconnection for client socket: " << std::endl;
+	removeClient(clientSocket);
 }

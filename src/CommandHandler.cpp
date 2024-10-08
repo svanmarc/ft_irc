@@ -141,6 +141,8 @@ void CommandHandler::handlePass(const std::string &command, int clientSocket, Cl
 	{
 		std::string clientPassword = trim(command.substr(pos + 5));
 
+		std::cout << "Client password: " << clientPassword << std::endl;
+
 		if (server.authenticate(clientPassword))
 		{
 			clientHandler->setAuthenticated(true);

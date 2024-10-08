@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <poll.h>
 #include <sstream>
+
 #include "ClientHandler.hpp"
 
 class CommandHandler;
@@ -24,6 +25,7 @@ public:
 	void start();
 	void stop();
 	bool authenticate(const std::string &clientPassword);
+	void handleClientDisconnect(int clientSocket);
 
 private:
 	int serverSocket;

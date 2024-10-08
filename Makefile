@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./include
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./include -g
 SRC = $(wildcard src/*.cpp)
 OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
 NAME = build/ircserv

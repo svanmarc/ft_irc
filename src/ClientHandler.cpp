@@ -8,18 +8,48 @@ ClientHandler::~ClientHandler()
 	close(clientSocket);
 }
 
+// void ClientHandler::handlerClient(Server &server)
+// {
+// 	char buffer[1024];
+// 	while (true)
+// 	{
+// 		memset(buffer, 0, sizeof(buffer));
+// 		int bytesRead = read(clientSocket, buffer, sizeof(buffer) - 1);
+// 		if (bytesRead <= 0)
+// 		{
+// 			std::cerr << "Client disconnected or error reading" << std::endl;
+// 			break;
+// 		}
+// 		std::string command(buffer);
+// 		std::cout << "Received command: " << command << std::endl;
+// 		readCommand(command, server);
+// 	}
+// }
+
 void ClientHandler::handlerClient(Server &server)
 {
 	char buffer[1024];
-	while (true)
+	memset(buffer, 0, sizeof(buffer));
+	int bytesRead = read(clientSocket, buffer, sizeof(buffer) - 1);
+
+	if (bytesRead < 0)
 	{
-		memset(buffer, 0, sizeof(buffer));
-		int bytesRead = read(clientSocket, buffer, sizeof(buffer) - 1);
-		if (bytesRead <= 0)
+		// Gestion de l'erreur de lecture
+		if (errno != EAGAIN && errno != EWOULDBLOCK) // Ignore les erreurs non critiques
 		{
-			std::cerr << "Client disconnected or error reading" << std::endl;
-			break;
+			std::cerr << "Error reading from client socket: " << strerror(errno) << std::endl;
+			server.handleClientDisconnect(clientSocket); // Utilise la méthode intermédiaire
 		}
+	}
+	else if (bytesRead == 0)
+	{
+		// Le client s'est déconnecté proprement
+		std::cerr << "Client disconnected." << std::endl;
+		server.handleClientDisconnect(clientSocket); // Utilise la méthode intermédiaire
+	}
+	else
+	{
+		// Lecture réussie, traiter la commande reçue
 		std::string command(buffer);
 		std::cout << "Received command: " << command << std::endl;
 		readCommand(command, server);
