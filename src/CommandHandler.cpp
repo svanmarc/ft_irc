@@ -38,11 +38,15 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
 		}
 		else if (cmd == "WHOIS")
 		{
-			handleWhois(clientSocket, clientHandler);
+			handleWhois(command, clientSocket, clientHandler, server);
 		}
 		else if (cmd == "QUIT")
 		{
 			handleQuit(clientSocket, clientHandler, server);
+		}
+		else if (cmd == "PRIVMSG")
+		{
+			handlePrivMsg(command, clientSocket, clientHandler, server);
 		}
 		else
 		{
@@ -94,7 +98,7 @@ void CommandHandler::handleNick(const std::string &command, int clientSocket, Cl
 		return;
 	}
 
-	clientHandler->m_user.setNickname(nickname);
+	clientHandler->setNickname(nickname);
 
 	std::string welcomeMessage = "Welcome to the Internet Relay Network 2024 ";
 	welcomeMessage += nickname;
@@ -107,14 +111,14 @@ void CommandHandler::handleUser(const std::string &command, int clientSocket, Cl
 	splitCommand(command, parts);
 	if (parts.size() < 5)
 	{
-		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Manque des paramètres : USER username hostname servername :realname");
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "missing parameters: USER <username> <hostname> <servername> <realname>");
 		return;
 	}
 
 	// Vérifier si l'utilisateur est déjà enregistré
-	if (clientHandler->m_user.isRegistered())
+	if (clientHandler->getUser().isRegistered())
 	{
-		sendResponse(clientSocket, ERR_ALREADYREGISTRED, "Vous êtes déjà enregistré !");
+		sendResponse(clientSocket, ERR_ALREADYREGISTRED, "You are already registered");
 		return;
 	}
 
@@ -124,17 +128,17 @@ void CommandHandler::handleUser(const std::string &command, int clientSocket, Cl
 	std::string servername = parts[3];
 	std::string realname = parts[4];
 
-	clientHandler->m_user.setUsername(username);
-	clientHandler->m_user.setHostname(hostname);
-	clientHandler->m_user.setRealname(realname);
+	clientHandler->getUser().setUsername(username);
+	clientHandler->getUser().setHostname(hostname);
+	clientHandler->getUser().setRealname(realname);
 
-	if (!clientHandler->m_user.getNickname().empty())
+	if (!clientHandler->getUser().getNickname().empty())
 	{
 		completeRegistration(clientSocket, clientHandler);
 	}
 	else
 	{
-		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "Vous devez d'abord choisir un pseudo avec la commande NICK");
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "missing parameters: NICK <nickname>");
 	}
 }
 
@@ -185,28 +189,35 @@ void CommandHandler::handleMode(const std::string &command, int clientSocket, Cl
 		mode = trim(command.substr(pos + 5));
 	}
 
-	clientHandler->m_user.setUserMode(mode);
+	clientHandler->getUser().setUserMode(mode);
 
-	std::string response = clientHandler->m_user.getNickname();
+	std::string response = clientHandler->getNickname();
 	response += " +";
 	response += mode;
 	sendResponse(clientSocket, RPL_CHANNELMODEIS, response);
 }
 
-void CommandHandler::handleWhois(int clientSocket, ClientHandler *clientHandler)
-{
-	std::string response = "NICK ";
-	response += clientHandler->m_user.getNickname();
-	sendResponse(clientSocket, RPL_WELCOME, response);
-}
+// void CommandHandler::sendResponse(int clientSocket, int code, const std::string &message)
+// {
+// 	std::string response = ":localhost ";
+// 	std::ostringstream oss;
+// 	oss << code;
+// 	response += oss.str();
+// 	response += " " + message + "\r\n";
+// 	std::cout << "Sending response: " << response << std::endl;
+// 	send(clientSocket, response.c_str(), response.length(), 0);
+// }
 
 void CommandHandler::sendResponse(int clientSocket, int code, const std::string &message)
 {
 	std::string response = ":localhost ";
-	std::ostringstream oss;
-	oss << code;
-	response += oss.str();
-	response += " " + message + "\r\n";
+	if (code != 0) // N'ajouter le code que s'il est différent de 0
+	{
+		std::ostringstream oss;
+		oss << code;
+		response += oss.str() + " ";
+	}
+	response += message + "\r\n";
 	std::cout << "Sending response: " << response << std::endl;
 	send(clientSocket, response.c_str(), response.length(), 0);
 }
@@ -219,25 +230,125 @@ void CommandHandler::sendResponse(int clientSocket, const std::string &message)
 void CommandHandler::completeRegistration(int clientSocket, ClientHandler *clientHandler)
 {
 	std::string welcomeMsg = ":";
-	welcomeMsg += clientHandler->m_user.getServername();
+	welcomeMsg += clientHandler->getUser().getServername();
 	welcomeMsg += " 001 ";
-	welcomeMsg += clientHandler->m_user.getNickname();
+	welcomeMsg += clientHandler->getNickname();
 	welcomeMsg += " :Welcome to the Internet Relay Network ";
-	welcomeMsg += clientHandler->m_user.getNickname();
+	welcomeMsg += clientHandler->getNickname();
 	welcomeMsg += "!";
-	welcomeMsg += clientHandler->m_user.getUsername();
+	welcomeMsg += clientHandler->getUser().getUsername();
 	welcomeMsg += "@";
-	welcomeMsg += clientHandler->m_user.getHostname();
+	welcomeMsg += clientHandler->getUser().getHostname();
 	welcomeMsg += "\r\n";
 
 	std::cout << "Sending welcome message: " << welcomeMsg << std::endl;
 	sendResponse(clientSocket, welcomeMsg);
-	clientHandler->m_user.setIsRegistered(true);
+	clientHandler->getUser().setIsRegistered(true);
 }
 
 void CommandHandler::handleQuit(int clientSocket, ClientHandler *clientHandler, Server &server)
 {
 	sendResponse(clientSocket, "Goodbye!");
-	std::cout << "Client " << clientHandler->m_user.getNickname() << " has quit." << std::endl;
+	std::cout << "Client " << clientHandler->getNickname() << " has quit." << std::endl;
 	server.handleClientDisconnect(clientSocket);
+}
+
+void CommandHandler::handlePrivMsg(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server)
+{
+	// Extraire le destinataire et le message
+	std::string::size_type start = command.find("PRIVMSG ");
+	if (start == std::string::npos)
+	{
+		sendResponse(clientSocket, ERR_UNKNOWNCOMMAND, "Unknown command: " + command);
+		return;
+	}
+
+	// Extraire le `target`
+	start += 8; // Sauter "PRIVMSG "
+	std::string::size_type spacePos = command.find(' ', start);
+	if (spacePos == std::string::npos)
+	{
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "No target specified");
+		return;
+	}
+	std::string target = command.substr(start, spacePos - start);
+
+	// Extraire le message après le symbole ':'
+	std::string::size_type messagePos = command.find(':', spacePos);
+	if (messagePos == std::string::npos)
+	{
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "No message specified");
+		return;
+	}
+	std::string message = command.substr(messagePos + 1);
+
+	// Envoi du message au destinataire spécifié
+	bool found = false;
+	const std::vector<ClientHandler *> &clients = server.getClients(); // Utiliser le getter de `Server` pour récupérer les clients
+
+	for (std::vector<ClientHandler *>::const_iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if ((*it)->getNickname() == target) // Utiliser `getNickname()` pour accéder au nom d'utilisateur
+		{
+			found = true;
+			std::string response = ":" + clientHandler->getNickname() + " PRIVMSG " + target + " :" + message;
+			(*it)->sendResponse(response); // Envoie le message au client spécifié
+			break;
+		}
+	}
+
+	if (!found)
+	{
+		std::cout << "PRIVMSG from " << clientHandler->getNickname()
+				  << " to " << target << ": " << message << std::endl;
+		sendResponse(clientSocket, "No such user: " + target);
+	}
+}
+
+void CommandHandler::handleWhois(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server)
+{
+	std::string::size_type start = command.find("WHOIS ");
+	if (start == std::string::npos)
+	{
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
+		return;
+	}
+
+	// Extraire le `nickname` cible
+	start += 6;												  // Sauter "WHOIS "
+	std::string targetNickname = trim(command.substr(start)); // Utiliser `trim` pour supprimer les espaces autour du pseudo
+
+	// Vérifier si le `nickname` est vide après extraction
+	if (targetNickname.empty())
+	{
+		sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
+		return;
+	}
+
+	// Chercher le client correspondant au `targetNickname`
+	const std::vector<ClientHandler *> &clients = server.getClients(); // Récupérer les clients
+	bool found = false;
+
+	for (std::vector<ClientHandler *>::const_iterator it = clients.begin(); it != clients.end(); ++it)
+	{
+		if ((*it)->getNickname() == targetNickname) // Vérifier la correspondance du `nickname`
+		{
+			found = true;
+			ClientHandler *targetClient = *it;
+
+			std::string response = "311 " + clientHandler->getNickname() + " ";
+			response += targetClient->getNickname() + " ";
+			response += targetClient->getUser().getUsername() + " ";
+			response += targetClient->getUser().getHostname() + " * :";
+			response += targetClient->getUser().getRealname();
+
+			sendResponse(clientSocket, response); // Envoyer la réponse WHOIS au client demandeur
+			return;
+		}
+	}
+
+	if (!found)
+	{
+		sendResponse(clientSocket, "No such nickname: " + targetNickname);
+	}
 }

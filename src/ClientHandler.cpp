@@ -8,24 +8,6 @@ ClientHandler::~ClientHandler()
 	close(clientSocket);
 }
 
-// void ClientHandler::handlerClient(Server &server)
-// {
-// 	char buffer[1024];
-// 	while (true)
-// 	{
-// 		memset(buffer, 0, sizeof(buffer));
-// 		int bytesRead = read(clientSocket, buffer, sizeof(buffer) - 1);
-// 		if (bytesRead <= 0)
-// 		{
-// 			std::cerr << "Client disconnected or error reading" << std::endl;
-// 			break;
-// 		}
-// 		std::string command(buffer);
-// 		std::cout << "Received command: " << command << std::endl;
-// 		readCommand(command, server);
-// 	}
-// }
-
 void ClientHandler::handlerClient(Server &server)
 {
 	char buffer[1024];
@@ -112,4 +94,19 @@ void ClientHandler::incrementAttempts()
 void ClientHandler::resetAttempts()
 {
 	attempts = 0;
+}
+
+const std::string &ClientHandler::getNickname() const
+{
+	return m_user.getNickname();
+}
+
+void ClientHandler::setNickname(const std::string &nickname)
+{
+	m_user.setNickname(nickname);
+}
+
+User &ClientHandler::getUser()
+{
+	return m_user;
 }

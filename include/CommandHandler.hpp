@@ -1,19 +1,15 @@
 #ifndef COMMANDHANDLER_HPP
 #define COMMANDHANDLER_HPP
 
-#include "ClientHandler.hpp"
-#include "Utils.hpp"
+#include <iostream>
+#include <vector>
 #include <string>
 #include <map>
-#include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <cstring>
-#include <sys/socket.h>
-#include <string.h>
-#include <vector>
-#include <unistd.h>
+#include "ClientHandler.hpp"
 #include "Server.hpp"
+#include "Utils.hpp"
 
 class Server;
 
@@ -40,11 +36,12 @@ private:
 	static void handleCap(const std::string &command, int clientSocket);
 	static void handleNick(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-	static void handleWhois(int clientSocket, ClientHandler *clientHandler);
+	static void handleWhois(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
 	static void handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler);
 	static void completeRegistration(int clientSocket, ClientHandler *clientHandler);
 	static void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
 	static void handleQuit(int clientSocket, ClientHandler *clientHandler, Server &server);
+	static void handlePrivMsg(const std::string &command, int clientSocket, ClientHandler *clientHandler, Server &server);
 };
 
 #endif
