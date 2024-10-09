@@ -1,5 +1,5 @@
-#include "Server.hpp"
 #include "CommandHandler.hpp"
+#include "Server.hpp"
 
 // Accepter un nouveau client
 void Server::acceptClient() {
@@ -42,7 +42,7 @@ void Server::handleClient(const int clientSocket) {
     std::cout << "Client command: " << message << std::endl;
     for (unsigned int i = 0; i < clients.size(); ++i) {
         if (clients[i]->getSocket() == clientSocket) {
-            commandHandler->handleCommand(message, clientSocket, clients[i]);
+            commandHandler->handleCommand(message, clients[i]);
             break;
         }
     }
@@ -74,9 +74,9 @@ ClientHandler *Server::findClient(const int clientSocket) const {
     return NULL;
 }
 // Vérifier le mot de passe du client
-bool Server::checkPassword(const std::string &clientPassword) { return clientPassword == m_password; }
+bool Server::checkPassword(const std::string &clientPassword) const { return clientPassword == m_password; }
 // Authentifier le client
-bool Server::authenticate(const std::string &clientPassword) { return checkPassword(clientPassword); }
+bool Server::authenticate(const std::string &clientPassword) const { return checkPassword(clientPassword); }
 
 void Server::handleClientDisconnect(int clientSocket) {
     std::cout << "Handing disconnection for client socket: " << std::endl;

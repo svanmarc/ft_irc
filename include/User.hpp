@@ -1,8 +1,7 @@
 #ifndef USER_HPP
 #define USER_HPP
 
-#include <ctime>
-#include <string>
+#include "Irc.hpp"
 
 class User {
 public:
@@ -13,7 +12,6 @@ public:
 
     const std::string &getNickname() const;
     void setNickname(const std::string &nickname);
-
     const std::string &getUserMode() const;
     void setUserMode(const std::string &userMode);
     const std::string &getUsername() const;

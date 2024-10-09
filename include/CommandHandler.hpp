@@ -1,27 +1,22 @@
 #ifndef COMMANDHANDLER_HPP
 #define COMMANDHANDLER_HPP
 
-#include <algorithm>
-#include <iostream>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
 #include "ClientHandler.hpp"
+#include "IRCConstants.hpp"
+#include "Irc.hpp"
+#include "MessageHandler.hpp"
 #include "Server.hpp"
-#include "Utils.hpp"
+#include "utils.hpp"
 
 class Server;
 
 class CommandHandler {
 public:
     CommandHandler(Server &server);
-    void handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+    void handleCommand(const std::string &command, ClientHandler *clientHandler);
 
 private:
     Server &m_server;
-    static const std::string WELCOME_MESSAGE;
-    static const int RPL_WELCOME = 1;
     static const int RPL_LISTSTART = 321;
     static const int RPL_LIST = 322;
     static const int RPL_LISTEND = 323;
@@ -34,18 +29,23 @@ private:
     static const int ERR_NEEDMOREPARAMS = 461;
     static const int ERR_ALREADYREGISTRED = 462;
 
-    void sendResponse(int clientSocket, int code, const std::string &message);
-    void sendResponse(int clientSocket, const std::string &message);
-    std::string parseCommand(const std::string &fullCommand);
-    void handleCap(const std::string &command, int clientSocket);
-    void handleNick(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-    void handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-    void handleWhois(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-    void handleUser(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-    void completeRegistration(int clientSocket, ClientHandler *clientHandler);
-    void handlePass(const std::string &command, int clientSocket, ClientHandler *clientHandler);
-    void handleQuit(int clientSocket, ClientHandler *clientHandler);
-    void handlePrivMsg(const std::string &command, int clientSocket, ClientHandler *clientHandler);
+
+    // fichier CommandsUser.cpp
+    static void handleNick(const std::string &command, ClientHandler *clientHandler);
+    static void handleUser(const std::string &command, ClientHandler *clientHandler);
+    void handlePass(const std::string &command, ClientHandler *clientHandler);
+    static void completeRegistration(ClientHandler *clientHandler);
+
+    // fichier CommandHandler.cpp
+    static void handleMode(const std::string &command, ClientHandler *clientHandler);
+    void handleQuit(ClientHandler *clientHandler);
+    static void handleCap(ClientHandler *clientHandler, const std::string &command);
+    // fichier CommandsUsers.cpp
+    void handleWhois(const std::string &command, ClientHandler *clientHandler);
+    static std::string parseCommand(const std::string &fullCommand);
+
+    // fichier CommandHandlerMsg
+    void handlePrivMsg(const std::string &command, ClientHandler *clientHandler);
 };
 
 #endif

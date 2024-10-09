@@ -1,9 +1,7 @@
 #pragma once
 #define CHANNEL_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
+#include "Irc.hpp"
 #include "User.hpp"
 
 

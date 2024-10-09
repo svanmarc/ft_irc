@@ -1,14 +1,14 @@
 #include "CommandHandler.hpp"
 
-void CommandHandler::handleWhois(const std::string &command, int clientSocket, ClientHandler *clientHandler) {
+void CommandHandler::handleWhois(const std::string &command, ClientHandler *clientHandler) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     std::cout << parts[1] << std::endl;
     if (parts.size() == 2 && (parts[1].empty() || parts[1] == "CAP")) {
-        sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
+        MessageHandler::sendResponse(clientHandler, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
         return;
     }
-    std::string targetNickname = trim(parts[1]);
+    const std::string targetNickname = trim(parts[1]);
     // Chercher le client correspondant au `targetNickname`
     const std::vector<ClientHandler *> &clients = m_server.getClients(); // Récupérer les clients
     bool found = false;
@@ -23,13 +23,14 @@ void CommandHandler::handleWhois(const std::string &command, int clientSocket, C
             response += targetClient->getUser().getUsername() + " ";
             response += targetClient->getUser().getHostname() + " * :";
             response += targetClient->getUser().getRealname();
-            sendResponse(clientSocket, response); // Envoyer la réponse WHOIS au client demandeur
-            sendResponse(clientSocket, RPL_WHOISSERVER, targetNickname + " localhost :Server description");
-            sendResponse(clientSocket, RPL_ENDOFWHOIS, targetNickname +  " :End of /WHOIS list");
+            MessageHandler::sendResponse(clientHandler, response); // Envoyer la réponse WHOIS au client demandeur
+            MessageHandler::sendResponse(clientHandler, RPL_WHOISSERVER,
+                                         targetNickname + " localhost :Server description");
+            MessageHandler::sendResponse(clientHandler, RPL_ENDOFWHOIS, targetNickname + " :End of /WHOIS list");
             return;
         }
     }
     if (!found) {
-        sendResponse(clientSocket, "WHOIS :No such nickname: " + targetNickname);
+        MessageHandler::sendResponse(clientHandler, "WHOIS :No such nickname: " + targetNickname);
     }
 }

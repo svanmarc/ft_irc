@@ -1,16 +1,12 @@
 #include "CommandHandler.hpp"
 
-void CommandHandler::handlePrivMsg(const std::string &command, int clientSocket, ClientHandler *clientHandler) {
-    std::string::size_type start = command.find("PRIVMSG ");
-    if (start == std::string::npos) {
-        sendResponse(clientSocket, ERR_UNKNOWNCOMMAND, "Unknown command: " + command);
-        return;
-    }
+void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *clientHandler) {
     // Extraire le `target`
+    std::string::size_type start = command.find("PRIVMSG");
     start += 8; // Sauter "PRIVMSG "
     std::string::size_type spacePos = command.find(' ', start);
     if (spacePos == std::string::npos) {
-        sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "No target specified");
+        MessageHandler::sendErrorNoTarget(clientHandler);
         return;
     }
     std::string target = command.substr(start, spacePos - start);
@@ -18,7 +14,7 @@ void CommandHandler::handlePrivMsg(const std::string &command, int clientSocket,
     // Extraire le message après le symbole ':'
     std::string::size_type messagePos = command.find(':', spacePos);
     if (messagePos == std::string::npos) {
-        sendResponse(clientSocket, ERR_NEEDMOREPARAMS, "No message specified");
+        MessageHandler::sendErrorNoMessage(clientHandler);
         return;
     }
     std::string message = command.substr(messagePos + 1);
@@ -32,8 +28,7 @@ void CommandHandler::handlePrivMsg(const std::string &command, int clientSocket,
         if ((*it)->getNickname() == target) // Utiliser `getNickname()` pour accéder au nom d'utilisateur
         {
             found = true;
-            std::string response = ":" + clientHandler->getNickname() + " PRIVMSG " + target + " :" + message;
-            (*it)->sendResponse(response); // Envoie le message au client spécifié
+            MessageHandler::sendMessageToUser(clientHandler, *it, message);
             break;
         }
     }
@@ -41,6 +36,6 @@ void CommandHandler::handlePrivMsg(const std::string &command, int clientSocket,
     if (!found) {
         std::cout << "PRIVMSG from " << clientHandler->getNickname() << " to " << target << ": " << message
                   << std::endl;
-        sendResponse(clientSocket, "No such user: " + target);
+        MessageHandler::sendResponse(clientHandler, "No such user: " + target);
     }
 }

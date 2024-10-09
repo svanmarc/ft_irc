@@ -26,14 +26,10 @@ void ClientHandler::handlerClient(Server &server) {
         // Lecture réussie, traiter la commande reçue
         std::string command(buffer);
         std::cout << "Received command: " << command << std::endl;
-        readCommand(command, server);
+        readCommand(command);
     }
 }
 
-void ClientHandler::readCommand(const std::string &command, Server &server) {
-    CommandHandler commandHandler(server);
-    commandHandler.handleCommand(command, m_clientSocket, this);
-}
 int ClientHandler::getSocket() const { return m_clientSocket; }
 bool ClientHandler::isAuthenticated() const { return m_user.isAuthenticated(); }
 void ClientHandler::setAuthenticated(bool isAuthenticated) { m_user.setAuthenticated(isAuthenticated); }
@@ -46,10 +42,7 @@ User &ClientHandler::getUser() { return m_user; }
 Server *ClientHandler::getServer() const { return m_server; }
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
-    commandHandler.handleCommand(command, m_clientSocket, this);
-}
-void ClientHandler::sendResponse(const std::string &response) const {
-    send(m_clientSocket, response.c_str(), response.length(), 0);
+    commandHandler.handleCommand(command, this);
 }
 bool ClientHandler::joinChannel(const std::string &channel) const {
     return (m_server->joinChannel(this->m_user, channel));

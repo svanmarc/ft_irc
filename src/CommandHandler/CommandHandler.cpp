@@ -1,10 +1,8 @@
 #include "CommandHandler.hpp"
 
-const std::string CommandHandler::WELCOME_MESSAGE = "Welcome to the Internet Relay Network 2024 ";
+CommandHandler::CommandHandler(Server &server) : m_server(server) {}
 
-CommandHandler::CommandHandler(Server &server): m_server(server) {}
-
-void CommandHandler::handleCommand(const std::string &command, int clientSocket, ClientHandler *clientHandler) {
+void CommandHandler::handleCommand(const std::string &command, ClientHandler *clientHandler) {
     try {
         std::cout << "Received command: " << command << std::endl;
 
@@ -12,61 +10,50 @@ void CommandHandler::handleCommand(const std::string &command, int clientSocket,
         std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
 
         if (cmd == "CAP") {
-            handleCap(command, clientSocket);
+            handleCap(clientHandler, command);
         } else if (cmd == "NICK") {
-            handleNick(command, clientSocket, clientHandler);
-        } else if (cmd == "USER") {
-            handleUser(command, clientSocket, clientHandler);
-        }
-        else if (cmd == "PASS")
-        {
-            handlePass(command, clientSocket, clientHandler);
-        }
-        else if (cmd == "USERHOST") {
-            std::cout << "USERHOST command received" << std::endl;
-            handleUser(command, clientSocket, clientHandler);
+            handleNick(command, clientHandler);
+        } else if (cmd == "USER" || cmd == "USERHOST") {
+            handleUser(command, clientHandler);
+        } else if (cmd == "PASS") {
+            handlePass(command, clientHandler);
         } else if (cmd == "MODE") {
-            handleMode(command, clientSocket, clientHandler);
+            handleMode(command, clientHandler);
         } else if (cmd == "WHOIS") {
-            handleWhois(command, clientSocket, clientHandler);
+            handleWhois(command, clientHandler);
         } else if (cmd == "JOIN") {
             std::cout << "JOIN command received" << std::endl;
-            std::string channelName = command.substr(5);
+            const std::string channelName = command.substr(5);
             const bool joinStatus = clientHandler->joinChannel(channelName);
             if (joinStatus) {
-                sendResponse(clientSocket, RPL_WELCOME, "Welcome to " + channelName);
+                MessageHandler::sendWelcomeToChannel(clientHandler, channelName);
             } else {
-                sendResponse(clientSocket, ERR_UNKNOWNCOMMAND, "Error joining channel");
+                MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
             }
-        }
-        else if (cmd == "QUIT")
-        {
-            handleQuit(clientSocket, clientHandler);
-        }
-        else if (cmd == "PRIVMSG")
-        {
-            handlePrivMsg(command, clientSocket, clientHandler);
-        }
-        else {
-            sendResponse(clientSocket, ERR_UNKNOWNCOMMAND, std::string("Unknown command: ") + cmd);
+        } else if (cmd == "QUIT") {
+            handleQuit(clientHandler);
+        } else if (cmd == "PRIVMSG") {
+            handlePrivMsg(command, clientHandler);
+        } else {
+            MessageHandler::sendErrorUnknownCommand(clientHandler);
         }
     } catch (const std::exception &e) {
         std::cerr << "Error handling command: " << e.what() << std::endl;
-        sendResponse(clientSocket, ERR_UNKNOWNCOMMAND, "Error processing command");
+        MessageHandler::sendErrorUnknownCommand(clientHandler);
     }
 }
 
 
-void CommandHandler::handleCap(const std::string &command, int clientSocket) {
+void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
     if (command.find("LS") != std::string::npos) {
-        sendResponse(clientSocket, RPL_CAPLS, "CAP * LS :multi-prefix extended-join account-notify");
-
-        sendResponse(clientSocket, RPL_CAPLS, "Ready to accept commands");
+        MessageHandler::sendCAP(clientHandler);
+        std::cout << "CAP * LS :multi-prefix" << std::endl;
     }
 }
 
 
-void CommandHandler::handleMode(const std::string &command, int clientSocket, ClientHandler *clientHandler) {
+void CommandHandler::handleMode(const std::string &command, ClientHandler *clientHandler) {
+    //------------ A REFLECHIR ------------
     std::string mode;
     size_t pos = command.find("MODE");
     if (pos != std::string::npos && pos + 5 < command.length()) {
@@ -78,11 +65,11 @@ void CommandHandler::handleMode(const std::string &command, int clientSocket, Cl
     std::string response = clientHandler->getNickname();
     response += " +";
     response += mode;
-    sendResponse(clientSocket, RPL_CHANNELMODEIS, response);
+    MessageHandler::sendResponse(clientHandler, RPL_CHANNELMODEIS, response);
 }
 
-void CommandHandler::handleQuit(int clientSocket, ClientHandler *clientHandler) {
-    sendResponse(clientSocket, "Goodbye!");
+void CommandHandler::handleQuit(ClientHandler *clientHandler) {
+    MessageHandler::sendGoodbye(clientHandler);
     std::cout << "Client " << clientHandler->getNickname() << " has quit." << std::endl;
-    m_server.handleClientDisconnect(clientSocket);
+    m_server.handleClientDisconnect(clientHandler->getSocket());
 }

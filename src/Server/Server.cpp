@@ -2,6 +2,7 @@
 #include "CommandHandler.hpp"
 
 Server::Server(const int port, const std::string &password) : m_password(password) {
+    m_serverName = "irc.svanmarc_mrabat";
     setupSocket(port);
     commandHandler = new CommandHandler(*this);
     // Ajouter le socket d'écoute à la liste des descripteurs surveillés par `poll`
@@ -94,3 +95,18 @@ bool Server::joinChannel(const User &newUser, const std::string &name) {
         return false;
     }
 }
+
+bool Server::getUserByNickname(const std::string &nickname, ClientHandler *&client_handler) {
+    for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        if ((*it)->getUser().getNickname() == nickname) {
+            // Assigner la référence de l'utilisateur trouvé
+            client_handler = *it;
+            // Indiquer que l'utilisateur a été trouvé
+            return true;
+        }
+    }
+    // Retourne false si l'utilisateur n'est pas trouvé
+    return false;
+}
+
+const std::string &Server::getServerName() const { return m_serverName; }

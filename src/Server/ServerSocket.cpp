@@ -1,5 +1,5 @@
-#include "Server.hpp"
 #include "CommandHandler.hpp"
+#include "Server.hpp"
 
 // Initialisation du socket avec le port fourni
 void Server::setupSocket(const int port) {
@@ -46,9 +46,9 @@ int Server::setSocketOptions() const {
 
 // Attacher le socket à l'adresse et au port
 int Server::bindSocket(int port) {
-    m_serverAddress.sin_family = AF_INET; // Protocole IPv4
-    m_serverAddress.sin_addr.s_addr = INADDR_ANY; // Écoute sur toutes les interfaces
-    m_serverAddress.sin_port = htons(port); // Convertir le port en format réseau
+    m_serverAddress.sin_family = AF_INET;
+    m_serverAddress.sin_addr.s_addr = INADDR_ANY;
+    m_serverAddress.sin_port = htons(port);
     if (bind(m_serverSocket, reinterpret_cast<sockaddr *>(&m_serverAddress), sizeof(m_serverAddress)) < 0) {
         std::cerr << "Failed to bind socket to port: " << std::strerror(errno) << std::endl;
         return -1;

@@ -32,7 +32,6 @@ public:
 
     // Communication avec le client
     int getSocket() const;
-    void sendResponse(const std::string &response) const;
     void readCommand(const std::string &command);
 
     bool joinChannel(const std::string &channel) const;
@@ -45,7 +44,6 @@ private:
     int m_attempts;
     User m_user;
     std::vector<std::string> channels;
-    void readCommand(const std::string &command, Server &server);
 };
 
 #endif

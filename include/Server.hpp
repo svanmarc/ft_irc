@@ -1,12 +1,8 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
-#include <iostream>
-#include <netinet/in.h>
-#include <poll.h>
-#include <string>
-#include <vector>
 #include "Channel.hpp"
 #include "ClientHandler.hpp"
+#include "Irc.hpp"
 
 class CommandHandler;
 
@@ -17,12 +13,16 @@ public:
 
     void start();
     void stop();
-    bool authenticate(const std::string &clientPassword);
     void handleClientDisconnect(int clientSocket);
     bool joinChannel(const User &newUser, const std::string &name);
     bool checkIfChannelExists(const std::string &name) const;
     Channel getChannel(const std::string &name);
+    // fichier Server.cpp
+    bool getUserByNickname(const std::string &nickname, ClientHandler *&client_handler);
+    const std::string &getServerName() const;
     const std::vector<ClientHandler *> &getClients() const { return clients; }
+    bool authenticate(const std::string &clientPassword) const;
+
 
 private:
     int m_serverSocket;
@@ -32,6 +32,7 @@ private:
     std::vector<struct pollfd> fds;
     CommandHandler *commandHandler;
     std::vector<Channel> m_channels;
+    std::string m_serverName;
 
     // Fonctions pour les sockets
     void setupSocket(int port);
@@ -42,8 +43,8 @@ private:
     // fonctions pour les clients
     void acceptClient();
     void handleClient(int clientSocket);
-    bool checkPassword(const std::string &clientPassword);
     void removeClient(int clientSocket);
+    bool checkPassword(const std::string &clientPassword) const;
     ClientHandler *findClient(int clientSocket) const;
 };
 
