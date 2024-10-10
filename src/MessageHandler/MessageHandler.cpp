@@ -9,7 +9,12 @@ static const int RPL_WELCOMECHANNEL = 7;
 static const int RPL_LISTSTART = 321;
 
 void MessageHandler::sendMessage(int socket, const std::string &message) {
-    send(socket, message.c_str(), message.size(), 0);
+    ssize_t bytesSent = send(socket, message.c_str(), message.size(), 0);
+    if (bytesSent == -1) {
+        std::cerr << "Error: Failed to send message to client. errno: " << errno << std::endl;
+    } else {
+        std::cout << "Message sent: " << message << " (" << bytesSent << " bytes)" << std::endl;
+    }
 }
 
 void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const std::string &message) {

@@ -2,13 +2,35 @@
 
 CommandHandler::CommandHandler(Server &server) : m_server(server) {}
 
+void CommandHandler::handleCommandNoRegistred(const std::string &command, ClientHandler *clientHandler) {
+    try {
+        std::cout << "Received command: " << command << std::endl;
+        std::string cmd = parseCommand(command);
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
+        if (cmd == "CAP") {
+            handleCap(clientHandler, command);
+        } else if (cmd == "NICK") {
+            handleNick(command, clientHandler);
+        } else if (cmd == "USER" || cmd == "USERHOST") {
+            handleUser(command, clientHandler);
+        } else if (cmd == "PASS") {
+            handlePass(command, clientHandler);
+        } else if (cmd == "WHOIS") {
+            handleWhois(command, clientHandler);
+        } else {
+            MessageHandler::sendErrorNotRegistered(clientHandler);
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error handling command: " << e.what() << std::endl;
+        MessageHandler::sendErrorUnknownCommand(clientHandler);
+    }
+}
+
 void CommandHandler::handleCommand(const std::string &command, ClientHandler *clientHandler) {
     try {
         std::cout << "Received command: " << command << std::endl;
-
         std::string cmd = parseCommand(command);
         std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
-
         if (cmd == "CAP") {
             handleCap(clientHandler, command);
         } else if (cmd == "NICK") {

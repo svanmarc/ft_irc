@@ -14,6 +14,7 @@ class CommandHandler {
 public:
     CommandHandler(Server &server);
     void handleCommand(const std::string &command, ClientHandler *clientHandler);
+    void handleCommandNoRegistred(const std::string &command, ClientHandler *clientHandler);
 
 private:
     Server &m_server;

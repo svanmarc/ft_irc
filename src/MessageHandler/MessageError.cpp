@@ -4,9 +4,8 @@ void MessageHandler::sendErrorAlreadyRegistered(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "Error: You may not reregister");
 }
 void MessageHandler::sendErrorNotRegistered(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "Error: You have not registered");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "* :You have not registered");
 }
-
 void MessageHandler::sendErrorNotNickNameGiven(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NONICKNAMEGIVEN, "Error: No nickname given");
 }

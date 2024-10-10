@@ -1,7 +1,7 @@
 #include "MessageHandler.hpp"
 
 void MessageHandler::sendCAP(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_CAPLS, "CAP * NAK :" + clientHandler->getServer()->getServerName() + " No capabilities enabled");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_CAPLS, "CAP * NAK :" + clientHandler->getServer()->getServerName() + " multi-prefix userhost-in-names");
     sendResponse(clientHandler, IRCConstants::RPL_CAPLS, "Ready to accept commands");
 }
 void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
