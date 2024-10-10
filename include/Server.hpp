@@ -18,11 +18,11 @@ public:
     bool checkIfChannelExists(const std::string &name) const;
     Channel getChannel(const std::string &name);
     // fichier Server.cpp
+    bool checkNickname(const std::string &nickname);
     bool getUserByNickname(const std::string &nickname, ClientHandler *&client_handler);
     const std::string &getServerName() const;
     const std::vector<ClientHandler *> &getClients() const { return clients; }
     bool authenticate(const std::string &clientPassword) const;
-
 
 private:
     int m_serverSocket;

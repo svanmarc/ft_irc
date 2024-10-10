@@ -10,9 +10,7 @@ void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_MYINFO, clientHandler->getServer()->getServerName() + " 1.0 aoOirw abeiIklmnoOpqQrRstv");
 }
 void MessageHandler::sendNewNickName(ClientHandler *clientHandler, const std::string &newNickName) {
-    std::string response = ":";
-    response += clientHandler->getServer()->getServerName();
-    response += " NICK ";
+    std::string response = " NICK ";
     response += newNickName;
     MessageHandler::sendResponse(clientHandler, response);
 }

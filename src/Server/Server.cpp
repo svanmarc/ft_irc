@@ -95,7 +95,15 @@ bool Server::joinChannel(const User &newUser, const std::string &name) {
         return false;
     }
 }
-
+bool Server::checkNickname(const std::string &nickname) {
+    for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        if ((*it)->getUser().getNickname() == nickname) {
+            return true;
+        }
+    }
+    // Retourne false si l'utilisateur n'est pas trouvé
+    return false;
+}
 bool Server::getUserByNickname(const std::string &nickname, ClientHandler *&client_handler) {
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getUser().getNickname() == nickname) {

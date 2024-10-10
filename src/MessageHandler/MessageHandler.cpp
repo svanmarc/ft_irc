@@ -26,6 +26,12 @@ void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const 
     MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 
+void MessageHandler::sendUserMsg(ClientHandler *clientHandler, const std::string &message, const std::string &target) {
+    const std::string nickname = clientHandler->getUser().getNickname();
+    const std::string response = ":" + nickname + " PRIVMSG " + target + " :" + message + "\r\n";
+    sendMessage(clientHandler->getSocket(), response);
+}
+
 void MessageHandler::sendResponse(ClientHandler *clientHandler, const std::string &message)
 {
     sendResponse(clientHandler, 0, message);

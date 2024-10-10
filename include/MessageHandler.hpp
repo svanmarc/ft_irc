@@ -19,6 +19,7 @@ public:
     static void sendMessage(int socket, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, int code, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, const std::string &message);
+    static void sendUserMsg(ClientHandler *clientHandler, const std::string &message, const std::string &target);
 
     // fichier MessageError.cpp
     static void sendErrorAlreadyRegistered(ClientHandler *clientHandler);
@@ -34,6 +35,7 @@ public:
     static void sendErrorUnknownCommand(ClientHandler *clientHandler);
     static void sendErrorNoTarget(ClientHandler *clientHandler);
     static void sendErrorNoMessage(ClientHandler *clientHandler);
+    static void sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);

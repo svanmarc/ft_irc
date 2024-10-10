@@ -40,3 +40,7 @@ void MessageHandler::sendErrorNoTarget(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorNoMessage(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No message specified");
 }
+void MessageHandler::sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname) {
+    std::string response = clientHandler->getUser().getNickname() + " " + nickname + " :Nickname is already in use";
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NICKNAMEINUSE, response);
+}
