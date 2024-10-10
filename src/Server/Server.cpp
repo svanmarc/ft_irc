@@ -87,7 +87,7 @@ bool Server::joinChannel(const User &newUser, const std::string &name) {
             getChannel(name).addUser(newUser);
             return true;
         }
-        Channel newChannel(name, newUser);
+        Channel const newChannel(name, newUser);
         m_channels.push_back(newChannel);
         return true;
     } catch (const std::exception &e) {

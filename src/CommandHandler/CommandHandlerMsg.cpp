@@ -34,8 +34,7 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
     }
 
     if (!found) {
-        std::cout << "PRIVMSG from " << clientHandler->getNickname() << " to " << target << ": " << message
-                  << std::endl;
-        MessageHandler::sendResponse(clientHandler, "No such user: " + target);
+        std::cout << "Error sending message: No such user " << target << std::endl;
+        MessageHandler::sendErrorNoSuchUser(clientHandler, target);
     }
 }

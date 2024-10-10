@@ -36,6 +36,7 @@ public:
     static void sendErrorNoTarget(ClientHandler *clientHandler);
     static void sendErrorNoMessage(ClientHandler *clientHandler);
     static void sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname);
+    static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);

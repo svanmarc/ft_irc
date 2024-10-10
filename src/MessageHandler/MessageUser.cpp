@@ -31,9 +31,8 @@ void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const st
 void MessageHandler::sendAuthentificationSuccess(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, "Authentification success");
 }
-void MessageHandler::sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget, const std::string &message) {
-    const std::string response = ":" + clientHandler->getNickname() + " PRIVMSG " + clientTarget->getNickname() + " :" + message;
-    MessageHandler::sendResponse(clientTarget, message);
+void MessageHandler::sendMessageToUser(ClientHandler *clientHandlerSender, ClientHandler *clientTarget, const std::string &message) {
+    MessageHandler::sendUserMsg(clientTarget, message, clientHandlerSender->getUser().getNickname());
 }
 
 void MessageHandler::sendGoodbye(ClientHandler *clientHandler) {

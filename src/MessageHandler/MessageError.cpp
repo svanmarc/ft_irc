@@ -44,3 +44,6 @@ void MessageHandler::sendErrorNickNameAlreadyExists(ClientHandler *clientHandler
     std::string response = clientHandler->getUser().getNickname() + " " + nickname + " :Nickname is already in use";
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NICKNAMEINUSE, response);
 }
+void MessageHandler::sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, "Error: No such user " + nickname);
+}
