@@ -9,11 +9,6 @@ void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_YOURHOST, "Your host is " + clientHandler->getServer()->getServerName() + ", running version 1.0");
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_MYINFO, clientHandler->getServer()->getServerName() + " 1.0 aoOirw abeiIklmnoOpqQrRstv");
 }
-void MessageHandler::sendNewNickName(ClientHandler *clientHandler, const std::string &newNickName) {
-    std::string response = " NICK ";
-    response += newNickName;
-    MessageHandler::sendResponse(clientHandler, response);
-}
 void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName, const std::string &newNickName) {
     std::string response = ":";
     response += oldNickName;

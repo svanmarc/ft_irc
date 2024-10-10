@@ -24,7 +24,7 @@ void CommandHandler::handleNick(const std::string &command, ClientHandler *clien
     }
     if (oldNickname.empty()) {
         // Envoyer un message de changement de nickname
-        MessageHandler::sendNewNickName(clientHandler, nickname);
+        std::cout << "New nickname: " << nickname << "Register" << std::endl;
     } else {
         // Envoyer un message de bienvenue
         MessageHandler::sendChangeNickName(clientHandler, oldNickname, nickname);

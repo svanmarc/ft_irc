@@ -41,7 +41,6 @@ public:
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);
     static void sendWelcomeMessage(ClientHandler *clientHandler);
-    static void sendNewNickName(ClientHandler *clientHandler, const std::string &newNickName);
     static void sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName,
                                    const std::string &newNickName);
     static void sendWelcomeToChannel(ClientHandler *clientHandler, const std::string &channelName);
