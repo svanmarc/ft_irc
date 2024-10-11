@@ -40,10 +40,10 @@ private:
     std::string m_servername;
     std::string m_password;
     bool m_isAuthenticated;
-    std::time_t m_connectionTime;
-    std::time_t m_lastActivityTime;
     bool m_isRegistered;
     bool m_isConnected;
+    std::time_t m_connectionTime;
+    std::time_t m_lastActivityTime;
 };
 
 #endif

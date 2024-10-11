@@ -97,7 +97,7 @@ the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
 ##### Basic Commands
 
 - [x] `NICK`: Set nickname
-- [ ] `PRIVMSG`: Sends a message to recipient
+- [X] `PRIVMSG`: Sends a message to recipient
 - [ ] `NOTICE`: Sends a message to recipient (slightly different behavior)
 - [ ] `LIST`: Lists all the channels
 - [ ] `WHO`: Lists all the users in a channel

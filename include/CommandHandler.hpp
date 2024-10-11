@@ -14,6 +14,7 @@ public:
     CommandHandler(Server &server);
     void handleCommand(const std::string &command, ClientHandler *clientHandler);
     void handleCommandNoRegistred(const std::string &command, ClientHandler *clientHandler);
+    void handleCommandNoAuthentificated(const std::string &command, ClientHandler *clientHandler);
 
 private:
     Server &m_server;
@@ -33,7 +34,7 @@ private:
     // fichier CommandsUser.cpp
     static void handleNick(const std::string &command, ClientHandler *clientHandler);
     static void handleUser(const std::string &command, ClientHandler *clientHandler);
-    void handlePass(const std::string &command, ClientHandler *clientHandler);
+    void handlePass(const std::string &command, ClientHandler *clientHandler) const;
     static void completeRegistration(ClientHandler *clientHandler);
 
     // fichier CommandHandler.cpp

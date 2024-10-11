@@ -2,24 +2,24 @@
 
 void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *clientHandler) {
     // Extraire le `target`
-    std::string::size_type start = command.find("PRIVMSG");
-    start += 8; // Sauter "PRIVMSG "
-    std::string::size_type spacePos = command.find(' ', start);
-    if (spacePos == std::string::npos) {
+    std::vector<std::string> parts;
+    splitCommand(command, parts);
+    if (parts.size() < 3 || parts[1].empty()) {
+        MessageHandler::sendErrorNoNickNameGiven(clientHandler);
+        return;
+    }
+    if (parts[1].empty()) {
         MessageHandler::sendErrorNoTarget(clientHandler);
         return;
     }
-    std::string target = command.substr(start, spacePos - start);
+    const std::string target = parts[1];
 
     // Extraire le message après le symbole ':'
-    std::string::size_type messagePos = command.find(':', spacePos);
-    if (messagePos == std::string::npos) {
+    const std::string message = parts[3];
+    if (message.empty()) {
         MessageHandler::sendErrorNoMessage(clientHandler);
         return;
     }
-    std::string message = command.substr(messagePos + 1);
-
-    // Envoi du message au destinataire spécifié
     bool found = false;
     const std::vector<ClientHandler *> &clients =
             m_server.getClients(); // Utiliser le getter de `Server` pour récupérer les clients

@@ -22,6 +22,7 @@ public:
     static void sendUserMsg(ClientHandler *clientHandler, const std::string &message, const std::string &target);
 
     // fichier MessageError.cpp
+    static void sendErrorNoAuthentification(ClientHandler *clientHandler);
     static void sendErrorAlreadyRegistered(ClientHandler *clientHandler);
     static void sendErrorNotRegistered(ClientHandler *clientHandler);
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);

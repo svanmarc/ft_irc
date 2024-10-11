@@ -30,30 +30,29 @@ void CommandHandler::handleUser(const std::string &command, ClientHandler *clien
     MessageHandler::sendWelcomeMessage(clientHandler);
 }
 
-void CommandHandler::handlePass(const std::string &command, ClientHandler *clientHandler) {
-    size_t pos = command.find("PASS ");
-    if (pos != std::string::npos && pos + 5 < command.length()) {
-        std::string clientPassword = trim(command.substr(pos + 5));
-        std::cout << "Client password: " << clientPassword << std::endl;
-
-        if (m_server.authenticate(clientPassword)) {
-            clientHandler->setAuthenticated(true);
-            clientHandler->resetAttempts(); // Réinitialisez les tentatives en cas de succès
-            MessageHandler::sendAuthentificationSuccess(clientHandler);
-        } else {
-            clientHandler->incrementAttempts(); // Incrémentez les tentatives
-            if (clientHandler->getAttempts() >= 3) {
-                // Fermez la connexion après 3 échecs
-                MessageHandler::sendErrorTooManyAttempts(clientHandler);
-                close(clientHandler->getSocket());
-            } else {
-                std::ostringstream oss; // Utilisez un ostringstream pour la conversion
-                oss << (3 - clientHandler->getAttempts());
-                MessageHandler::sendErrorIncorrectPassword(clientHandler, oss.str());
-            }
-        }
-    } else {
+void CommandHandler::handlePass(const std::string &command, ClientHandler *clientHandler) const {
+    std::vector<std::string> parts;
+    splitCommand(command, parts);
+    if (parts.size() < 2 || parts[1].empty()) {
         MessageHandler::sendErrorNoPasswordGiven(clientHandler);
-        close(clientHandler->getSocket());
+        return;
     }
+    const std::string clientPassword = trim(parts[1]);
+    std::cout << "Client password: " << clientPassword << std::endl;
+    if (m_server.authenticate(clientPassword)) {
+        clientHandler->setAuthenticated(true);
+        clientHandler->resetAttempts(); // Réinitialisez les tentatives en cas de succès
+        MessageHandler::sendAuthentificationSuccess(clientHandler);
+    } else {
+        clientHandler->incrementAttempts(); // Incrémentez les tentatives
+        if (clientHandler->getAttempts() >= 3) {
+            // Fermez la connexion après 3 échecs
+            MessageHandler::sendErrorTooManyAttempts(clientHandler);
+            close(clientHandler->getSocket());
+        } else {
+            std::ostringstream oss; // Utilisez un ostringstream pour la conversion
+            oss << (3 - clientHandler->getAttempts());
+            MessageHandler::sendErrorIncorrectPassword(clientHandler, oss.str());
+        }
+        }
 }

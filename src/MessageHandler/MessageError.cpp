@@ -1,5 +1,8 @@
 #include "MessageHandler.hpp"
 
+void MessageHandler::sendErrorNoAuthentification(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_PASSWDMISMATCH, "Error: You need to authenticate first");
+}
 void MessageHandler::sendErrorAlreadyRegistered(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "Error: You may not reregister");
 }

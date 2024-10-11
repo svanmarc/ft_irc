@@ -42,7 +42,9 @@ User &ClientHandler::getUser() { return m_user; }
 Server *ClientHandler::getServer() const { return m_server; }
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
-    if (this->getUser().isRegistered()) {
+    if (!this->getUser().isAuthenticated()) {
+        commandHandler.handleCommandNoAuthentificated(command, this);
+    } else if (this->getUser().isRegistered()) {
         commandHandler.handleCommand(command, this);
     } else {
         std::cout << "User not registered" << std::endl;

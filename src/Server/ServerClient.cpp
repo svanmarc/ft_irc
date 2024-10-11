@@ -78,7 +78,7 @@ bool Server::checkPassword(const std::string &clientPassword) const { return cli
 // Authentifier le client
 bool Server::authenticate(const std::string &clientPassword) const { return checkPassword(clientPassword); }
 
-void Server::handleClientDisconnect(int clientSocket) {
+void Server::handleClientDisconnect(int const clientSocket) {
     std::cout << "Handing disconnection for client socket: " << std::endl;
     removeClient(clientSocket);
 }

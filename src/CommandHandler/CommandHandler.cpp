@@ -26,6 +26,25 @@ void CommandHandler::handleCommandNoRegistred(const std::string &command, Client
     }
 }
 
+void CommandHandler::handleCommandNoAuthentificated(const std::string &command, ClientHandler *clientHandler) {
+    try {
+        std::cout << "Received command: " << command << std::endl;
+        std::string cmd = parseCommand(command);
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
+        if (cmd == "CAP") {
+            handleCap(clientHandler, command);
+        } else if (cmd == "PASS") {
+            std::cout << "Command: " << cmd << "|" << std::endl;
+            handlePass(command, clientHandler);
+        } else {
+            MessageHandler::sendErrorNoAuthentification(clientHandler);
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error handling command: " << e.what() << std::endl;
+        MessageHandler::sendErrorUnknownCommand(clientHandler);
+    }
+}
+
 void CommandHandler::handleCommand(const std::string &command, ClientHandler *clientHandler) {
     try {
         std::cout << "Received command: " << command << std::endl;
