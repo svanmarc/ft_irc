@@ -3,7 +3,6 @@
 void CommandHandler::handleWhois(const std::string &command, ClientHandler *clientHandler) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
-    // std::cout << parts[1] << std::endl;
     if (parts.size() < 2 || parts[1].empty()) {
         MessageHandler::sendResponse(clientHandler, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
         return;
