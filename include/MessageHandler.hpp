@@ -48,6 +48,12 @@ public:
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget,
                                   const std::string &message);
     static void sendGoodbye(ClientHandler *clientHandler);
+
+    // Fichier MessageWhois
+    static void MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient);
+    static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
+    static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
+    static void MessageWhoisNoGiven(ClientHandler *clientHandler);
 };
 
 

@@ -17,6 +17,7 @@ public:
     static const int RPL_WHOISOPERATOR = 313; // 313: <nick> :is an IRC operator
     static const int RPL_WHOISIDLE = 317; // 317: <nick> <seconds> :seconds idle
     static const int RPL_ENDOFWHOIS = 318; // 318: End of WHOIS list
+    static const int RPL_WHOISCHANNELS = 319; // 319: <nick> :{[@|+]<channel><space>}
     static const int RPL_WHO = 352; // 352: <channel> <user> <host> <server> <nick> <H|G>[*] :<hop count> <real name>
     static const int RPL_LISTSTART = 321; // 321: Channel :Users  Name
     static const int RPL_LIST = 322; // 322: <channel> <# visible> :<topic>
