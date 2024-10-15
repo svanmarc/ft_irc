@@ -50,6 +50,9 @@ private:
 
     // fichier CommandHandlerMsg
     void handlePrivMsg(const std::string &command, ClientHandler *clientHandler);
+
+    // fichier CommandHandlerChannels.cpp
+    void handleJoinChannel(const std::string &command, ClientHandler *clientHandler);
 };
 
 #endif

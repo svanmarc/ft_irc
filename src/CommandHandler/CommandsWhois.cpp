@@ -31,9 +31,13 @@ void CommandHandler::handleUser(const std::string &command, ClientHandler *clien
 }
 
 void CommandHandler::handlePass(const std::string &command, ClientHandler *clientHandler) {
-    size_t pos = command.find("PASS ");
-    if (pos != std::string::npos && pos + 5 < command.length()) {
-        std::string clientPassword = trim(command.substr(pos + 5));
+    std::vector<std::string> parts;
+    splitCommand(command, parts);
+    if ((parts.size() < 2) || (parts[1].empty())) {
+        MessageHandler::sendErrorNoPasswordGiven(clientHandler);
+        return;
+    }
+        std::string clientPassword = trim(parts[1]);
         std::cout << "Client password: " << clientPassword << std::endl;
 
         if (m_server.authenticate(clientPassword)) {
@@ -52,8 +56,4 @@ void CommandHandler::handlePass(const std::string &command, ClientHandler *clien
                 MessageHandler::sendErrorIncorrectPassword(clientHandler, oss.str());
             }
         }
-    } else {
-        MessageHandler::sendErrorNoPasswordGiven(clientHandler);
-        close(clientHandler->getSocket());
-    }
 }

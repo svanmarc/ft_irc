@@ -22,4 +22,5 @@ public:
     void setName(const std::string &name);
     std::string getTopic() const;
     void setTopic(const std::string &topic);
+    bool checkIfUserIsInChannel(const User &user) const;
 };

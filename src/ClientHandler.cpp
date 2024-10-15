@@ -40,19 +40,21 @@ const std::string &ClientHandler::getNickname() const { return m_user.getNicknam
 void ClientHandler::setNickname(const std::string &nickname) { m_user.setNickname(nickname); }
 User &ClientHandler::getUser() { return m_user; }
 Server *ClientHandler::getServer() const { return m_server; }
+
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
-    if (this->getUser().isAuthenticated()) {
-        if (this->getUser().isRegistered()) {
-            commandHandler.handleCommand(command, this);
-        } else {
-            std::cout << "User not registered" << std::endl;
-            commandHandler.handleCommandNoRegistred(command, this);
-        }
-    } else {
+    if (!this->getUser().isAuthenticated()) {
+        std::cout << "User not authenticated" << std::endl;
         commandHandler.handleCommandNoAuth(command, this);
+        return;
     }
-
+    if (!this->getUser().isRegistered()) {
+        std::cout << "User no registered" << std::endl;
+        commandHandler.handleCommandNoRegistred(command, this);
+        return;
+    }
+    std::cout << "User authenticated and registrerd" << std::endl;
+    commandHandler.handleCommand(command, this);
 }
 bool ClientHandler::joinChannel(const std::string &channel) const {
     return (m_server->joinChannel(this->m_user, channel));

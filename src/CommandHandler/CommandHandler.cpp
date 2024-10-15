@@ -68,13 +68,7 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
             handleWhois(command, clientHandler);
         } else if (cmd == "JOIN") {
             std::cout << "JOIN command received" << std::endl;
-            const std::string channelName = command.substr(5);
-            const bool joinStatus = clientHandler->joinChannel(channelName);
-            if (joinStatus) {
-                MessageHandler::sendWelcomeToChannel(clientHandler, channelName);
-            } else {
-                MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
-            }
+            handleJoinChannel(command, clientHandler);
         } else if (cmd == "QUIT") {
             handleQuit(clientHandler);
         } else if (cmd == "PRIVMSG") {
