@@ -42,12 +42,17 @@ User &ClientHandler::getUser() { return m_user; }
 Server *ClientHandler::getServer() const { return m_server; }
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
-    if (this->getUser().isRegistered()) {
-        commandHandler.handleCommand(command, this);
+    if (this->getUser().isAuthenticated()) {
+        if (this->getUser().isRegistered()) {
+            commandHandler.handleCommand(command, this);
+        } else {
+            std::cout << "User not registered" << std::endl;
+            commandHandler.handleCommandNoRegistred(command, this);
+        }
     } else {
-        std::cout << "User not registered" << std::endl;
-        commandHandler.handleCommandNoRegistred(command, this);
+        commandHandler.handleCommandNoAuth(command, this);
     }
+
 }
 bool ClientHandler::joinChannel(const std::string &channel) const {
     return (m_server->joinChannel(this->m_user, channel));

@@ -15,6 +15,12 @@ void MessageHandler::sendErrorNoNickNameGiven(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, "Error: "+ nickname + " :No such nick/channel");
 }
+void MessageHandler::sendErrorNickNameTooLong(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_ERRONEUSNICKNAME, "Error: Nickname is too long");
+}
+void MessageHandler::sendErrorNickNameInvalidCharacters(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_ERRONEUSNICKNAME, "Error: Nickname contains invalid characters");
+}
 void MessageHandler::sendErrorNoUserParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Manque des paramètres : USER username hostname servername :realname");
 }
