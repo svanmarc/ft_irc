@@ -45,7 +45,6 @@ public:
     static void sendWelcomeMessage(ClientHandler *clientHandler);
     static void sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName,
                                    const std::string &newNickName);
-    static void sendWelcomeToChannel(ClientHandler *clientHandler, const std::string &channelName);
     static void sendAuthentificationSuccess(ClientHandler *clientHandler);
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget,
                                   const std::string &message);
@@ -56,6 +55,10 @@ public:
     static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
     static void MessageWhoisNoGiven(ClientHandler *clientHandler);
+
+    // Fichier MessageChannel
+    static void sendWelcomeToChannel(ClientHandler *clientHandler, const Channel &channel);
+    static void sendNewMemberToChannel(ClientHandler *clientHandler, const Channel &channel);
 };
 
 

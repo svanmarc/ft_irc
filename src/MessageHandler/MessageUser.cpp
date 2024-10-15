@@ -20,9 +20,7 @@ void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std:
     response += newNickName;
     MessageHandler::sendResponse(clientHandler, response);
 }
-void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const std::string &channelName) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WELCOME, "Welcome to " + channelName);
-}
+
 void MessageHandler::sendAuthentificationSuccess(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, "Authentification success");
 }

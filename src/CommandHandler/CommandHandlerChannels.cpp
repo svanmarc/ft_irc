@@ -8,7 +8,9 @@ void CommandHandler::handleJoinChannel(const std::string &command, ClientHandler
     }
     const bool joinStatus = clientHandler->joinChannel(channelName);
     if (joinStatus) {
-        MessageHandler::sendWelcomeToChannel(clientHandler, channelName);
+        Channel const newChannel = clientHandler->getServer()->getChannel(channelName);
+        MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
+
     } else {
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
     }
