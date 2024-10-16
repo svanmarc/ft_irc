@@ -55,9 +55,7 @@ void ClientHandler::readCommand(const std::string &command) {
     }
     std::cout << "User authenticated and registrerd" << std::endl;
     commandHandler.handleCommand(command, this);
-}
-bool ClientHandler::joinChannel(const std::string &channel) const {
-    return (m_server->joinChannel(this->m_user, channel));
+    std::cout << "--- FIN ---" << std::endl;
 }
 void ClientHandler::leaveChannel(const std::string &channel) {
     for (size_t i = 0; i < channels.size(); i++) {
@@ -66,4 +64,8 @@ void ClientHandler::leaveChannel(const std::string &channel) {
             break;
         }
     }
+}
+
+bool ClientHandler::operator==(const ClientHandler &other) const {
+    return (this->m_clientSocket == other.m_clientSocket);
 }

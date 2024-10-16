@@ -80,14 +80,15 @@ bool Server::checkIfChannelExists(const std::string &name) const {
     return false;
 }
 
-bool Server::joinChannel(const User &newUser, const std::string &name) {
+bool Server::joinChannel(ClientHandler* newClient, const std::string &name) {
+
     try {
         if (checkIfChannelExists(name)) {
             std::cout << "Channel already exists add user in" << std::endl;
-            getChannel(name).addUser(newUser);
+            getChannel(name).addClient(newClient);
             return true;
         }
-        Channel const newChannel(name, newUser);
+        Channel const newChannel(name, newClient);
         m_channels.push_back(newChannel);
         return true;
     } catch (const std::exception &e) {

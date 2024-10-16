@@ -39,7 +39,7 @@ void CommandHandler::handleCommandNoAuth(const std::string &command, ClientHandl
         } else if (cmd == "WHOIS") {
             handleWhois(command, clientHandler);
         } else {
-            MessageHandler::sendErrorNotRegistered(clientHandler);
+            MessageHandler::sendErrorNoAuth(clientHandler);
         }
     } catch (const std::exception &e) {
         std::cerr << "Error handling command: " << e.what() << std::endl;
@@ -69,6 +69,7 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         } else if (cmd == "JOIN") {
             std::cout << "JOIN command received" << std::endl;
             handleJoinChannel(command, clientHandler);
+            std::cout << "--- FIN IF -----++" << std::endl;
         } else if (cmd == "QUIT") {
             handleQuit(clientHandler);
         } else if (cmd == "PRIVMSG") {
@@ -111,4 +112,8 @@ void CommandHandler::handleQuit(ClientHandler *clientHandler) {
     MessageHandler::sendGoodbye(clientHandler);
     std::cout << "Client " << clientHandler->getNickname() << " has quit." << std::endl;
     m_server.handleClientDisconnect(clientHandler->getSocket());
+}
+
+Server &CommandHandler::getServer() const {
+    return m_server;
 }

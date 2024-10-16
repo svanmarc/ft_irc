@@ -34,9 +34,9 @@ public:
     int getSocket() const;
     void readCommand(const std::string &command);
 
-    bool joinChannel(const std::string &channel) const;
     void leaveChannel(const std::string &channel);
     Server *getServer() const;
+    bool operator==(const ClientHandler &other) const;
 
 private:
     int m_clientSocket;

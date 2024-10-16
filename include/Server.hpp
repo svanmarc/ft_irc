@@ -14,7 +14,7 @@ public:
     void start();
     void stop();
     void handleClientDisconnect(int clientSocket);
-    bool joinChannel(const User &newUser, const std::string &name);
+    bool joinChannel(ClientHandler* newClient, const std::string &name);
     bool checkIfChannelExists(const std::string &name) const;
     Channel getChannel(const std::string &name);
     // fichier Server.cpp

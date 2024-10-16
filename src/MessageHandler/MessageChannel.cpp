@@ -4,15 +4,23 @@ void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const Ch
     std::string topic = channel.getTopic() == "" ? "No topic is set" : channel.getTopic();
     std::string message = clientHandler->getUser().getNickname();
     message += " " + channel.getName();
-    message += " " + channel.getTopic();
+    message += " " + topic;
+    std::cout << "FT ------ ending welcome message to channel " << message << std::endl;
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WELCOME, message);
 }
 
+/*void MessageHandler::sendMessageToAllClientsInChannel(const Channel &channel, const std::string &message) {
+    const std::string messageT = "test";
+    std::cout << "Sending message to all clients in channel " << message << std::endl;
+    for (std::vector<ClientHandler>::const_iterator it = channel.getClients().begin(); it != channel.getClients().end(); ++it) {
+        std::cout << "Sending message to " << (&(*it)) << std::endl;
+        sendUserMsg(const_cast<ClientHandler*>(&(*it)), messageT, "");
+    }
+}
+*/
 void MessageHandler::sendNewMemberToChannel(ClientHandler *clientHandler, const Channel &channel) {
     std::string message = clientHandler->getUser().getNickname();
     message += " " + channel.getName();
-    for (std::vector<User>::const_iterator it = channel.getUsers().begin(); it != channel.getUsers().end(); ++it) {
-        sendUserMsg((*it),message, clientHandler->getUser().getNickname());
-    }
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_JOIN, message);
+    std::cout << "Sending new member message to channel " << message << std::endl;
+    //sendMessageToAllClientsInChannel(channel, message);
 }

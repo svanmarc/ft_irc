@@ -3,7 +3,6 @@
 #include "ClientHandler.hpp"
 #include "IRCConstants.hpp"
 #include "Irc.hpp"
-#include "MessageHandler.hpp"
 #include "Server.hpp"
 
 class MessageHandler {
@@ -24,6 +23,7 @@ public:
     // fichier MessageError.cpp
     static void sendErrorAlreadyRegistered(ClientHandler *clientHandler);
     static void sendErrorNotRegistered(ClientHandler *clientHandler);
+    static void sendErrorNoAuth(ClientHandler *clientHandler);
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
@@ -59,6 +59,7 @@ public:
     // Fichier MessageChannel
     static void sendWelcomeToChannel(ClientHandler *clientHandler, const Channel &channel);
     static void sendNewMemberToChannel(ClientHandler *clientHandler, const Channel &channel);
+    //static void sendMessageToAllClientsInChannel(const Channel &channel, const std::string &message);
 };
 
 

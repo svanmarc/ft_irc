@@ -15,6 +15,7 @@ public:
     void handleCommand(const std::string &command, ClientHandler *clientHandler);
     void handleCommandNoRegistred(const std::string &command, ClientHandler *clientHandler);
     void handleCommandNoAuth(const std::string &command, ClientHandler *clientHandler);
+    Server &getServer() const;
 
 private:
     Server &m_server;
