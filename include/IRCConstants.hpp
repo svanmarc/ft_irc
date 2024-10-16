@@ -29,6 +29,7 @@ public:
     static const int RPL_SUMMONING = 342; // 342: <nick> :Summoning user
     static const int RPL_VERSION = 351; // 351: <version> <server> :<comments>
     static const int RPL_WHOREPLY = 352; // 352: <channel> <user> <host> <server> <nick> <H|G>* :<hop count> <real name>
+    static const int RPL_NAMREPLY = 353; // 353: <channel> :<nick> <nick> <nick>
     static const int RPL_ENDOFWHO = 315; // 315: End of WHO list
     static const int RPL_ENDOFNAMES = 366; // 366: End of NAMES list
     static const int RPL_MOTD = 372; // 372: :<text>

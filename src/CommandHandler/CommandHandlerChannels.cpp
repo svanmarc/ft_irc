@@ -15,9 +15,11 @@ void CommandHandler::handleJoinChannel(const std::string &command, ClientHandler
     const bool joinStatus = getServer().joinChannel(clientHandler, channelName);
     std::cout << "Join status: " << joinStatus << std::endl;
     if (joinStatus) {
-        Channel const newChannel = getServer().getChannel(channelName);
+        Channel newChannel = getServer().getChannel(channelName);
         MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
-        //MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
+        MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
+        MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
+        MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
 
     } else {
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);

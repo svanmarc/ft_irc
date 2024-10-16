@@ -2,8 +2,10 @@
 #define MESSAGEHANDLER_H
 #include "ClientHandler.hpp"
 #include "IRCConstants.hpp"
+
 #include "Irc.hpp"
 #include "Server.hpp"
+#include "Channel.hpp"
 
 class MessageHandler {
 private:
@@ -58,8 +60,10 @@ public:
 
     // Fichier MessageChannel
     static void sendWelcomeToChannel(ClientHandler *clientHandler, const Channel &channel);
-    static void sendNewMemberToChannel(ClientHandler *clientHandler, const Channel &channel);
-    //static void sendMessageToAllClientsInChannel(const Channel &channel, const std::string &message);
+    static void sendNewMemberToChannel(ClientHandler *clientHandler, Channel &channel);
+    static void sendMessageToAllClientsInChannel(Channel &channel, const std::string &message);
+    static void sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel);
+    static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
 };
 
 

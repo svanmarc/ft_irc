@@ -55,7 +55,6 @@ void ClientHandler::readCommand(const std::string &command) {
     }
     std::cout << "User authenticated and registrerd" << std::endl;
     commandHandler.handleCommand(command, this);
-    std::cout << "--- FIN ---" << std::endl;
 }
 void ClientHandler::leaveChannel(const std::string &channel) {
     for (size_t i = 0; i < channels.size(); i++) {

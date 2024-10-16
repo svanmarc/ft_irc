@@ -1,7 +1,7 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
-#include "Channel.hpp"
 #include "ClientHandler.hpp"
+#include "Channel.hpp"
 #include "Irc.hpp"
 
 class CommandHandler;

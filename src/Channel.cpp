@@ -35,3 +35,12 @@ bool Channel::checkIfClientIsInChannel(ClientHandler* client) const {
     }
     return false;
 }
+
+void Channel::printAllNicknamesInChannel() const {
+    std::cout << "Nicknames in channel " << m_name << ": ";
+    for (size_t i = 0; i < m_clients.size(); i++) {
+        std::cout << m_clients[i]->getNickname() << " ";
+    }
+    std::cout << std::endl;
+}
+

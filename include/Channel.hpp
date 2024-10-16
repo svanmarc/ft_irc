@@ -5,6 +5,7 @@
 #include "ClientHandler.hpp"
 
 
+
 class Channel {
 private:
     std::vector<ClientHandler*> m_clients;
@@ -24,4 +25,6 @@ public:
     std::string getTopic() const;
     void setTopic(const std::string &topic);
     bool checkIfClientIsInChannel(ClientHandler* client) const;
+    void printAllNicknamesInChannel() const;
+
 };
