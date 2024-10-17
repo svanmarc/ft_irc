@@ -10,6 +10,7 @@ Server::Server(const int port, const std::string &password) : m_password(passwor
     // Ajouter au vecteur `fds`
     fds.push_back(serverPollFD);
 }
+
 Server::~Server() {
     stop();
     if (commandHandler != 0) {
@@ -45,11 +46,10 @@ void Server::start() {
 
 void Server::stop() {
     std::cout << "Stopping server..." << std::endl;
-
-    for (size_t i = 0; i < clients.size(); ++i) {
-        if (clients[i] != 0) {
-            delete clients[i];
-            clients[i] = 0;
+    for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        if (*it != 0) {
+            delete *it;
+            *it = 0;
         }
     }
     clients.clear();
@@ -62,26 +62,26 @@ void Server::stop() {
     }
     std::cout << "Server stopped --- Welcome to the real world." << std::endl;
 }
-Channel Server::getChannel(std::string &name) {
-    for (size_t i = 0; i < m_channels.size(); i++) {
-        if (m_channels[i].getName() == name) {
-            return m_channels[i];
+
+Channel &Server::getChannel(std::string &name) {
+    for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
+        if (it->getName() == name) {
+            return *it;
         }
     }
     throw std::runtime_error("Channel not found");
 }
 
 bool Server::checkIfChannelExists(const std::string &name) const {
-    for (size_t i = 0; i < m_channels.size(); i++) {
-        if (m_channels[i].getName() == name) {
+    for (std::vector<Channel>::const_iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
+        if (it->getName() == name) {
             return true;
         }
     }
     return false;
 }
 
-bool Server::joinChannel(ClientHandler* newClient, std::string &name) {
-
+bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
     try {
         if (checkIfChannelExists(name)) {
             std::cout << "Channel already exists add user in" << std::endl;
@@ -96,26 +96,25 @@ bool Server::joinChannel(ClientHandler* newClient, std::string &name) {
         return false;
     }
 }
+
 bool Server::checkNickname(const std::string &nickname) {
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getUser().getNickname() == nickname) {
             return true;
         }
     }
-    // Retourne false si l'utilisateur n'est pas trouvé
     return false;
 }
+
 bool Server::getUserByNickname(const std::string &nickname, ClientHandler *&client_handler) {
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getUser().getNickname() == nickname) {
-            // Assigner la référence de l'utilisateur trouvé
             client_handler = *it;
-            // Indiquer que l'utilisateur a été trouvé
             return true;
         }
     }
-    // Retourne false si l'utilisateur n'est pas trouvé
     return false;
 }
+
 
 const std::string &Server::getServerName() const { return m_serverName; }
