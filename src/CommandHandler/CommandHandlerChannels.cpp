@@ -7,7 +7,7 @@ void CommandHandler::handleJoinChannel(const std::string &command, ClientHandler
         MessageHandler::sendErrorJoinChannel(clientHandler, "");
         return;
     }
-    std::string const channelName = trim(parts[1]);
+    std::string channelName = trim(parts[1]);
     if (channelName[0] != '#') {
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
         return;

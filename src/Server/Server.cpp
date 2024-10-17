@@ -62,7 +62,7 @@ void Server::stop() {
     }
     std::cout << "Server stopped --- Welcome to the real world." << std::endl;
 }
-Channel Server::getChannel(const std::string &name) {
+Channel Server::getChannel(std::string &name) {
     for (size_t i = 0; i < m_channels.size(); i++) {
         if (m_channels[i].getName() == name) {
             return m_channels[i];
@@ -80,7 +80,7 @@ bool Server::checkIfChannelExists(const std::string &name) const {
     return false;
 }
 
-bool Server::joinChannel(ClientHandler* newClient, const std::string &name) {
+bool Server::joinChannel(ClientHandler* newClient, std::string &name) {
 
     try {
         if (checkIfChannelExists(name)) {

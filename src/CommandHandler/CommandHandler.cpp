@@ -31,7 +31,7 @@ void CommandHandler::handleCommandNoAuth(const std::string &command, ClientHandl
         std::string cmd = parseCommand(command);
         std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
         if (cmd == "CAP") {
-            handleCap(clientHandler, command);
+            MessageHandler::sendNothing(cmd);
         } else if (cmd == "NICK") {
             handleNick(command, clientHandler);
         } else if (cmd == "PASS") {
@@ -39,7 +39,8 @@ void CommandHandler::handleCommandNoAuth(const std::string &command, ClientHandl
         } else if (cmd == "WHOIS") {
             handleWhois(command, clientHandler);
         } else {
-            MessageHandler::sendErrorNoAuth(clientHandler);
+            std::cout << "Error handling command: " << cmd << std::endl;
+            MessageHandler::sendErrorNoAuth(clientHandler, cmd);
         }
     } catch (const std::exception &e) {
         std::cerr << "Error handling command: " << e.what() << std::endl;
@@ -81,16 +82,6 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         MessageHandler::sendErrorUnknownCommand(clientHandler);
     }
 }
-
-
-void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
-    if (command.find("LS") != std::string::npos) {
-        MessageHandler::sendCAP(clientHandler);
-        std::cout << "CAP * LS :multi-prefix" << std::endl;
-    }
-}
-
-
 void CommandHandler::handleMode(const std::string &command, ClientHandler *clientHandler) {
     //------------ A REFLECHIR ------------
     std::string mode;
@@ -115,4 +106,10 @@ void CommandHandler::handleQuit(ClientHandler *clientHandler) {
 
 Server &CommandHandler::getServer() const {
     return m_server;
+}
+
+void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
+    if (command.find("LS") != std::string::npos) {
+        MessageHandler::sendCAP(clientHandler);
+    }
 }

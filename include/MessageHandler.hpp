@@ -25,7 +25,7 @@ public:
     // fichier MessageError.cpp
     static void sendErrorAlreadyRegistered(ClientHandler *clientHandler);
     static void sendErrorNotRegistered(ClientHandler *clientHandler);
-    static void sendErrorNoAuth(ClientHandler *clientHandler);
+    static void sendErrorNoAuth(ClientHandler *clientHandler, const std::string &command);
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
@@ -44,6 +44,7 @@ public:
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);
+    static void sendNothing(std::string &cmd);
     static void sendWelcomeMessage(ClientHandler *clientHandler);
     static void sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName,
                                    const std::string &newNickName);

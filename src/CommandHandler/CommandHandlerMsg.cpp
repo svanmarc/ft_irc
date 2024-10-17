@@ -19,6 +19,16 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
     }
     std::string message = command.substr(messagePos + 1);
 
+    if (target[0] == '#')
+    {
+        // Envoi du message à tous les clients dans le canal spécifié
+        std::cout << "Sending message to channel " << target << ": " << message << std::endl;
+        Channel channel = m_server.getChannel(target);
+        std::string formattedMessage = ":" + clientHandler->getNickname() + " PRIVMSG " + channel.getName() + " :" + message + "\r\n";
+        MessageHandler::sendMessageToAllClientsInChannel(channel, formattedMessage);
+        return;
+    }
+
     // Envoi du message au destinataire spécifié
     bool found = false;
     const std::vector<ClientHandler *> &clients =

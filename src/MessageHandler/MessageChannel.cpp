@@ -9,13 +9,14 @@ void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const Ch
 }
 
 void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const std::string &message) {
-    std::cout << "Sending message to all clients in channel: " << message << std::endl;
+    std::cout << "Sending message to all clients in channel: " << message << channel.getClients().size() << std::endl;
     for (size_t i = 0; i < channel.getClients().size(); i++) {
         ClientHandler *client = channel.getClients()[i];
         if (client == NULL) {
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
+        std::cout << "Sending message to client: " << client->getUser().getNickname() << std::endl;
         MessageHandler::sendMessage(client->getSocket(), message);
     }
 }
@@ -39,7 +40,7 @@ void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Ch
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
-        currentUserString += client->getUser().getNickname();
+        currentUserString += client->getUser().getNickname() + " ";
     }
     std::string message = clientHandler->getUser().getNickname();
     message += " = ";

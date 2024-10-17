@@ -6,8 +6,10 @@ void MessageHandler::sendErrorAlreadyRegistered(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorNotRegistered(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "* :You have not registered");
 }
-void MessageHandler::sendErrorNoAuth(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "Error: You have are not authenticated");
+void MessageHandler::sendErrorNoAuth(ClientHandler *clientHandler, const std::string &command) {
+    // exemple :*.localhost 451 * JOIN :You have not registered
+    std::string response = " * " + command + " :You have not registered";
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, response);
 }
 void MessageHandler::sendErrorNotNickNameGiven(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NONICKNAMEGIVEN, "Error: No nickname given");

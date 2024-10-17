@@ -9,8 +9,6 @@ static const int RPL_WELCOMECHANNEL = 7;
 static const int RPL_LISTSTART = 321;
 
 void MessageHandler::sendMessage(int socket, const std::string &message) {
-    std::cout << "Sending message to client: " << message << std::endl;
-
     size_t totalSent = 0;
     const char* buffer = message.c_str();
     size_t length = message.size();
@@ -34,7 +32,7 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
         totalSent += bytesSent;
     }
 
-    std::cout << "Message sent successfully: " << message << " (" << totalSent << " bytes)" << std::endl;
+    std::cout << "Message sent successfully: " << message << std::endl;
     return;
 }
 
@@ -48,7 +46,6 @@ void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const 
         response += oss.str() + " ";
     }
     response += message + "\r\n";
-    std::cout << "Sending response: " << response <<  "Socket "<< clientHandler->getSocket() << std::endl;
     MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 

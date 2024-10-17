@@ -5,6 +5,7 @@ class IRCConstants {
 public:
     static const int RPL_WELCOME = 001; // 001: Welcome to the Internet Relay Network
     static const int RPL_YOURHOST = 002; // 002: Your host is <server>, running version <version>
+    static const int RPL_CREATED = 003; // 003: This server was created <date>
     static const int RPL_MYINFO = 004; // 004: <server> <version> :<options>
     static const int RPL_BOUNCE = 005; // 005: Try server <server>, port <port>
     static const int RPL_USERHOST = 302; // 302: :*1
