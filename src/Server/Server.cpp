@@ -81,14 +81,33 @@ bool Server::checkIfChannelExists(const std::string &name) const {
     return false;
 }
 
+// bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
+//     try {
+//         if (checkIfChannelExists(name)) {
+//             std::cout << "Channel already exists add user in" << std::endl;
+//             getChannel(name).addClient(newClient);
+//             return true;
+//         }
+//         Channel const newChannel(name, newClient);
+//         m_channels.push_back(newChannel);
+//         return true;
+//     } catch (const std::exception &e) {
+//         std::cerr << "Exception: " << e.what() << std::endl;
+//         return false;
+//     }
+// }
+
 bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
     try {
         if (checkIfChannelExists(name)) {
-            std::cout << "Channel already exists add user in" << std::endl;
-            getChannel(name).addClient(newClient);
+            std::cout << "Channel already exists, adding user" << std::endl;
+            // Récupérer une référence au canal existant et ajouter le client
+            Channel &existingChannel = getChannel(name);
+            existingChannel.addClient(newClient);
             return true;
         }
-        Channel const newChannel(name, newClient);
+        // Si le canal n'existe pas, créer un nouveau canal et ajouter le client
+        Channel newChannel(name, newClient);
         m_channels.push_back(newChannel);
         return true;
     } catch (const std::exception &e) {

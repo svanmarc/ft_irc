@@ -3,9 +3,9 @@
 #include "ClientHandler.hpp"
 #include "IRCConstants.hpp"
 
+#include "Channel.hpp"
 #include "Irc.hpp"
 #include "Server.hpp"
-#include "Channel.hpp"
 
 class MessageHandler {
 private:
@@ -41,6 +41,8 @@ public:
     static void sendErrorNoMessage(ClientHandler *clientHandler);
     static void sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
+    static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
+
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);

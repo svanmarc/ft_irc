@@ -17,10 +17,21 @@ void Channel::addClient(ClientHandler *client) {
     m_clients.push_back(client);
 }
 
+// void Channel::removeClient(const ClientHandler *client) {
+//     for (std::vector<ClientHandler *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
+//         if (*it == client) {
+//             m_clients.erase(it);
+//             break;
+//         }
+//     }
+// }
+
 void Channel::removeClient(const ClientHandler *client) {
+    std::cout << "Removing client " << client->getNickname() << " from channel " << m_name << std::endl;
     for (std::vector<ClientHandler *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
         if (*it == client) {
             m_clients.erase(it);
+            std::cout << "Client " << client->getNickname() << " removed from channel " << m_name << std::endl;
             break;
         }
     }

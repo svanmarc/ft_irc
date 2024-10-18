@@ -49,19 +49,37 @@ void Server::handleClient(const int clientSocket) {
 }
 
 // Retirer un client du vecteur `clients`
+// void Server::removeClient(const int clientSocket) {
+//     // Trouver le client par son socket
+//     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+//         if ((*it)->getSocket() == clientSocket) {
+//             delete *it;
+//             clients.erase(it);
+//             break;
+//         }
+//     }
+//     // Retirer également le client de `fds`
+//     for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); ++it) {
+//         if (it->fd == clientSocket) {
+//             fds.erase(it);
+//             break;
+//         }
+//     }
+// }
 void Server::removeClient(const int clientSocket) {
-    // Trouver le client par son socket
+    std::cout << "Removing client with socket " << clientSocket << " from server" << std::endl;
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getSocket() == clientSocket) {
             delete *it;
             clients.erase(it);
+            std::cout << "Client removed from server" << std::endl;
             break;
         }
     }
-    // Retirer également le client de `fds`
     for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); ++it) {
         if (it->fd == clientSocket) {
             fds.erase(it);
+            std::cout << "Socket removed from fds" << std::endl;
             break;
         }
     }

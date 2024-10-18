@@ -54,7 +54,7 @@ private:
 
     // fichier CommandHandlerChannels.cpp
     void handleJoinChannel(const std::string &command, ClientHandler *clientHandler);
-    // void handlePart(const std::string &command, ClientHandler *clientHandler);
+    void handlePart(const std::string &command, ClientHandler *clientHandler);
 };
 
 #endif

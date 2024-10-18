@@ -49,7 +49,6 @@ void CommandHandler::handleCommandNoAuth(const std::string &command, ClientHandl
 }
 
 
-
 void CommandHandler::handleCommand(const std::string &command, ClientHandler *clientHandler) {
     try {
         std::cout << "Received command: " << command << std::endl;
@@ -70,6 +69,9 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         } else if (cmd == "JOIN") {
             std::cout << "JOIN command received" << std::endl;
             handleJoinChannel(command, clientHandler);
+        } else if (cmd == "PART") {
+            std::cout << "PART command received" << std::endl;
+            handlePart(command, clientHandler);
         } else if (cmd == "QUIT") {
             handleQuit(clientHandler);
         } else if (cmd == "PRIVMSG") {
@@ -104,9 +106,7 @@ void CommandHandler::handleQuit(ClientHandler *clientHandler) {
     m_server.handleClientDisconnect(clientHandler->getSocket());
 }
 
-Server &CommandHandler::getServer() const {
-    return m_server;
-}
+Server &CommandHandler::getServer() const { return m_server; }
 
 void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
     if (command.find("LS") != std::string::npos) {
