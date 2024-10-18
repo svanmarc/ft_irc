@@ -13,44 +13,54 @@ void CommandHandler::handleJoinChannel(const std::string &command, ClientHandler
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
         return;
     }
+    // Vérifie si le client peut joindre le canal
     const bool joinStatus = getServer().joinChannel(clientHandler, channelName);
     std::cout << "Join status: " << joinStatus << std::endl;
+
     if (joinStatus) {
-        Channel newChannel = getServer().getChannel(channelName);
+        // Utiliser une référence pour éviter la copie du canal
+        Channel &newChannel = getServer().getChannel(channelName); // référence au lieu d'une copie
         MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
         MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
         MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
         MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
-
     } else {
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
     }
 }
 
-// void CommandHandler::handlePart(const std::string &command, ClientHandler *clientHandler) {
-//     std::vector<std::string> parts;
-//     splitCommand(command, parts);
+void CommandHandler::handlePart(const std::string &command, ClientHandler *clientHandler) {
+    std::vector<std::string> parts;
+    splitCommand(command, parts);
 
-//     if (parts.size() < 2) {
-//         MessageHandler::sendErrorNoTarget(clientHandler);
-//         return;
-//     }
+    if (parts.size() < 2) {
+        MessageHandler::sendErrorNoTarget(clientHandler);
+        return;
+    }
 
-//     std::string channelName = trim(parts[1]);
+    std::string channelName = trim(parts[1]);
 
-//     if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
-//         MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
-//         return;
-//     }
+    if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
+        MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
+        return;
+    }
 
-//     Channel &channel = clientHandler->getServer()->getChannel(channelName);
-//     channel.removeClient(clientHandler);
+    // Retirer le client du canal au niveau du serveur
+    Channel &channel = clientHandler->getServer()->getChannel(channelName);
+    std::cout << "BEFORE REMOVE: Clients in channel: " << channel.getClients().size() << std::endl;
+    channel.removeClient(clientHandler);
+    std::cout << "AFTER REMOVE: Clients in channel: " << channel.getClients().size() << std::endl;
 
-//     std::string leaveMessage = clientHandler->getNickname() + " has left the channel " + channelName;
+    // Supprimer le canal de la liste des canaux du client
+    clientHandler->leaveChannel(channelName);
+    std::cout << "Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
 
-//     // Envoi du message à tous les clients du canal
-//     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage);
+    // Confirmer au client qu'il a bien quitté le canal
+    //:root!root@IP.hosted-by-42lausanne.ch PART #test :hasta la vista Baby
+    std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" + getServer().getServerName();
+    leaveMessage += " PART " + channelName + " : Au revoir a jamais";
 
-//     // Envoi de la réponse au client
-//     MessageHandler::sendResponse(clientHandler, "You have left the channel " + channelName);
-// }
+    MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage);
+    MessageHandler::sendMessage(clientHandler->getSocket(),leaveMessage);
+
+}

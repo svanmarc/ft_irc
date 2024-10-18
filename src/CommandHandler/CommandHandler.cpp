@@ -89,6 +89,9 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         } else if (cmd == "JOIN") {
             std::cout << "JOIN command received" << std::endl;
             handleJoinChannel(command, clientHandler);
+        } else if (cmd == "PART") {
+            std::cout << "PART command received" << std::endl;
+            handlePart(command, clientHandler);
         } else if (cmd == "QUIT") {
             handleQuit(clientHandler);
         } else if (cmd == "PRIVMSG") {
