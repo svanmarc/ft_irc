@@ -77,10 +77,11 @@ void ClientHandler::readCommand(const std::string &command) {
         }
     }
 }
+
 void ClientHandler::leaveChannel(const std::string &channel) {
-    for (size_t i = 0; i < channels.size(); i++) {
-        if (channels[i] == channel) {
-            channels.erase(channels.begin() + i);
+    for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it) {
+        if (*it == channel) {
+            channels.erase(it);
             break;
         }
     }

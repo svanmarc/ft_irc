@@ -9,9 +9,16 @@ static const int RPL_WELCOMECHANNEL = 7;
 static const int RPL_LISTSTART = 321;
 
 void MessageHandler::sendMessage(int socket, const std::string &message) {
+    std::string finalMessage = message;
+
+    // Ajouter \r\n si le message ne se termine pas déjà par \r\n
+    if (finalMessage.substr(finalMessage.size() - 2) != "\r\n") {
+        finalMessage += "\r\n";
+    }
+
     size_t totalSent = 0;
-    const char* buffer = message.c_str();
-    size_t length = message.size();
+    const char *buffer = finalMessage.c_str();
+    size_t length = finalMessage.size();
 
     while (totalSent < length) {
         ssize_t bytesSent = send(socket, buffer + totalSent, length - totalSent, 0);
@@ -21,8 +28,8 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
                 // L'appel a été interrompu par un signal, on réessaie
                 continue;
             }
-            std::cerr << "Error: Failed to send message to client. errnum: " << errno
-                      << " (" << strerror(errno) << ")" << std::endl;
+            std::cerr << "Error: Failed to send message to client. errnum: " << errno << " (" << strerror(errno) << ")"
+                      << std::endl;
             return;
         } else if (bytesSent == 0) {
             std::cerr << "Connection closed by peer" << std::endl;
@@ -32,9 +39,9 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
         totalSent += bytesSent;
     }
 
-    std::cout << "Message sent successfully: " << message << std::endl;
-    return;
+    std::cout << "Message sent successfully: " << finalMessage << std::endl;
 }
+
 
 void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const std::string &message) {
     const std::string SERVER_NAME = clientHandler->getServer()->getServerName();
@@ -45,17 +52,16 @@ void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const 
         oss << code;
         response += oss.str() + " ";
     }
-    response += message + "\r\n";
+    response += message;
     MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 
 void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &message, const std::string &sender) {
     const std::string targetnickname = target->getUser().getNickname();
-    const std::string response = ":" + sender + " PRIVMSG " + targetnickname + " :" + message + "\r\n";
+    const std::string response = ":" + sender + " PRIVMSG " + targetnickname + " :" + message;
     sendMessage(target->getSocket(), response);
 }
 
-void MessageHandler::sendResponse(ClientHandler *clientHandler, const std::string &message)
-{
+void MessageHandler::sendResponse(ClientHandler *clientHandler, const std::string &message) {
     sendResponse(clientHandler, 0, message);
 }

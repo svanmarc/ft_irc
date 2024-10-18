@@ -10,8 +10,9 @@ void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const Ch
 
 void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const std::string &message) {
     std::cout << "Sending message to all clients in channel: " << message << channel.getClients().size() << std::endl;
-    for (size_t i = 0; i < channel.getClients().size(); i++) {
-        ClientHandler *client = channel.getClients()[i];
+    std::vector<ClientHandler *> clients = channel.getClients();
+    for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        ClientHandler *client = *it;
         if (client == NULL) {
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;

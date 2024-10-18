@@ -49,32 +49,37 @@ void Server::handleClient(const int clientSocket) {
 }
 
 // Retirer un client du vecteur `clients`
-void Server::removeClient(int clientSocket) {
-    for (size_t i = 0; i < clients.size(); ++i) {
-        if (clients[i]->getSocket() == clientSocket) {
-            delete clients[i]; // Libérer la mémoire allouée pour le client
-            clients.erase(clients.begin() + i);
+void Server::removeClient(const int clientSocket) {
+    // Trouver le client par son socket
+    for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
+        if ((*it)->getSocket() == clientSocket) {
+            close(clientSocket);
+            delete *it;
+            clients.erase(it);
             break;
         }
     }
     // Retirer également le client de `fds`
-    for (size_t i = 0; i < fds.size(); ++i) {
-        if (fds[i].fd == clientSocket) {
-            fds.erase(fds.begin() + i);
+    for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); ++it) {
+        if (it->fd == clientSocket) {
+            fds.erase(it);
             break;
         }
     }
 }
-// Trouver un client par son socket
+
+
 ClientHandler *Server::findClient(const int clientSocket) const {
-    for (size_t i = 0; i < clients.size(); ++i) {
-        if (clients[i]->getSocket() == clientSocket)
-            return clients[i];
+    for (std::vector<ClientHandler *>::const_iterator it = clients.begin(); it != clients.end(); ++it) {
+        if ((*it)->getSocket() == clientSocket)
+            return *it;
     }
     return NULL;
 }
+
 // Vérifier le mot de passe du client
 bool Server::checkPassword(const std::string &clientPassword) const { return clientPassword == m_password; }
+
 // Authentifier le client
 bool Server::authenticate(const std::string &clientPassword) const { return checkPassword(clientPassword); }
 

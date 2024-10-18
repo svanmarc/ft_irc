@@ -1,7 +1,6 @@
 #include "CommandHandler.hpp"
 
 void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *clientHandler) {
-    // Extraire le `target`
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 3 || parts[1].empty()) {
@@ -15,11 +14,12 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
     std::string target = parts[1];
 
     // Extraire le message après le symbole ':'
-    const std::string message = parts[3];
-    if (message.empty()) {
+    size_t posStartMessg = command.find(':');
+    if (posStartMessg == std::string::npos) {
         MessageHandler::sendErrorNoMessage(clientHandler);
         return;
     }
+    std::string message = command.substr(posStartMessg + 1);
     if (target[0] == '#')
     {
         // Envoi du message à tous les clients dans le canal spécifié
