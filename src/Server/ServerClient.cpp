@@ -66,16 +66,20 @@ void Server::handleClient(const int clientSocket) {
 //         }
 //     }
 // }
+
 void Server::removeClient(const int clientSocket) {
     std::cout << "Removing client with socket " << clientSocket << " from server" << std::endl;
+    // Trouver et supprimer le client
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getSocket() == clientSocket) {
+            close(clientSocket); // Fermer le socket
             delete *it;
             clients.erase(it);
             std::cout << "Client removed from server" << std::endl;
             break;
         }
     }
+    // Supprimer également le client de `pollfd`
     for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); ++it) {
         if (it->fd == clientSocket) {
             fds.erase(it);
@@ -100,7 +104,20 @@ bool Server::checkPassword(const std::string &clientPassword) const { return cli
 // Authentifier le client
 bool Server::authenticate(const std::string &clientPassword) const { return checkPassword(clientPassword); }
 
+// void Server::handleClientDisconnect(int clientSocket) {
+//     std::cout << "Handing disconnection for client socket: " << std::endl;
+//     removeClient(clientSocket);
+// }
+
 void Server::handleClientDisconnect(int clientSocket) {
-    std::cout << "Handing disconnection for client socket: " << std::endl;
-    removeClient(clientSocket);
+    ClientHandler *client = findClient(clientSocket);
+    if (client != NULL) {
+        std::cout << "Client " << client->getNickname() << " disconnected" << std::endl;
+        // Retirer le client de tous les canaux
+        for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
+            it->removeClient(client);
+        }
+        // Supprimer le client du serveur
+        removeClient(clientSocket);
+    }
 }

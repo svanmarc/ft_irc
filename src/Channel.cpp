@@ -26,16 +26,31 @@ void Channel::addClient(ClientHandler *client) {
 //     }
 // }
 
+// void Channel::removeClient(const ClientHandler *client) {
+//     std::cout << "Removing client " << client->getNickname() << " from channel " << m_name << std::endl;
+//     for (std::vector<ClientHandler *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
+//         if (*it == client) {
+//             m_clients.erase(it);
+//             std::cout << "Client " << client->getNickname() << " removed from channel " << m_name << std::endl;
+//             break;
+//         }
+//     }
+// }
+
 void Channel::removeClient(const ClientHandler *client) {
     std::cout << "Removing client " << client->getNickname() << " from channel " << m_name << std::endl;
-    for (std::vector<ClientHandler *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
-        if (*it == client) {
-            m_clients.erase(it);
-            std::cout << "Client " << client->getNickname() << " removed from channel " << m_name << std::endl;
-            break;
-        }
+
+    // Utilisation de std::find pour simplifier la recherche
+    std::vector<ClientHandler *>::iterator it = std::find(m_clients.begin(), m_clients.end(), client);
+
+    if (it != m_clients.end()) {
+        m_clients.erase(it);
+        std::cout << "Client " << client->getNickname() << " removed from channel " << m_name << std::endl;
+    } else {
+        std::cout << "Client " << client->getNickname() << " not found in channel " << m_name << std::endl;
     }
 }
+
 
 std::string Channel::getName() const { return m_name; }
 

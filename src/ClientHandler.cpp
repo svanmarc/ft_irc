@@ -4,7 +4,10 @@
 ClientHandler::ClientHandler(int const socket, Server *serverRef) :
     m_clientSocket(socket), m_server(serverRef), m_attempts(0) {}
 
-ClientHandler::~ClientHandler() { close(m_clientSocket); }
+ClientHandler::~ClientHandler() {
+    close(m_clientSocket);
+    std::cout << "Socket " << m_clientSocket << " closed" << std::endl;
+}
 
 void ClientHandler::handlerClient(Server &server) {
     char buffer[1024];
