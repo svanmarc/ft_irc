@@ -109,14 +109,16 @@ void CommandHandler::handlePart(const std::string &command, ClientHandler *clien
     channel.removeClient(clientHandler);
     std::cout << "AFTER REMOVE: Clients in channel: " << channel.getClients().size() << std::endl;
 
-    // Envoi d'un message à tous les autres clients du canal pour signaler le départ
-    std::string leaveMessage = clientHandler->getNickname() + " has left the channel " + channelName;
-    MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage);
-
     // Supprimer le canal de la liste des canaux du client
     clientHandler->leaveChannel(channelName);
     std::cout << "Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
 
     // Confirmer au client qu'il a bien quitté le canal
-    MessageHandler::sendResponse(clientHandler, "You have left the channel " + channelName);
+    //:root!root@IP.hosted-by-42lausanne.ch PART #test :hasta la vista Baby
+    std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getUser().getHostname();
+    leaveMessage += " PART " + channelName + " :" + leaveMessage;
+
+    MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage);
+    MessageHandler::sendMessage(clientHandler->getSocket(),leaveMessage);
+
 }
