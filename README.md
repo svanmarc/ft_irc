@@ -98,12 +98,12 @@ the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
 
 - [x] `NICK`: Set nickname
 - [X] `PRIVMSG`: Sends a message to recipient
-- [ ] `NOTICE`: Sends a message to recipient (slightly different behavior)
+- [X] `NOTICE`: Sends a message to recipient (slightly different behavior)
 - [ ] `LIST`: Lists all the channels
 - [ ] `WHO`: Lists all the users in a channel
 - [ ] `TOPIC`: Show the topic of a channel
-- [ ] `JOIN`: Join a channel
-- [ ] `PART`: Leave a channel
+- [X] `JOIN`: Join a channel
+- [X] `PART`: Leave a channel
 - [X] `QUIT`: Leave the server
 - [ ] `SHOWTIME BOT`: Activates the bot
 

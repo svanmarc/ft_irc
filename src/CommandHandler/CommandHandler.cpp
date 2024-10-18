@@ -94,8 +94,11 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
             handlePart(command, clientHandler);
         } else if (cmd == "QUIT") {
             handleQuit(clientHandler);
-        } else if (cmd == "PRIVMSG") {
+        } else if (cmd == "PRIVMSG" || cmd == "NOTICE") {
             handlePrivMsg(command, clientHandler);
+        }
+        else if (cmd == "PING") {
+            handlePing(command,clientHandler);
         } else {
             MessageHandler::sendErrorUnknownCommand(clientHandler);
         }

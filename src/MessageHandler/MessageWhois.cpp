@@ -35,3 +35,8 @@ void MessageHandler::MessageWhoisNotFound(ClientHandler *clientHandler, const st
 void MessageHandler::MessageWhoisNoGiven(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NONICKNAMEGIVEN, "No nickname given");
 }
+
+void MessageHandler::sendPong(ClientHandler *clientHandler) {
+    std::string message = "PONG " + clientHandler->getServer()->getServerName() + " :" + clientHandler->getServer()->getServerName();
+    MessageHandler::sendMessage(clientHandler->getSocket(), message);
+}

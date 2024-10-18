@@ -71,3 +71,7 @@ void MessageHandler::sendErrorNotInChannel(ClientHandler *clientHandler, const s
     std::string message = "You're not in channel " + channelName;
     sendResponse(clientHandler, IRCConstants::ERR_NOTINCHANNEL, message);
 }
+
+void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
+}

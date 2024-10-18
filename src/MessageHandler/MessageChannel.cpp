@@ -8,16 +8,19 @@ void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const Ch
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WELCOME, message);
 }
 
-void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const std::string &message) {
-    std::cout << "Sending message to all clients in channel: " << message << channel.getClients().size() << std::endl;
+void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const std::string &message, ClientHandler *clientHandler, bool sendToSender) {
+    std::cout << clientHandler->getUser().getNickname() << " :Sending message to all clients in channel: " << message << std::endl;
     std::vector<ClientHandler *> clients = channel.getClients();
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         ClientHandler *client = *it;
+        std::cout << "Sending message to client: " << client->getUser().getNickname() << std::endl;
         if (client == NULL) {
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
-        std::cout << "Sending message to client: " << client->getUser().getNickname() << std::endl;
+        if (client == clientHandler && !sendToSender) {
+            continue;
+        }
         MessageHandler::sendMessage(client->getSocket(), message);
     }
 }
@@ -29,9 +32,8 @@ void MessageHandler::sendNewMemberToChannel(ClientHandler *clientHandler, Channe
     message += clientHandler->getUser().getHostname();
     message += " JOIN";
     message += " " + channel.getName();
-    message += "\r\n";
     std::cout << "Sending new member message to channel " << message << std::endl;
-    sendMessageToAllClientsInChannel(channel, message);
+    sendMessageToAllClientsInChannel(channel, message, clientHandler, true);
 }
 
 void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel) {

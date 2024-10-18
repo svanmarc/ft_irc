@@ -35,8 +35,8 @@ void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std:
 void MessageHandler::sendAuthentificationSuccess(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, "Authentification success");
 }
-void MessageHandler::sendMessageToUser(ClientHandler *clientHandlerSender, ClientHandler *clientTarget, const std::string &message) {
-    MessageHandler::sendUserMsg(clientTarget, message, clientHandlerSender->getUser().getNickname());
+void MessageHandler::sendMessageToUser(ClientHandler *clientHandlerSender, ClientHandler *clientTarget, const std::string &message, bool notice) {
+    MessageHandler::sendUserMsg(clientTarget, message, clientHandlerSender, notice);
 }
 
 void MessageHandler::sendGoodbye(ClientHandler *clientHandler) {

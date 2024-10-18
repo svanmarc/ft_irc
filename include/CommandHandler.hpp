@@ -32,8 +32,9 @@ private:
     static const int ERR_ALREADYREGISTRED = 462;
 
 
-    // fichier CommandsUser.cpp
+    // fichier CommandWhois.cpp
     static void handleUser(const std::string &command, ClientHandler *clientHandler);
+    static void handlePing(const std::string &command, ClientHandler *clientHandler);
     void handlePass(const std::string &command, ClientHandler *clientHandler);
     static void completeRegistration(ClientHandler *clientHandler);
     // fichier CommandHandler.cpp
@@ -44,6 +45,7 @@ private:
     // fichier CommandsUsers.cpp
     void handleWhois(const std::string &command, ClientHandler *clientHandler);
     static std::string parseCommand(const std::string &fullCommand);
+
 
     // fichier CommandHandlerNick.cpp
     static bool checkNickname(const std::string &nickname, ClientHandler *clientHandler);

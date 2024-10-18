@@ -13,7 +13,7 @@ public:
     static void sendMessage(int socket, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, int code, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, const std::string &message);
-    static void sendUserMsg(ClientHandler *clientHandler, const std::string &message, const std::string &target);
+    static void sendUserMsg(ClientHandler *clientHandler, const std::string &message, ClientHandler *sender, bool notice);
 
     // fichier MessageError.cpp
     static void sendErrorNoAuthentification(ClientHandler *clientHandler);
@@ -36,6 +36,7 @@ public:
     static void sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
+    static void sendErrorNoPingParams(ClientHandler *clientHandler);
 
 
     // fichier MessageUser.cpp
@@ -46,7 +47,7 @@ public:
                                    const std::string &newNickName);
     static void sendAuthentificationSuccess(ClientHandler *clientHandler);
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget,
-                                  const std::string &message);
+                                  const std::string &message, bool notice);
     static void sendGoodbye(ClientHandler *clientHandler);
 
     // Fichier MessageWhois
@@ -54,11 +55,12 @@ public:
     static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
     static void MessageWhoisNoGiven(ClientHandler *clientHandler);
+    static void sendPong(ClientHandler *clientHandler);
 
     // Fichier MessageChannel
     static void sendWelcomeToChannel(ClientHandler *clientHandler, const Channel &channel);
     static void sendNewMemberToChannel(ClientHandler *clientHandler, Channel &channel);
-    static void sendMessageToAllClientsInChannel(Channel &channel, const std::string &message);
+    static void sendMessageToAllClientsInChannel(Channel &channel, const std::string &message, ClientHandler *clientHandler, bool sendToSender);
     static void sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel);
     static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
 };

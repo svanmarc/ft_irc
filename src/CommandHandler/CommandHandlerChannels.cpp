@@ -58,9 +58,9 @@ void CommandHandler::handlePart(const std::string &command, ClientHandler *clien
     // Confirmer au client qu'il a bien quitté le canal
     //:root!root@IP.hosted-by-42lausanne.ch PART #test :hasta la vista Baby
     std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" + getServer().getServerName();
-    leaveMessage += " PART " + channelName + " : Au revoir a jamais";
-
-    MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage);
+    leaveMessage += " PART " + channelName + " :Au revoir a jamais";
     MessageHandler::sendMessage(clientHandler->getSocket(),leaveMessage);
+    std::cout << "---- Sending leave message: " << leaveMessage << std::endl;
+    MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);
 }
 

@@ -12,6 +12,7 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
         return;
     }
     std::string target = parts[1];
+    std::string cmd = parts[0];
 
     // Extraire le message après le symbole ':'
     size_t posStartMessg = command.find(':');
@@ -32,8 +33,8 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
         std::cout << "Sending message to channel " << target << ": " << message << std::endl;
         std::string formattedMessage = ":" + clientHandler->getNickname();
         formattedMessage += "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getUser().getHostname();
-        formattedMessage += " PRIVMSG " + channel.getName() + " :" + message + "\r\n";
-        MessageHandler::sendMessageToAllClientsInChannel(channel, formattedMessage);
+        formattedMessage += " " + cmd + " " + channel.getName() + " :" + message + "\r\n";
+        MessageHandler::sendMessageToAllClientsInChannel(channel, formattedMessage, clientHandler, false);
         return;
     }
 
@@ -46,7 +47,7 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
         if ((*it)->getNickname() == target) // Utiliser `getNickname()` pour accéder au nom d'utilisateur
         {
             found = true;
-            MessageHandler::sendMessageToUser(clientHandler, *it, message);
+            MessageHandler::sendMessageToUser(clientHandler, *it, message, cmd == "NOTICE");
             break;
         }
     }

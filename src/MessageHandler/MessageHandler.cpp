@@ -38,7 +38,7 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
         totalSent += bytesSent;
     }
 
-    std::cout << "Message sent successfully: " << finalMessage << std::endl;
+    std::cout << "Message sent successfully: " << finalMessage;
 }
 
 
@@ -55,9 +55,17 @@ void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const 
     MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 
-void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &message, const std::string &sender) {
+void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &message, ClientHandler *sender, bool notice) {
+    //:tamm2_!root@IP.hosted-by-42lausanne.ch NOTICE tamm2 :tu es dans la merde
     const std::string targetnickname = target->getUser().getNickname();
-    const std::string response = ":" + sender + " PRIVMSG " + targetnickname + " :" + message;
+    std::string msgType = "PRIVMSG";
+    if (notice) {
+        msgType = "NOTICE " + message;
+    }
+
+    std::string response = ":" + sender->getUser().getNickname();
+    response += "!" + sender->getUser().getUsername() + "@" + sender->getUser().getHostname();
+    response +=  " " + msgType + " " + targetnickname + " :" + message + "\r\n";
     sendMessage(target->getSocket(), response);
 }
 
