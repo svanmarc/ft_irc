@@ -62,5 +62,5 @@ void CommandHandler::handlePart(const std::string &command, ClientHandler *clien
 
     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage);
     MessageHandler::sendMessage(clientHandler->getSocket(),leaveMessage);
-
 }
+

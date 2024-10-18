@@ -1,6 +1,5 @@
 #include "MessageHandler.hpp"
 
-static const int RPL_WELCOME = 1;
 static const int RPL_YOURHOST = 2;
 static const int RPL_MYINFO = 4;
 static const int RPL_NICK = 5;

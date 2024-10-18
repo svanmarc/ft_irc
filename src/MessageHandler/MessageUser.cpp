@@ -11,13 +11,13 @@ void MessageHandler::sendNothing(std::string &cmd) {
 
 void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
     //:*.localhost 001 client2 :Welcome to the Internet Relay Network client2!root@127.0.0.1.hosted-by-42lausanne.ch
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WELCOME, clientHandler->getUser().getNickname() + " :Welcome to the Internet Relay Network " + clientHandler->getUser().getNickname() + "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getUser().getHostname());
+    MessageHandler::sendResponse(clientHandler, 0, " 001 " + clientHandler->getUser().getNickname() + " :Welcome to the Internet Relay Network " + clientHandler->getUser().getNickname() + "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getUser().getHostname());
     //:*.localhost 002 client2 :Your host is *.localhost, running version 1.0
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_YOURHOST, clientHandler->getUser().getNickname() + " :Your host is " + clientHandler->getServer()->getServerName() + ", running version 1.0");
+    MessageHandler::sendResponse(clientHandler, 0, " 002 " + clientHandler->getUser().getNickname() + " :Your host is " + clientHandler->getServer()->getServerName() + ", running version 1.0");
     //:*.42irc.net 003 client2 :This server was created Thu Oct 17 14:16:27 2024
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_CREATED, clientHandler->getUser().getNickname() + " :This server was created This server was created Thu Oct 17 14:16:27 2024");
+    MessageHandler::sendResponse(clientHandler, 0, " 003 " + clientHandler->getUser().getNickname() + " :This server was created This server was created Thu Oct 17 14:16:27 2024");
     //:*.localhost 004 client2 :*.42irc.net 1.0 Channel modes +ntikl
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_MYINFO, clientHandler->getUser().getNickname() + " :"+ clientHandler->getServer()->getServerName() + " 1.0 Channel modes +ntikl");
+    MessageHandler::sendResponse(clientHandler, 0, " 004 " +  clientHandler->getUser().getNickname() + " :"+ clientHandler->getServer()->getServerName() + " 1.0 Channel modes +ntikl");
     sendCAP(clientHandler);
 }
 void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName, const std::string &newNickName) {

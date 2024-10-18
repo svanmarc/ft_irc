@@ -10,13 +10,6 @@
 class MessageHandler {
 private:
 public:
-    static const int RPL_WELCOME;
-    static const int RPL_YOURHOST;
-    static const int RPL_MYINFO;
-    static const int RPL_NICK;
-    static const int RPL_NICKCHANGE;
-    static const int RPL_WELCOMECHANNEL;
-    static const int RPL_LISTSTART;
     static void sendMessage(int socket, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, int code, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, const std::string &message);
