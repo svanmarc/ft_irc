@@ -100,13 +100,13 @@ bool Server::checkIfChannelExists(const std::string &name) const {
 bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
     try {
         if (checkIfChannelExists(name)) {
-            std::cout << "Channel already exists, adding user" << std::endl;
-            // Récupérer une référence au canal existant et ajouter le client
+            std::cout << "[DEBUG] Channel already exists, adding user" << std::endl;
+
             Channel &existingChannel = getChannel(name);
             existingChannel.addClient(newClient);
             return true;
         }
-        // Si le canal n'existe pas, créer un nouveau canal et ajouter le client
+        std::cout << "[DEBUG] Creating new channel: " << name << std::endl;
         Channel newChannel(name, newClient);
         m_channels.push_back(newChannel);
         return true;
@@ -115,6 +115,7 @@ bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
         return false;
     }
 }
+
 
 bool Server::checkNickname(const std::string &nickname) {
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {

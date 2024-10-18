@@ -8,7 +8,6 @@
 #include <vector>
 #include "User.hpp"
 
-
 class Server;
 
 class ClientHandler {
@@ -34,7 +33,10 @@ public:
     int getSocket() const;
     void readCommand(const std::string &command);
 
+    // Gestion des canaux
+    bool isInChannel(const std::string &channelName) const;
     void leaveChannel(const std::string &channel);
+
     Server *getServer() const;
     bool operator==(const ClientHandler &other) const;
 

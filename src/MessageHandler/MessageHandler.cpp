@@ -65,3 +65,8 @@ void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &messa
 void MessageHandler::sendResponse(ClientHandler *clientHandler, const std::string &message) {
     sendResponse(clientHandler, 0, message);
 }
+
+void MessageHandler::sendSystemNotice(ClientHandler *clientHandler, const std::string &message) {
+    std::string notice = ":irc.svanmarc_mrabat NOTICE " + clientHandler->getNickname() + " :" + message;
+    sendMessage(clientHandler->getSocket(), notice);
+}

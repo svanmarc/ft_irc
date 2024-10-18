@@ -60,3 +60,13 @@ void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &c
     std::cout << "Sending End of NAMES list new client " << message << std::endl;
     sendResponse(clientHandler, IRCConstants::RPL_ENDOFNAMES, message);
 }
+
+void MessageHandler::sendSystemNoticeToChannel(Channel &channel, const std::string &message) {
+    // Envoyer un message à tous les clients du canal
+    for (std::vector<ClientHandler *>::iterator it = channel.getClients().begin(); it != channel.getClients().end();
+         ++it) {
+        ClientHandler *client = *it;
+        std::string notice = ":irc.svanmarc_mrabat NOTICE #" + channel.getName() + " :" + message;
+        sendMessage(client->getSocket(), notice); // Utiliser sendMessage pour chaque client du canal
+    }
+}

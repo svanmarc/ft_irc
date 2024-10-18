@@ -93,3 +93,12 @@ void ClientHandler::leaveChannel(const std::string &channel) {
 bool ClientHandler::operator==(const ClientHandler &other) const {
     return (this->m_clientSocket == other.m_clientSocket);
 }
+
+bool ClientHandler::isInChannel(const std::string &channelName) const {
+    for (std::vector<std::string>::const_iterator it = channels.begin(); it != channels.end(); ++it) {
+        if (*it == channelName) {
+            return true;
+        }
+    }
+    return false;
+}

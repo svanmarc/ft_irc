@@ -21,6 +21,7 @@ public:
     static void sendResponse(ClientHandler *clientHandler, int code, const std::string &message);
     static void sendResponse(ClientHandler *clientHandler, const std::string &message);
     static void sendUserMsg(ClientHandler *clientHandler, const std::string &message, const std::string &target);
+    static void sendSystemNotice(ClientHandler *clientHandler, const std::string &message);
 
     // fichier MessageError.cpp
     static void sendErrorAlreadyRegistered(ClientHandler *clientHandler);
@@ -67,6 +68,7 @@ public:
     static void sendMessageToAllClientsInChannel(Channel &channel, const std::string &message);
     static void sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel);
     static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
+    static void sendSystemNoticeToChannel(Channel &channel, const std::string &message);
 };
 
 
