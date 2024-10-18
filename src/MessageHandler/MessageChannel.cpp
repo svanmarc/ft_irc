@@ -22,17 +22,19 @@ void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const st
 }
 
 void MessageHandler::sendNewMemberToChannel(ClientHandler *clientHandler, Channel &channel) {
-    //':yourNick JOIN :#test'
-    std::string message = clientHandler->getUser().getNickname();
-    message += " JOIN ";
-    message += ": " + channel.getName();
+    //:tamm2!root@IP.hosted-by-42lausanne.ch JOIN #1
+    std::string message =  ":"+ clientHandler->getUser().getNickname() + "!";
+    message += clientHandler->getUser().getUsername() + "@";
+    message += clientHandler->getUser().getHostname();
+    message += " JOIN";
+    message += " " + channel.getName();
     message += "\r\n";
     std::cout << "Sending new member message to channel " << message << std::endl;
     sendMessageToAllClientsInChannel(channel, message);
 }
 
 void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel) {
-    //:irc.example.com 353 yourNick = #test :user1 user2 user3
+    //:*.42irc.net 353 tamm2 = #1 :@tamm2
     std::string currentUserString;
     for (size_t i = 0; i < channel.getClients().size(); i++) {
         ClientHandler *client = channel.getClients()[i];
@@ -40,7 +42,7 @@ void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Ch
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
-        currentUserString += client->getUser().getNickname() + " ";
+        currentUserString += "@"+ client->getUser().getNickname() + " ";
     }
     std::string message = clientHandler->getUser().getNickname();
     message += " = ";
@@ -48,14 +50,14 @@ void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Ch
     message += " :";
     message += currentUserString;
     std::cout << "Sending current member list to new client " << message << std::endl;
-    sendResponse(clientHandler, IRCConstants::RPL_NAMREPLY,message);
+    sendResponse(clientHandler, IRCConstants::RPL_NAMREPLY, message);
 }
 
 void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel)
 {
     //:irc.example.com 366 yourNick #test :End of NAMES list
     std::string message = clientHandler->getUser().getNickname();
-    message += "" + channel.getName();
+    message += " " + channel.getName();
     message += " :End of NAMES list";
     std::cout << "Sending End of NAMES list new client " << message << std::endl;
     sendResponse(clientHandler, IRCConstants::RPL_ENDOFNAMES, message);
