@@ -5,6 +5,7 @@ class IRCConstants {
 public:
     static const int RPL_WELCOME = 001; // 001: Welcome to the Internet Relay Network
     static const int RPL_YOURHOST = 002; // 002: Your host is <server>, running version <version>
+    static const int RPL_CREATED = 003; // 003: This server was created <date>
     static const int RPL_MYINFO = 004; // 004: <server> <version> :<options>
     static const int RPL_BOUNCE = 005; // 005: Try server <server>, port <port>
     static const int RPL_USERHOST = 302; // 302: :*1
@@ -17,6 +18,7 @@ public:
     static const int RPL_WHOISOPERATOR = 313; // 313: <nick> :is an IRC operator
     static const int RPL_WHOISIDLE = 317; // 317: <nick> <seconds> :seconds idle
     static const int RPL_ENDOFWHOIS = 318; // 318: End of WHOIS list
+    static const int RPL_WHOISCHANNELS = 319; // 319: <nick> :{[@|+]<channel><space>}
     static const int RPL_WHO = 352; // 352: <channel> <user> <host> <server> <nick> <H|G>[*] :<hop count> <real name>
     static const int RPL_LISTSTART = 321; // 321: Channel :Users  Name
     static const int RPL_LIST = 322; // 322: <channel> <# visible> :<topic>
@@ -28,6 +30,7 @@ public:
     static const int RPL_SUMMONING = 342; // 342: <nick> :Summoning user
     static const int RPL_VERSION = 351; // 351: <version> <server> :<comments>
     static const int RPL_WHOREPLY = 352; // 352: <channel> <user> <host> <server> <nick> <H|G>* :<hop count> <real name>
+    static const int RPL_NAMREPLY = 353; // 353: <channel> :<nick> <nick> <nick>
     static const int RPL_ENDOFWHO = 315; // 315: End of WHO list
     static const int RPL_ENDOFNAMES = 366; // 366: End of NAMES list
     static const int RPL_MOTD = 372; // 372: :<text>

@@ -9,12 +9,31 @@ static const int RPL_WELCOMECHANNEL = 7;
 static const int RPL_LISTSTART = 321;
 
 void MessageHandler::sendMessage(int socket, const std::string &message) {
-    ssize_t bytesSent = send(socket, message.c_str(), message.size(), 0);
-    if (bytesSent == -1) {
-        std::cerr << "Error: Failed to send message to client. errno: " << errno << std::endl;
-    } else {
-        std::cout << "Message sent: " << message << " (" << bytesSent << " bytes)" << std::endl;
+    size_t totalSent = 0;
+    const char* buffer = message.c_str();
+    size_t length = message.size();
+
+    while (totalSent < length) {
+        ssize_t bytesSent = send(socket, buffer + totalSent, length - totalSent, 0);
+
+        if (bytesSent == -1) {
+            if (errno == EINTR) {
+                // L'appel a été interrompu par un signal, on réessaie
+                continue;
+            }
+            std::cerr << "Error: Failed to send message to client. errnum: " << errno
+                      << " (" << strerror(errno) << ")" << std::endl;
+            return;
+        } else if (bytesSent == 0) {
+            std::cerr << "Connection closed by peer" << std::endl;
+            return;
+        }
+
+        totalSent += bytesSent;
     }
+
+    std::cout << "Message sent successfully: " << message << std::endl;
+    return;
 }
 
 void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const std::string &message) {
@@ -27,7 +46,6 @@ void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const 
         response += oss.str() + " ";
     }
     response += message + "\r\n";
-    std::cout << "Sending response: " << response << std::endl;
     MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 

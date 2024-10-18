@@ -2,9 +2,10 @@
 #define MESSAGEHANDLER_H
 #include "ClientHandler.hpp"
 #include "IRCConstants.hpp"
+
 #include "Irc.hpp"
-#include "MessageHandler.hpp"
 #include "Server.hpp"
+#include "Channel.hpp"
 
 class MessageHandler {
 private:
@@ -25,9 +26,12 @@ public:
     static void sendErrorNoAuthentification(ClientHandler *clientHandler);
     static void sendErrorAlreadyRegistered(ClientHandler *clientHandler);
     static void sendErrorNotRegistered(ClientHandler *clientHandler);
+    static void sendErrorNoAuth(ClientHandler *clientHandler, const std::string &command);
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
+    static void sendErrorNickNameTooLong(ClientHandler *clientHandler);
+    static void sendErrorNickNameInvalidCharacters(ClientHandler *clientHandler);
     static void sendErrorNoUserParams(ClientHandler *clientHandler);
     static void sendErrorTooManyAttempts(ClientHandler *clientHandler);
     static void sendErrorIncorrectPassword(ClientHandler *clientHandler, const std::string &strAttempt);
@@ -41,14 +45,27 @@ public:
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);
+    static void sendNothing(std::string &cmd);
     static void sendWelcomeMessage(ClientHandler *clientHandler);
     static void sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName,
                                    const std::string &newNickName);
-    static void sendWelcomeToChannel(ClientHandler *clientHandler, const std::string &channelName);
     static void sendAuthentificationSuccess(ClientHandler *clientHandler);
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget,
                                   const std::string &message);
     static void sendGoodbye(ClientHandler *clientHandler);
+
+    // Fichier MessageWhois
+    static void MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient);
+    static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
+    static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
+    static void MessageWhoisNoGiven(ClientHandler *clientHandler);
+
+    // Fichier MessageChannel
+    static void sendWelcomeToChannel(ClientHandler *clientHandler, const Channel &channel);
+    static void sendNewMemberToChannel(ClientHandler *clientHandler, Channel &channel);
+    static void sendMessageToAllClientsInChannel(Channel &channel, const std::string &message);
+    static void sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel);
+    static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
 };
 
 

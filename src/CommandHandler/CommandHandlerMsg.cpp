@@ -12,7 +12,7 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
         MessageHandler::sendErrorNoTarget(clientHandler);
         return;
     }
-    const std::string target = parts[1];
+    std::string target = parts[1];
 
     // Extraire le message après le symbole ':'
     const std::string message = parts[3];
@@ -20,6 +20,20 @@ void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *cl
         MessageHandler::sendErrorNoMessage(clientHandler);
         return;
     }
+    if (target[0] == '#')
+    {
+        // Envoi du message à tous les clients dans le canal spécifié
+        //:tamm2!root@IP.hosted-by-42lausanne.ch PRIVMSG #d :slugt
+        std::cout << "Sending message to channel " << target << ": " << message << std::endl;
+        Channel channel = m_server.getChannel(target);
+        std::string formattedMessage = ":" + clientHandler->getNickname();
+        formattedMessage += "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getUser().getHostname();
+        formattedMessage += " PRIVMSG " + channel.getName() + " :" + message + "\r\n";
+        MessageHandler::sendMessageToAllClientsInChannel(channel, formattedMessage);
+        return;
+    }
+
+    // Envoi du message au destinataire spécifié
     bool found = false;
     const std::vector<ClientHandler *> &clients =
             m_server.getClients(); // Utiliser le getter de `Server` pour récupérer les clients

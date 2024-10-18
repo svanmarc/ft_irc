@@ -25,6 +25,30 @@ void CommandHandler::handleCommandNoRegistred(const std::string &command, Client
         MessageHandler::sendErrorUnknownCommand(clientHandler);
     }
 }
+void CommandHandler::handleCommandNoAuth(const std::string &command, ClientHandler *clientHandler) {
+    try {
+        std::cout << "Received command: " << command << std::endl;
+        std::string cmd = parseCommand(command);
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
+        if (cmd == "CAP") {
+            MessageHandler::sendNothing(cmd);
+        } else if (cmd == "NICK") {
+            handleNick(command, clientHandler);
+        } else if (cmd == "PASS") {
+            handlePass(command, clientHandler);
+        } else if (cmd == "WHOIS") {
+            handleWhois(command, clientHandler);
+        } else {
+            std::cout << "Error handling command: " << cmd << std::endl;
+            MessageHandler::sendErrorNoAuth(clientHandler, cmd);
+        }
+    } catch (const std::exception &e) {
+        std::cerr << "Error handling command: " << e.what() << std::endl;
+        MessageHandler::sendErrorUnknownCommand(clientHandler);
+    }
+}
+
+
 
 void CommandHandler::handleCommandNoAuthentificated(const std::string &command, ClientHandler *clientHandler) {
     try {
@@ -64,13 +88,7 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
             handleWhois(command, clientHandler);
         } else if (cmd == "JOIN") {
             std::cout << "JOIN command received" << std::endl;
-            const std::string channelName = command.substr(5);
-            const bool joinStatus = clientHandler->joinChannel(channelName);
-            if (joinStatus) {
-                MessageHandler::sendWelcomeToChannel(clientHandler, channelName);
-            } else {
-                MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
-            }
+            handleJoinChannel(command, clientHandler);
         } else if (cmd == "QUIT") {
             handleQuit(clientHandler);
         } else if (cmd == "PRIVMSG") {
@@ -83,16 +101,6 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         MessageHandler::sendErrorUnknownCommand(clientHandler);
     }
 }
-
-
-void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
-    if (command.find("LS") != std::string::npos) {
-        MessageHandler::sendCAP(clientHandler);
-        std::cout << "CAP * LS :multi-prefix" << std::endl;
-    }
-}
-
-
 void CommandHandler::handleMode(const std::string &command, ClientHandler *clientHandler) {
     //------------ A REFLECHIR ------------
     std::string mode;
@@ -113,4 +121,14 @@ void CommandHandler::handleQuit(ClientHandler *clientHandler) {
     MessageHandler::sendGoodbye(clientHandler);
     std::cout << "Client " << clientHandler->getNickname() << " has quit." << std::endl;
     m_server.handleClientDisconnect(clientHandler->getSocket());
+}
+
+Server &CommandHandler::getServer() const {
+    return m_server;
+}
+
+void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
+    if (command.find("LS") != std::string::npos) {
+        MessageHandler::sendCAP(clientHandler);
+    }
 }

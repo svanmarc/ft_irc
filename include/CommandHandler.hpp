@@ -14,6 +14,7 @@ public:
     CommandHandler(Server &server);
     void handleCommand(const std::string &command, ClientHandler *clientHandler);
     void handleCommandNoRegistred(const std::string &command, ClientHandler *clientHandler);
+    void handleCommandNoAuth(const std::string &command, ClientHandler *clientHandler);
     void handleCommandNoAuthentificated(const std::string &command, ClientHandler *clientHandler);
 
 private:
@@ -32,21 +33,27 @@ private:
 
 
     // fichier CommandsUser.cpp
-    static void handleNick(const std::string &command, ClientHandler *clientHandler);
     static void handleUser(const std::string &command, ClientHandler *clientHandler);
-    void handlePass(const std::string &command, ClientHandler *clientHandler) const;
+    void handlePass(const std::string &command, ClientHandler *clientHandler);
     static void completeRegistration(ClientHandler *clientHandler);
-
     // fichier CommandHandler.cpp
     static void handleMode(const std::string &command, ClientHandler *clientHandler);
     void handleQuit(ClientHandler *clientHandler);
+    Server &getServer() const;
     static void handleCap(ClientHandler *clientHandler, const std::string &command);
     // fichier CommandsUsers.cpp
     void handleWhois(const std::string &command, ClientHandler *clientHandler);
     static std::string parseCommand(const std::string &fullCommand);
 
+    // fichier CommandHandlerNick.cpp
+    static bool checkNickname(const std::string &nickname, ClientHandler *clientHandler);
+    static void handleNick(const std::string &command, ClientHandler *clientHandler);
+
     // fichier CommandHandlerMsg
     void handlePrivMsg(const std::string &command, ClientHandler *clientHandler);
+
+    // fichier CommandHandlerChannels.cpp
+    void handleJoinChannel(const std::string &command, ClientHandler *clientHandler);
 };
 
 #endif

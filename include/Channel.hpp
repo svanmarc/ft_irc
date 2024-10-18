@@ -2,24 +2,29 @@
 #define CHANNEL_HPP
 
 #include "Irc.hpp"
-#include "User.hpp"
+#include "ClientHandler.hpp"
+
 
 
 class Channel {
 private:
-    std::vector<User> m_users;
+    std::vector<ClientHandler*> m_clients;
     std::string m_name;
     std::string m_topic;
-    const User &m_owner;
+    ClientHandler *m_owner;  // Propriétaire du canal (pointeur)
+
 
 public:
-    Channel(const std::string &name, const User &owner);
+    Channel(const std::string &name, ClientHandler *owner);
     ~Channel();
-    std::vector<User> getUsers() const;
-    void addUser(const User &user);
-    void removeUser(const User &user);
+    std::vector<ClientHandler*> getClients() const;
+    void addClient(ClientHandler* client);
+    void removeClient(const ClientHandler* client);
     std::string getName() const;
     void setName(const std::string &name);
     std::string getTopic() const;
     void setTopic(const std::string &topic);
+    bool checkIfClientIsInChannel(ClientHandler* client) const;
+    void printAllNicknamesInChannel() const;
+
 };

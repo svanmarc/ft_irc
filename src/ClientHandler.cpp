@@ -40,19 +40,42 @@ const std::string &ClientHandler::getNickname() const { return m_user.getNicknam
 void ClientHandler::setNickname(const std::string &nickname) { m_user.setNickname(nickname); }
 User &ClientHandler::getUser() { return m_user; }
 Server *ClientHandler::getServer() const { return m_server; }
+
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
-    if (!this->getUser().isAuthenticated()) {
-        commandHandler.handleCommandNoAuthentificated(command, this);
-    } else if (this->getUser().isRegistered()) {
-        commandHandler.handleCommand(command, this);
-    } else {
-        std::cout << "User not registered" << std::endl;
-        commandHandler.handleCommandNoRegistred(command, this);
+    std::cout << "Reading command: " << command << std::endl;
+    std::istringstream commandStream(command);
+    std::string singleCommand;
+
+    while (std::getline(commandStream, singleCommand, '\n')) {
+        // Supprimer '\r' à la fin de la commande, s'il est présent
+        if (!singleCommand.empty() && singleCommand[singleCommand.size() - 1] == '\r') {
+            singleCommand.erase(singleCommand.size() - 1);
+        }
+
+        // Si la commande n'est pas vide, on la traite
+        if (!singleCommand.empty()) {
+            std::cout << "Processing command: " << singleCommand << std::endl;
+
+            // Gestion de l'authentification
+            if (!this->getUser().isAuthenticated()) {
+                std::cout << "User not authenticated" << std::endl;
+                commandHandler.handleCommandNoAuth(singleCommand, this);
+                continue; // Passer à la prochaine commande sans quitter la boucle
+            }
+
+            // Gestion de l'enregistrement
+            if (!this->getUser().isRegistered()) {
+                std::cout << "User not registered" << std::endl;
+                commandHandler.handleCommandNoRegistred(singleCommand, this);
+                continue; // Passer à la prochaine commande
+            }
+
+            // Si l'utilisateur est authentifié et enregistré
+            std::cout << "User authenticated and registered" << std::endl;
+            commandHandler.handleCommand(singleCommand, this);
+        }
     }
-}
-bool ClientHandler::joinChannel(const std::string &channel) const {
-    return (m_server->joinChannel(this->m_user, channel));
 }
 void ClientHandler::leaveChannel(const std::string &channel) {
     for (size_t i = 0; i < channels.size(); i++) {
@@ -61,4 +84,8 @@ void ClientHandler::leaveChannel(const std::string &channel) {
             break;
         }
     }
+}
+
+bool ClientHandler::operator==(const ClientHandler &other) const {
+    return (this->m_clientSocket == other.m_clientSocket);
 }

@@ -30,7 +30,7 @@ void CommandHandler::handleUser(const std::string &command, ClientHandler *clien
     MessageHandler::sendWelcomeMessage(clientHandler);
 }
 
-void CommandHandler::handlePass(const std::string &command, ClientHandler *clientHandler) const {
+void CommandHandler::handlePass(const std::string &command, ClientHandler *clientHandler) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2 || parts[1].empty()) {

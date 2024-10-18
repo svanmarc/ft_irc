@@ -3,7 +3,8 @@
 void CommandHandler::handleWhois(const std::string &command, ClientHandler *clientHandler) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
-    if (parts.size() < 2 || parts[1].empty()) {
+    std::cout << parts[1] << std::endl;
+    if (parts.size() == 2 && (parts[1].empty() || parts[1] == "CAP")) {
         MessageHandler::sendResponse(clientHandler, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
         return;
     }
@@ -15,21 +16,10 @@ void CommandHandler::handleWhois(const std::string &command, ClientHandler *clie
         if ((*it)->getNickname() == targetNickname) // Vérifier la correspondance du `nickname`
         {
             found = true;
-            ClientHandler *targetClient = *it;
-
-            std::string response = "311 " + clientHandler->getNickname() + " ";
-            response += targetClient->getNickname() + " ";
-            response += targetClient->getUser().getUsername() + " ";
-            response += targetClient->getUser().getHostname() + " * :";
-            response += targetClient->getUser().getRealname();
-            MessageHandler::sendResponse(clientHandler, response); // Envoyer la réponse WHOIS au client demandeur
-            MessageHandler::sendResponse(clientHandler, RPL_WHOISSERVER,
-                                         targetNickname + " localhost :Server description");
-            MessageHandler::sendResponse(clientHandler, RPL_ENDOFWHOIS, targetNickname + " :End of /WHOIS list");
+            MessageHandler::MessageWhois(clientHandler, *it);
             return;
         }
     }
-    if (!found) {
-        MessageHandler::sendResponse(clientHandler, "WHOIS :No such nickname: " + targetNickname);
-    }
+    if (!found)
+        MessageHandler::MessageWhoisNotFound(clientHandler, targetNickname);
 }
