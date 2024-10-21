@@ -32,6 +32,7 @@ public:
     //gestion des modes
     void setMode(const ChannelMode &mode);
     void setInviteOnly(bool inviteOnly);
+    bool getInviteOnly() const;
     ChannelMode getMode() const;
 
 

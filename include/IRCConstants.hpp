@@ -55,6 +55,7 @@ public:
     static const int ERR_INVITEONLYCHAN = 473; // 473: Cannot join channel (+i)
     static const int ERR_BANNEDFROMCHAN = 474; // 474: Cannot join channel (+b)
     static const int ERR_NOTINCHANNEL = 442; // 442: You're not on that channel
+    static const int ERR_NOTFOROTHERS = 502; // 502: Can't change mode for other users
 };
 
 // from https://www.alien.net.au/irc/irc2numerics.html

@@ -39,13 +39,13 @@ void Server::handleClient(const int clientSocket) {
         return;
     }
     std::string message(buffer);
-    std::cout << "Client command: " << message << std::endl;
-    for (unsigned int i = 0; i < clients.size(); ++i) {
+    std::cout << "#---------- Client command: " << message << "------------#" << std::endl;
+    /*for (unsigned int i = 0; i < clients.size(); ++i) {
         if (clients[i]->getSocket() == clientSocket) {
             commandHandler->handleCommand(message, clients[i]);
             break;
         }
-    }
+    }*/
 }
 
 // Retirer un client du vecteur `clients`

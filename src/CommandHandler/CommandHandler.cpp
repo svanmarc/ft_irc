@@ -1,127 +1,52 @@
 #include "CommandHandler.hpp"
 
-CommandHandler::CommandHandler(Server &server) : m_server(server) {}
-
-void CommandHandler::handleCommandNoRegistred(const std::string &command, ClientHandler *clientHandler) {
-    try {
-        std::cout << "Received command: " << command << std::endl;
-        std::string cmd = parseCommand(command);
-        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
-        if (cmd == "CAP") {
-            handleCap(clientHandler, command);
-        } else if (cmd == "NICK") {
-            handleNick(command, clientHandler);
-        } else if (cmd == "USER" || cmd == "USERHOST") {
-            handleUser(command, clientHandler);
-        } else if (cmd == "PASS") {
-            handlePass(command, clientHandler);
-        } else if (cmd == "WHOIS") {
-            handleWhois(command, clientHandler);
-        } else {
-            MessageHandler::sendErrorNotRegistered(clientHandler);
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error handling command: " << e.what() << std::endl;
-        MessageHandler::sendErrorUnknownCommand(clientHandler);
-    }
-}
-void CommandHandler::handleCommandNoAuth(const std::string &command, ClientHandler *clientHandler) {
-    try {
-        std::cout << "Received command: " << command << std::endl;
-        std::string cmd = parseCommand(command);
-        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
-        if (cmd == "CAP") {
-            MessageHandler::sendNothing(cmd);
-        } else if (cmd == "NICK") {
-            handleNick(command, clientHandler);
-        } else if (cmd == "PASS") {
-            handlePass(command, clientHandler);
-        } else if (cmd == "WHOIS") {
-            handleWhois(command, clientHandler);
-        } else {
-            std::cout << "Error handling command: " << cmd << std::endl;
-            MessageHandler::sendErrorNoAuth(clientHandler, cmd);
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error handling command: " << e.what() << std::endl;
-        MessageHandler::sendErrorUnknownCommand(clientHandler);
-    }
-}
-
-
-
-void CommandHandler::handleCommandNoAuthentificated(const std::string &command, ClientHandler *clientHandler) {
-    try {
-        std::cout << "Received command: " << command << std::endl;
-        std::string cmd = parseCommand(command);
-        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
-        if (cmd == "CAP") {
-            handleCap(clientHandler, command);
-        } else if (cmd == "PASS") {
-            std::cout << "Command: " << cmd << "|" << std::endl;
-            handlePass(command, clientHandler);
-        } else {
-            MessageHandler::sendErrorNoAuthentification(clientHandler);
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error handling command: " << e.what() << std::endl;
-        MessageHandler::sendErrorUnknownCommand(clientHandler);
-    }
-}
-
-void CommandHandler::handleCommand(const std::string &command, ClientHandler *clientHandler) {
-    try {
-        std::cout << "Received command: " << command << std::endl;
-        std::string cmd = parseCommand(command);
-        std::transform(cmd.begin(), cmd.end(), cmd.begin(), toupper);
-        if (cmd == "CAP") {
-            handleCap(clientHandler, command);
-        } else if (cmd == "NICK") {
-            handleNick(command, clientHandler);
-        } else if (cmd == "USER" || cmd == "USERHOST") {
-            handleUser(command, clientHandler);
-        } else if (cmd == "PASS") {
-            handlePass(command, clientHandler);
-        } else if (cmd == "MODE") {
-            handleMode(command, clientHandler);
-        } else if (cmd == "WHOIS") {
-            handleWhois(command, clientHandler);
-        } else if (cmd == "JOIN") {
-            std::cout << "JOIN command received" << std::endl;
-            handleJoinChannel(command, clientHandler);
-        } else if (cmd == "PART") {
-            std::cout << "PART command received" << std::endl;
-            handlePart(command, clientHandler);
-        } else if (cmd == "QUIT") {
-            handleQuit(clientHandler);
-        } else if (cmd == "PRIVMSG" || cmd == "NOTICE") {
-            handlePrivMsg(command, clientHandler);
-        }
-        else if(cmd == "MODE"){
-            handleMode(command,clientHandler);
-        }
-        else if (cmd == "PING") {
-            handlePing(command,clientHandler);
-        } else {
-            MessageHandler::sendErrorUnknownCommand(clientHandler);
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Error handling command: " << e.what() << std::endl;
-        MessageHandler::sendErrorUnknownCommand(clientHandler);
-    }
-}
-void CommandHandler::handleQuit(ClientHandler *clientHandler) {
-    MessageHandler::sendGoodbye(clientHandler);
-    std::cout << "Client " << clientHandler->getNickname() << " has quit." << std::endl;
-    m_server.handleClientDisconnect(clientHandler->getSocket());
-}
-
 Server &CommandHandler::getServer() const {
     return m_server;
 }
 
-void CommandHandler::handleCap(ClientHandler *clientHandler, const std::string &command) {
-    if (command.find("LS") != std::string::npos) {
-        MessageHandler::sendCAP(clientHandler);
+CommandHandler::CommandHandler(Server &server) : m_server(server) {}
+
+
+void CommandHandler::handleCommand_(const std::string &command, ClientHandler *clientHandler, \
+                                    int nbcmd, const std::string cmd[], \
+                                    void (CommandHandler::*p[])(ClientHandler*, \
+                                    const std::string&)) {
+    std::string cmdParsed = parseCommand(command);
+    std::transform(cmdParsed.begin(), cmdParsed.end(), cmdParsed.begin(), toupper);
+    for (int i = 0; i < nbcmd; ++i) {
+        if (cmdParsed == cmd[i] && p[i] != NULL) {
+            (this->*p[i])(clientHandler, command);
+            return;
+        }
     }
+    if (!clientHandler->isAuthenticated())
+        MessageHandler::sendErrorNoAuth(clientHandler, cmdParsed);
+    else
+        std::cout << "Unknown command: " << command << "parsed : |" << cmdParsed << "|" << std::endl;
+}
+
+
+void CommandHandler::handleCommandNoRegister(const std::string &command, ClientHandler *clientHandler) {
+    const int nbacceptableCmdNoRegister = 5;
+    const std::string acceptableCmdNoRegister[nbacceptableCmdNoRegister] = { "NICK", "USER", "USERHOST", "PASS", "WHOIS" };
+    void (CommandHandler::*p[nbacceptableCmdNoRegister])(ClientHandler*, const std::string&) = {
+        &CommandHandler::handleNick, \
+        &CommandHandler::handleUser, &CommandHandler::handleUser, \
+        &CommandHandler::handlePass, &CommandHandler::handleWhois
+    };
+    CommandHandler::handleCommand_(command, clientHandler, nbacceptableCmdNoRegister, acceptableCmdNoRegister, p);
+}
+
+void CommandHandler::handleCommandRegister(const std::string &command, ClientHandler *clientHandler) {
+    const int nbacceptableCmd = 14;
+    const std::string acceptableCmd[nbacceptableCmd] = { "CAP", "NICK", "USER", "USERHOST", \
+        "PASS", "MODE", "WHOIS", "JOIN", "PART", "QUIT", "PRIVMSG", "NOTICE", "MODE", "PING"
+    };
+    void (CommandHandler::*p[nbacceptableCmd])(ClientHandler*, const std::string&) = {
+        &CommandHandler::handleCap, &CommandHandler::handleNick, &CommandHandler::handleUser,\
+        &CommandHandler::handleUser, &CommandHandler::handlePass, &CommandHandler::handleMode, \
+        &CommandHandler::handleWhois, &CommandHandler::handleJoinChannel, &CommandHandler::handlePart, \
+        &CommandHandler::handleQuit, &CommandHandler::handlePrivMsg, &CommandHandler::handlePrivMsg, \
+        &CommandHandler::handleMode, &CommandHandler::handlePing };
+    CommandHandler::handleCommand_(command, clientHandler, nbacceptableCmd, acceptableCmd, p);
 }

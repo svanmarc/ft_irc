@@ -1,6 +1,6 @@
 #include "CommandHandler.hpp"
 
-void CommandHandler::handleWhois(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handleWhois(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     std::cout << parts[1] << std::endl;

@@ -38,8 +38,11 @@ public:
     static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
     static void sendErrorNoPingParams(ClientHandler *clientHandler);
     static void sendErrorModeParams(ClientHandler *clientHandler);
+    static void sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode);
+    static void sendErrorNoChangeModeForOther(ClientHandler *clientHandler);
     static void sendErrorUnknownMode(ClientHandler *clientHandler, const std::string &mode);
     static void sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName);
+    static void sendErrorInviteOnly(ClientHandler *clientHandler, const std::string &channelName);
 
 
     // fichier MessageUser.cpp

@@ -1,6 +1,6 @@
 #include "CommandHandler.hpp"
 
-void CommandHandler::handlePrivMsg(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handlePrivMsg(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 3 || parts[1].empty()) {

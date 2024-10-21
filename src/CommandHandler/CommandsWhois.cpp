@@ -2,7 +2,7 @@
 #include "CommandHandler.hpp"
 #include "MessageHandler.hpp"
 
-void CommandHandler::handleUser(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handleUser(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 5) {
@@ -19,7 +19,6 @@ void CommandHandler::handleUser(const std::string &command, ClientHandler *clien
         MessageHandler::sendErrorNotNickNameGiven(clientHandler);
         return;
     }
-    // --------- A CHANGER ---------
     std::string username = parts[1];
     std::string hostname = parts[2];
     std::string servername = parts[3];
@@ -30,7 +29,7 @@ void CommandHandler::handleUser(const std::string &command, ClientHandler *clien
     MessageHandler::sendWelcomeMessage(clientHandler);
 }
 
-void CommandHandler::handlePing(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2) {
@@ -41,7 +40,10 @@ void CommandHandler::handlePing(const std::string &command, ClientHandler *clien
     MessageHandler::sendPong(clientHandler);
 }
 
-void CommandHandler::handlePass(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string &command) {
+    if (clientHandler->isAuthenticated()){
+        return;
+    }
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2 || parts[1].empty()) {

@@ -59,24 +59,16 @@ void ClientHandler::readCommand(const std::string &command) {
         // Si la commande n'est pas vide, on la traite
         if (!singleCommand.empty()) {
             std::cout << "Processing command: " << singleCommand << std::endl;
-
-            // Gestion de l'authentification
-            if (!this->getUser().isAuthenticated()) {
-                std::cout << "User not authenticated" << std::endl;
-                commandHandler.handleCommandNoAuth(singleCommand, this);
-                continue; // Passer à la prochaine commande sans quitter la boucle
-            }
-
             // Gestion de l'enregistrement
             if (!this->getUser().isRegistered()) {
-                std::cout << "User not registered" << std::endl;
-                commandHandler.handleCommandNoRegistred(singleCommand, this);
+                std::cout << "🚫----- User not registered ----" << std::endl;
+                commandHandler.handleCommandNoRegister(singleCommand, this);
                 continue; // Passer à la prochaine commande
             }
 
             // Si l'utilisateur est authentifié et enregistré
-            std::cout << "User authenticated and registered" << std::endl;
-            commandHandler.handleCommand(singleCommand, this);
+            std::cout << "🔑----- User authenticated and registered" << std::endl;
+            commandHandler.handleCommandRegister(singleCommand, this);
         }
     }
 }

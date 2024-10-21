@@ -77,12 +77,24 @@ void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
 }
 
 void MessageHandler::sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, "Error: No such channel " + channelName);
+    //:*.42irc.net 403 tamm2 #ttttt :No such channel
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, clientHandler->getNickname() +  " " + channelName +  " :No such channel/user ");
 }
-
+void MessageHandler::sendErrorNoChangeModeForOther(ClientHandler *clientHandler) {
+    //:*.42irc.net 502 tamm2 :Can't change mode for other users
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTFOROTHERS, clientHandler->getNickname() +  " :Can't change mode for other users");
+}
 void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
 }
+void MessageHandler::sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Mode " + mode + " is already set");
+}
 void MessageHandler::sendErrorUnknownMode(ClientHandler *clientHandler, const std::string &mode) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Unknown mode " + mode);
+}
+
+void MessageHandler::sendErrorInviteOnly(ClientHandler *clientHandler, const std::string &channelName) {
+    //:*.42irc.net 473 moi #t :Cannot join channel (+i)
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_INVITEONLYCHAN, clientHandler->getNickname() +  " " + channelName + " :Cannot join channel (+i)");
 }

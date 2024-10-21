@@ -1,7 +1,7 @@
 #include "ClientHandler.hpp"
 #include "CommandHandler.hpp"
 
-void CommandHandler::handleJoinChannel(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2) {
@@ -13,23 +13,19 @@ void CommandHandler::handleJoinChannel(const std::string &command, ClientHandler
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
         return;
     }
-    // Vérifie si le client peut joindre le canal
+
     const bool joinStatus = getServer().joinChannel(clientHandler, channelName);
     std::cout << "Join status: " << joinStatus << std::endl;
-
     if (joinStatus) {
-        // Utiliser une référence pour éviter la copie du canal
-        Channel &newChannel = getServer().getChannel(channelName); // référence au lieu d'une copie
+        Channel &newChannel = getServer().getChannel(channelName);
         MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
         MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
         MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
         MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
-    } else {
-        MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
     }
 }
 
-void CommandHandler::handlePart(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
 

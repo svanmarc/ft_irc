@@ -18,7 +18,7 @@ bool CommandHandler::checkNickname(const std::string &nickname, ClientHandler *c
     return true;
 }
 
-void CommandHandler::handleNick(const std::string &command, ClientHandler *clientHandler) {
+void CommandHandler::handleNick(ClientHandler *clientHandler, const std::string &command) {
     // manque la verification si il existe deja !!!!!
     std::vector<std::string> parts;
     splitCommand(command, parts);
