@@ -43,13 +43,10 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
 
     // Retirer le client du canal au niveau du serveur
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
-    std::cout << "BEFORE REMOVE: Clients in channel: " << channel.getClients().size() << std::endl;
     channel.removeClient(clientHandler);
-    std::cout << "AFTER REMOVE: Clients in channel: " << channel.getClients().size() << std::endl;
-
     // Supprimer le canal de la liste des canaux du client
     clientHandler->leaveChannel(channelName);
-    std::cout << "Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
+    std::cout << "👋Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
 
     // Confirmer au client qu'il a bien quitté le canal
     //:root!root@IP.hosted-by-42lausanne.ch PART #test :hasta la vista Baby
