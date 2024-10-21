@@ -75,3 +75,14 @@ void MessageHandler::sendErrorNotInChannel(ClientHandler *clientHandler, const s
 void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
 }
+
+void MessageHandler::sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, "Error: No such channel " + channelName);
+}
+
+void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
+}
+void MessageHandler::sendErrorUnknownMode(ClientHandler *clientHandler, const std::string &mode) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Unknown mode " + mode);
+}

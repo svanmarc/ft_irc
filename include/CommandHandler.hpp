@@ -38,7 +38,6 @@ private:
     void handlePass(const std::string &command, ClientHandler *clientHandler);
     static void completeRegistration(ClientHandler *clientHandler);
     // fichier CommandHandler.cpp
-    static void handleMode(const std::string &command, ClientHandler *clientHandler);
     void handleQuit(ClientHandler *clientHandler);
     Server &getServer() const;
     static void handleCap(ClientHandler *clientHandler, const std::string &command);
@@ -57,6 +56,11 @@ private:
     // fichier CommandHandlerChannels.cpp
     void handleJoinChannel(const std::string &command, ClientHandler *clientHandler);
     void handlePart(const std::string &command, ClientHandler *clientHandler);
+
+    //fichier CommandHandlerMode.cpp
+    void handleMode(const std::string &command, ClientHandler *clientHandler);
+    void channelModelHandler(Channel &channel, std::string mode);
+    void userModeHandler(ClientHandler *clientHandler, std::string mode);
 };
 
 #endif

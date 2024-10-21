@@ -51,6 +51,7 @@ public:
     static const int ERR_NOSUCHNICK = 401; // 401: No such nick/channel
     static const int ERR_NOTREGISTERED = 451; // 451: You have not registered
     static const int ERR_CHANNELISFULL = 471; // 471: Cannot join channel (+l)
+    static const int ERR_UNKNOWNMODE = 472; // 472: Unknown mode
     static const int ERR_INVITEONLYCHAN = 473; // 473: Cannot join channel (+i)
     static const int ERR_BANNEDFROMCHAN = 474; // 474: Cannot join channel (+b)
     static const int ERR_NOTINCHANNEL = 442; // 442: You're not on that channel

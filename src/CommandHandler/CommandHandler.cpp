@@ -97,6 +97,9 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         } else if (cmd == "PRIVMSG" || cmd == "NOTICE") {
             handlePrivMsg(command, clientHandler);
         }
+        else if(cmd == "MODE"){
+            handleMode(command,clientHandler);
+        }
         else if (cmd == "PING") {
             handlePing(command,clientHandler);
         } else {
@@ -107,22 +110,6 @@ void CommandHandler::handleCommand(const std::string &command, ClientHandler *cl
         MessageHandler::sendErrorUnknownCommand(clientHandler);
     }
 }
-void CommandHandler::handleMode(const std::string &command, ClientHandler *clientHandler) {
-    //------------ A REFLECHIR ------------
-    std::string mode;
-    size_t pos = command.find("MODE");
-    if (pos != std::string::npos && pos + 5 < command.length()) {
-        mode = trim(command.substr(pos + 5));
-    }
-
-    clientHandler->getUser().setUserMode(mode);
-
-    std::string response = clientHandler->getNickname();
-    response += " +";
-    response += mode;
-    MessageHandler::sendResponse(clientHandler, RPL_CHANNELMODEIS, response);
-}
-
 void CommandHandler::handleQuit(ClientHandler *clientHandler) {
     MessageHandler::sendGoodbye(clientHandler);
     std::cout << "Client " << clientHandler->getNickname() << " has quit." << std::endl;

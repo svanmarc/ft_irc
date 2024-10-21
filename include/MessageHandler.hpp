@@ -37,6 +37,9 @@ public:
     static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
     static void sendErrorNoPingParams(ClientHandler *clientHandler);
+    static void sendErrorModeParams(ClientHandler *clientHandler);
+    static void sendErrorUnknownMode(ClientHandler *clientHandler, const std::string &mode);
+    static void sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName);
 
 
     // fichier MessageUser.cpp
@@ -48,6 +51,7 @@ public:
     static void sendAuthentificationSuccess(ClientHandler *clientHandler);
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget,
                                   const std::string &message, bool notice);
+    static void sendModeChange(ClientHandler *clientHandler, const std::string &mode, const std::string &target);
     static void sendGoodbye(ClientHandler *clientHandler);
 
     // Fichier MessageWhois

@@ -39,6 +39,13 @@ void MessageHandler::sendMessageToUser(ClientHandler *clientHandlerSender, Clien
     MessageHandler::sendUserMsg(clientTarget, message, clientHandlerSender, notice);
 }
 
+
+void MessageHandler::sendModeChange(ClientHandler *clientHandler, const std::string &mode, const std::string &target) {
+    //send message ex  ::tamm2!root@IP.hosted-by-42lausanne.ch MODE #modeTest +i :
+    const std::string response = ":" + clientHandler->getUser().getNickname() + "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getServer()->getServerName() + " MODE " + target + " "+ mode;
+    MessageHandler::sendMessage(clientHandler->getSocket(), response);
+}
+
 void MessageHandler::sendGoodbye(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_QUIT, "Goodbye, welcome to the real world");
 }

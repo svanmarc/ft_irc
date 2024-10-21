@@ -17,6 +17,8 @@ void Channel::addClient(ClientHandler *client) {
     m_clients.push_back(client);
 }
 
+void Channel::setInviteOnly(bool inviteOnly) { m_mode.setInviteOnly(inviteOnly); }
+
 // void Channel::removeClient(const ClientHandler *client) {
 //     for (std::vector<ClientHandler *>::iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
 //         if (*it == client) {

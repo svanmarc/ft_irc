@@ -3,6 +3,7 @@
 
 #include "Irc.hpp"
 #include "ClientHandler.hpp"
+#include "ChannelMode.hpp"
 
 
 
@@ -12,6 +13,8 @@ private:
     std::string m_name;
     std::string m_topic;
     ClientHandler *m_owner;  // Propriétaire du canal (pointeur)
+    // ChannelMode m_mode; // Mode du canal
+    ChannelMode m_mode;
 
 
 public:
@@ -26,5 +29,10 @@ public:
     void setTopic(const std::string &topic);
     bool checkIfClientIsInChannel(ClientHandler* client) const;
     void printAllNicknamesInChannel() const;
+    //gestion des modes
+    void setMode(const ChannelMode &mode);
+    void setInviteOnly(bool inviteOnly);
+    ChannelMode getMode() const;
+
 
 };
