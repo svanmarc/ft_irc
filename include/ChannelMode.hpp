@@ -15,6 +15,8 @@ class ChannelMode {
         ~ChannelMode();
         bool getInviteOnly() const;
         void setInviteOnly(bool inviteOnly);
+        bool getTopicProtection() const;
+        void setTopicProtection(bool topicProtection);
 };
 #endif //CHANNELMODE_H
 

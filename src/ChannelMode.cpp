@@ -18,3 +18,11 @@ bool ChannelMode::getInviteOnly() const {
 void ChannelMode::setInviteOnly(bool inviteOnly) {
     m_inviteOnly = inviteOnly;
 }
+
+bool ChannelMode::getTopicProtection() const {
+    return m_topicProtection;
+}
+
+void ChannelMode::setTopicProtection(bool topicProtection) {
+    m_topicProtection = topicProtection;
+}
