@@ -1,6 +1,6 @@
 #ifndef CHANNELMODE_H
 #define CHANNELMODE_H
-#include "irc.hpp"
+#include "Irc.hpp"
 
 class ChannelMode {
     private:

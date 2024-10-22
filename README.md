@@ -112,8 +112,8 @@ the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
 - [ ] `KICK`: Eject a client from the channel
 - [ ] `INVITE`: Invite a client to a channel
 - [ ] `TOPIC`: Change or view the channel topic
-- [ ] `MODE`: Change the channel's mode
-    - [ ] `i`: Set/remove Invite-only channel
+- [-] `MODE`: Change the channel's mode
+    - [X] `i`: Set/remove Invite-only channel
     - [ ] `t`: Set/remove the restrictions of the TOPIC command to channel operators
     - [ ] `k`: Set/remove the channel key (password)
     - [ ] `o`: Give/take channel operator privilege
