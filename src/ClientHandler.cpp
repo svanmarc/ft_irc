@@ -16,15 +16,14 @@ void ClientHandler::handlerClient(Server &server) {
 
     if (bytesRead < 0) {
         // Gestion de l'erreur de lecture
-        if (errno != EAGAIN && errno != EWOULDBLOCK) // Ignore les erreurs non critiques
-        {
+        if (errno != EAGAIN && errno != EWOULDBLOCK) {
             std::cerr << "Error reading from client socket: " << strerror(errno) << std::endl;
-            server.handleClientDisconnect(m_clientSocket); // Utilise la méthode intermédiaire
+            server.handleClientDisconnect(m_clientSocket);
         }
     } else if (bytesRead == 0) {
         // Le client s'est déconnecté proprement
         std::cerr << "Client disconnected." << std::endl;
-        server.handleClientDisconnect(m_clientSocket); // Utilise la méthode intermédiaire
+        server.handleClientDisconnect(m_clientSocket);
     } else {
         // Lecture réussie, traiter la commande reçue
         std::string command(buffer);
@@ -33,17 +32,6 @@ void ClientHandler::handlerClient(Server &server) {
     }
 }
 
-int ClientHandler::getSocket() const { return m_clientSocket; }
-bool ClientHandler::isAuthenticated() const { return m_user.isAuthenticated(); }
-void ClientHandler::setAuthenticated(bool isAuthenticated) { m_user.setAuthenticated(isAuthenticated); }
-int ClientHandler::getAttempts() const { return m_attempts; }
-void ClientHandler::incrementAttempts() { m_attempts++; }
-void ClientHandler::resetAttempts() { m_attempts = 0; }
-const std::string &ClientHandler::getNickname() const { return m_user.getNickname(); }
-void ClientHandler::setNickname(const std::string &nickname) { m_user.setNickname(nickname); }
-User &ClientHandler::getUser() { return m_user; }
-Server *ClientHandler::getServer() const { return m_server; }
-
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
     std::cout << "Reading command: " << command << std::endl;
@@ -51,19 +39,19 @@ void ClientHandler::readCommand(const std::string &command) {
     std::string singleCommand;
 
     while (std::getline(commandStream, singleCommand, '\n')) {
-        // Supprimer '\r' à la fin de la commande, s'il est présent
+        // Supprimer '\r' à la fin de la commande
         if (!singleCommand.empty() && singleCommand[singleCommand.size() - 1] == '\r') {
             singleCommand.erase(singleCommand.size() - 1);
         }
 
-        // Si la commande n'est pas vide, on la traite
         if (!singleCommand.empty()) {
             std::cout << "Processing command: " << singleCommand << std::endl;
+
             // Gestion de l'enregistrement
             if (!this->getUser().isRegistered()) {
                 std::cout << "🚫----- User not registered ----" << std::endl;
                 commandHandler.handleCommandNoRegister(singleCommand, this);
-                continue; // Passer à la prochaine commande
+                continue;
             }
 
             // Si l'utilisateur est authentifié et enregistré
@@ -73,15 +61,54 @@ void ClientHandler::readCommand(const std::string &command) {
     }
 }
 
+// Méthode pour obtenir le socket du client
+int ClientHandler::getSocket() const { return m_clientSocket; }
+
+// Méthodes pour la gestion de l'authentification
+bool ClientHandler::isAuthenticated() const { return m_user.isAuthenticated(); }
+
+void ClientHandler::setAuthenticated(bool isAuthenticated) { m_user.setAuthenticated(isAuthenticated); }
+
+int ClientHandler::getAttempts() const { return m_attempts; }
+
+void ClientHandler::incrementAttempts() { m_attempts++; }
+
+void ClientHandler::resetAttempts() { m_attempts = 0; }
+
+// Gestion des informations de l'utilisateur
+User &ClientHandler::getUser() { return m_user; }
+
+const std::string &ClientHandler::getNickname() const { return m_user.getNickname(); }
+
+void ClientHandler::setNickname(const std::string &nickname) { m_user.setNickname(nickname); }
+
+// Gestion des canaux
+void ClientHandler::addChannelToList(const std::string &channel) {
+    if (std::find(channels.begin(), channels.end(), channel) == channels.end()) {
+        channels.push_back(channel);
+    }
+}
+
 void ClientHandler::leaveChannel(const std::string &channel) {
     for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it) {
         if (*it == channel) {
             channels.erase(it);
+            std::cout << "Client " << getNickname() << " a quitté le canal " << channel << std::endl;
             break;
         }
     }
 }
 
+void ClientHandler::confirmJoinChannel(const std::string &channel) {
+    std::cout << "Client " << getNickname() << " a rejoint le canal " << channel << std::endl;
+}
+
+std::vector<std::string> ClientHandler::getChannels() const { return channels; }
+
+// Méthode pour obtenir le serveur associé
+Server *ClientHandler::getServer() const { return m_server; }
+
+// Surcharge de l'opérateur == pour comparer deux clients
 bool ClientHandler::operator==(const ClientHandler &other) const {
     return (this->m_clientSocket == other.m_clientSocket);
 }
