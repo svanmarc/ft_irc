@@ -66,6 +66,9 @@ void CommandHandler::handleInvite(ClientHandler *clientHandler, const std::strin
         // Envoyer l'invitation
         channel.inviteClient(targetClient);
         MessageHandler::sendInviteNotification(clientHandler, targetClient, channel);
+        std::string message =
+                ":" + clientHandler->getNickname() + " INVITE " + targetNickname + " " + channelName + "\r\n";
+        MessageHandler::sendMessageToAllClientsInChannel(channel, message, clientHandler, targetClient);
     } else {
         MessageHandler::sendErrorNoSuchNick(clientHandler, targetNickname);
     }
