@@ -57,23 +57,26 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
 
     std::string channelName = trim(parts[1]);
 
+    // Extraire le message après le symbole ':', s'il existe
+    std::string partMessage = "Left the channel";
+    if (parts.size() > 2) {
+        partMessage = command.substr(command.find(':') + 1);
+    }
+
     if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
         MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
         return;
     }
 
-    // Retirer le client du canal au niveau du serveur
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
-    channel.removeClient(clientHandler);
-    // Supprimer le canal de la liste des canaux du client
-    clientHandler->leaveChannel(channelName);
-    std::cout << "👋Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
-
-    // Confirmer au client qu'il a bien quitté le canal
     std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" +
-                               getServer().getServerName();
-    leaveMessage += " PART " + channelName + " :Au revoir a jamais";
-    MessageHandler::sendMessage(clientHandler->getSocket(), leaveMessage);
-    std::cout << "---- Sending leave message: " << leaveMessage << std::endl;
+                               clientHandler->getUser().getHostname() + " PART " + channelName + " :" + partMessage;
+
     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);
+
+    clientHandler->leaveChannel(channelName);
+
+    channel.removeClient(clientHandler);
+
+    std::cout << "👋Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
 }
