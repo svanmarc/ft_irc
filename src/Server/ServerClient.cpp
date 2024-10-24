@@ -86,14 +86,35 @@ bool Server::checkPassword(const std::string &clientPassword) const { return cli
 // Authentifier le client
 bool Server::authenticate(const std::string &clientPassword) const { return checkPassword(clientPassword); }
 
+// void Server::handleClientDisconnect(int clientSocket) {
+//     ClientHandler *client = findClient(clientSocket);
+//     if (client != NULL) {
+//         std::cout << "Client " << client->getNickname() << " disconnected" << std::endl;
+//         // Retirer le client de tous les canaux
+//         for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
+//             it->removeClient(client);
+//         }
+//         // Supprimer le client du serveur
+//         removeClient(clientSocket);
+//     }
+// }
+
 void Server::handleClientDisconnect(int clientSocket) {
     ClientHandler *client = findClient(clientSocket);
     if (client != NULL) {
         std::cout << "Client " << client->getNickname() << " disconnected" << std::endl;
+
+        // Libérer le pseudo (s'il est défini)
+        std::string nickname = client->getNickname();
+        if (!nickname.empty()) {
+            std::cout << "Releasing nickname: " << nickname << std::endl;
+        }
+
         // Retirer le client de tous les canaux
         for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
             it->removeClient(client);
         }
+
         // Supprimer le client du serveur
         removeClient(clientSocket);
     }
