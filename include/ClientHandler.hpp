@@ -34,7 +34,6 @@ public:
     // Gestion des canaux
     void addChannelToList(const std::string &channel);
     void leaveChannel(const std::string &channel);
-    void confirmJoinChannel(const std::string &channel);
     std::vector<std::string> getChannels() const;
 
     // Interaction Client-Serveur

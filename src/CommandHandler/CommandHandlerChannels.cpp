@@ -1,30 +1,6 @@
 #include "ClientHandler.hpp"
 #include "CommandHandler.hpp"
 
-// void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::string &command) {
-//     std::vector<std::string> parts;
-//     splitCommand(command, parts);
-//     if (parts.size() < 2) {
-//         MessageHandler::sendErrorJoinChannel(clientHandler, "");
-//         return;
-//     }
-//     std::string channelName = trim(parts[1]);
-//     if (channelName[0] != '#') {
-//         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
-//         return;
-//     }
-
-//     const bool joinStatus = getServer().joinChannel(clientHandler, channelName);
-//     std::cout << "Join status: " << joinStatus << std::endl;
-//     if (joinStatus) {
-//         Channel &newChannel = getServer().getChannel(channelName);
-//         MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
-//         MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
-//         MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
-//         MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
-//     }
-// }
-
 void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
@@ -32,41 +8,43 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
         MessageHandler::sendErrorJoinChannel(clientHandler, "");
         return;
     }
+
     std::string channelName = trim(parts[1]);
     if (channelName[0] != '#') {
         MessageHandler::sendErrorJoinChannel(clientHandler, channelName);
         return;
     }
 
+    // Vérification si le canal existe et gestion des permissions
     try {
         Channel &channel = clientHandler->getServer()->getChannel(channelName);
-        std::cout << "Checking if channel is invite-only..." << std::endl;
         if (channel.getInviteOnly()) {
-            std::cout << "Channel is invite-only. Checking if client is invited..." << std::endl;
             if (!channel.isClientInvited(clientHandler)) {
                 MessageHandler::sendErrorInviteOnly(clientHandler, channelName);
-                std::cout << "Client is not invited. Sending error message." << std::endl;
                 return;
-            } else {
-                std::cout << "Client is invited. Allowing join." << std::endl;
             }
         }
     } catch (const std::runtime_error &e) {
+        // Le canal n'existe pas encore, nous allons le créer
         std::cout << "Channel not found. Creating new channel." << std::endl;
-        // Le canal n'existe pas, nous allons le créer
     }
 
-    const bool joinStatus = clientHandler->getServer()->joinChannel(clientHandler, channelName);
-    std::cout << "Join status: " << joinStatus << std::endl;
-    if (joinStatus) {
-        Channel &newChannel = clientHandler->getServer()->getChannel(channelName);
-        clientHandler->confirmJoinChannel(channelName);
-        MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
-        MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
-        MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
-        MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
+    // Validation de l'état de la connexion au canal
+    if (!clientHandler->getServer()->joinChannel(clientHandler, channelName)) {
+        return;
     }
+
+    // Une fois la connexion validée, ajouter le client à la liste des canaux
+    Channel &newChannel = clientHandler->getServer()->getChannel(channelName);
+    clientHandler->addChannelToList(channelName);
+
+    // Envoi des messages aux autres membres du canal
+    MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
+    MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
+    MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
+    MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
 }
+
 
 void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;

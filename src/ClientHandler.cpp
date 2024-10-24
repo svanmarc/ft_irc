@@ -99,10 +99,6 @@ void ClientHandler::leaveChannel(const std::string &channel) {
     }
 }
 
-void ClientHandler::confirmJoinChannel(const std::string &channel) {
-    std::cout << "Client " << getNickname() << " a rejoint le canal " << channel << std::endl;
-}
-
 std::vector<std::string> ClientHandler::getChannels() const { return channels; }
 
 // Méthode pour obtenir le serveur associé
