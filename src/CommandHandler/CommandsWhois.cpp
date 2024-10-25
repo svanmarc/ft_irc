@@ -29,19 +29,19 @@ void CommandHandler::handleUser(ClientHandler *clientHandler, const std::string 
     MessageHandler::sendWelcomeMessage(clientHandler);
 }
 
-void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string &command) {
-    std::vector<std::string> parts;
-    splitCommand(command, parts);
-    if (parts.size() < 2) {
-        MessageHandler::sendErrorNoPingParams(clientHandler);
-        return;
-    }
-    const std::string serverName = parts[1];
-    MessageHandler::sendPong(clientHandler);
-}
+// void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string &command) {
+//     std::vector<std::string> parts;
+//     splitCommand(command, parts);
+//     if (parts.size() < 2) {
+//         MessageHandler::sendErrorNoPingParams(clientHandler);
+//         return;
+//     }
+//     const std::string serverName = parts[1];
+//     MessageHandler::sendPong(clientHandler);
+// }
 
 void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string &command) {
-    if (clientHandler->isAuthenticated()){
+    if (clientHandler->isAuthenticated()) {
         return;
     }
     std::vector<std::string> parts;
@@ -67,5 +67,5 @@ void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string 
             oss << (3 - clientHandler->getAttempts());
             MessageHandler::sendErrorIncorrectPassword(clientHandler, oss.str());
         }
-        }
+    }
 }

@@ -2,7 +2,7 @@
 #include "CommandHandler.hpp"
 
 ClientHandler::ClientHandler(int const socket, Server *serverRef) :
-    m_clientSocket(socket), m_server(serverRef), m_attempts(0) {}
+    m_clientSocket(socket), m_server(serverRef), m_attempts(0), m_isOperator(false), m_isInvited(false) {}
 
 ClientHandler::~ClientHandler() {
     close(m_clientSocket);
@@ -108,3 +108,16 @@ Server *ClientHandler::getServer() const { return m_server; }
 bool ClientHandler::operator==(const ClientHandler &other) const {
     return (this->m_clientSocket == other.m_clientSocket);
 }
+
+// Gestion des privilèges
+bool ClientHandler::isOperator(const std::string &channel) const {
+    return m_isOperator && std::find(channels.begin(), channels.end(), channel) != channels.end();
+}
+
+void ClientHandler::setOperator(bool isOperator) { m_isOperator = isOperator; }
+
+bool ClientHandler::isInvited(const std::string &channel) const {
+    return m_isInvited && std::find(channels.begin(), channels.end(), channel) != channels.end();
+}
+
+void ClientHandler::setInvited(bool isInvited) { m_isInvited = isInvited; }

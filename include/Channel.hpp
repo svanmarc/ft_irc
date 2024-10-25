@@ -11,6 +11,7 @@ private:
     std::string m_name;
     std::string m_topic;
     ClientHandler *m_owner; // Propriétaire du canal
+    std::vector<ClientHandler *> m_operators; // Liste des opérateurs
 
     // Attributs des modes
     bool m_inviteOnly; // +i (invite only)
@@ -29,6 +30,11 @@ public:
     void removeClient(const ClientHandler *client);
     bool checkIfClientIsInChannel(ClientHandler *client) const;
     void printAllNicknamesInChannel() const;
+
+    // Gestion des opérateurs
+    void addOperator(ClientHandler *client);
+    void removeOperator(ClientHandler *client);
+    bool checkIfClientIsOperator(ClientHandler *client) const;
 
     // Gestion des invitations
     void inviteClient(ClientHandler *client);

@@ -108,3 +108,10 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
+
+void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
+    std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +
+                              " +o " + targetClient->getNickname();
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
+    std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
+}

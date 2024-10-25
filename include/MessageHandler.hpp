@@ -37,7 +37,7 @@ public:
     static void sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
-    static void sendErrorNoPingParams(ClientHandler *clientHandler);
+    // static void sendErrorNoPingParams(ClientHandler *clientHandler);
     static void sendErrorModeParams(ClientHandler *clientHandler);
     static void sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode);
     static void sendErrorNoChangeModeForOther(ClientHandler *clientHandler);
@@ -49,6 +49,7 @@ public:
                                           const std::string &channelName);
     static void sendErrorAlreadyInvited(ClientHandler *clientHandler, const std::string &nickname,
                                         const std::string &channelName);
+    static void sendErrorNotChannelOperator(ClientHandler *clientHandler);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);
@@ -67,7 +68,7 @@ public:
     static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
     static void MessageWhoisNoGiven(ClientHandler *clientHandler);
-    static void sendPong(ClientHandler *clientHandler);
+    // static void sendPong(ClientHandler *clientHandler);
 
     // Fichier MessageChannel
     static void sendWelcomeToChannel(ClientHandler *clientHandler, const Channel &channel);
@@ -78,6 +79,7 @@ public:
     static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
     static void sendInviteNotification(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
     static void sendChannelModes(ClientHandler *clientHandler, Channel &channel);
+    static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
 };
 
 

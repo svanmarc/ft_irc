@@ -73,9 +73,9 @@ void MessageHandler::sendErrorNotInChannel(ClientHandler *clientHandler, const s
     sendResponse(clientHandler, IRCConstants::ERR_NOTINCHANNEL, message);
 }
 
-void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
-}
+// void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
+//     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
+// }
 
 void MessageHandler::sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName) {
     //:*.42irc.net 403 tamm2 #ttttt :No such channel
@@ -132,4 +132,9 @@ void MessageHandler::sendErrorAlreadyInvited(ClientHandler *clientHandler, const
                                              const std::string &channelName) {
     std::string message = "User " + nickname + " is already invited to channel " + channelName;
     sendResponse(clientHandler, IRCConstants::ERR_USERONCHANNEL, message);
+}
+
+void MessageHandler::sendErrorNotChannelOperator(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANOPRIVSNEEDED,
+                                 "Error: You're not a channel operator");
 }

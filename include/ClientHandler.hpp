@@ -15,6 +15,8 @@ public:
     ClientHandler(int socket, Server *serverRef);
     ~ClientHandler();
 
+    bool operator==(const ClientHandler &other) const;
+
     // Communication avec le client et gestion des commandes
     void handlerClient(Server &server);
     void readCommand(const std::string &command);
@@ -40,7 +42,11 @@ public:
     int getSocket() const;
     Server *getServer() const;
 
-    bool operator==(const ClientHandler &other) const;
+    // Gestion des privilèges
+    bool isOperator(const std::string &channel) const;
+    void setOperator(bool isOperator);
+    bool isInvited(const std::string &channel) const;
+    void setInvited(bool isInvited);
 
 private:
     int m_clientSocket; // Socket du client
@@ -48,6 +54,8 @@ private:
     int m_attempts; // Nombre de tentatives d'authentification
     User m_user; // Informations associées à l'utilisateur
     std::vector<std::string> channels; // Liste des canaux que le client a rejoints
+    bool m_isOperator; // Indique si le client est un opérateur
+    bool m_isInvited; // Indique si le client est invité dans un canal
 };
 
 #endif

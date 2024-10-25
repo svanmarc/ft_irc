@@ -2,6 +2,7 @@
 #include "CommandHandler.hpp"
 
 void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::string &command) {
+    std::cout << "Handling JOIN command: " << command << " from " << clientHandler->getNickname() << std::endl;
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2) {

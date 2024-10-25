@@ -35,7 +35,7 @@ private:
 
     // CommandWhois.cpp
     void handleUser(ClientHandler *clientHandler, const std::string &command);
-    void handlePing(ClientHandler *clientHandler, const std::string &command);
+    // void handlePing(ClientHandler *clientHandler, const std::string &command);
     void handlePass(ClientHandler *clientHandler, const std::string &command);
     void completeRegistration(ClientHandler *clientHandler);
 
@@ -46,29 +46,33 @@ private:
     void handleWhois(ClientHandler *clientHandler, const std::string &command);
     std::string parseCommand(const std::string &fullCommand);
 
-    // CommandHandlerNick.cpp
+    // CommandNick.cpp
     bool checkNickname(const std::string &nickname, ClientHandler *clientHandler);
     void handleNick(ClientHandler *clientHandler, const std::string &command);
 
-    // CommandHandlerMsg
+    // CommandPrivMsg
     void handlePrivMsg(ClientHandler *clientHandler, const std::string &command);
 
-    // CommandHandlerChannels.cpp
+    // CommandJoinPart.cpp
     void handleJoinChannel(ClientHandler *clientHandler, const std::string &command);
     void handlePart(ClientHandler *clientHandler, const std::string &command);
 
-    // CommandHandlerMode.cpp
+    // CommandMode.cpp
     void handleMode(ClientHandler *clientHandler, const std::string &command);
     void channelModelHandler(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                              const std::string &param);
     void userModeHandler(ClientHandler *clientHandler, const std::string &mode);
 
-    // CommandHandlerQuit.cpp
+    // CommandQuit.cpp
     void handleQuit(ClientHandler *clientHandler, const std::string &command);
     void handleCap(ClientHandler *clientHandler, const std::string &command);
 
     // CommandInvite.cpp
     void handleInvite(ClientHandler *clientHandler, const std::string &command);
+
+
+    void handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
+                      const std::string &target);
 };
 
 #endif

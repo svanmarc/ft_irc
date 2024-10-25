@@ -1,7 +1,5 @@
 #include "CommandHandler.hpp"
 
-#include "CommandHandler.hpp"
-
 void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                                          const std::string &param) {
     try {
@@ -29,8 +27,6 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
                 channel.setPassword("");
                 std::cout << "Password removed for channel" << std::endl;
             }
-        } else if (modeChar == 'o') {
-            channel.setOperatorPrivileges(modeSign == '+');
         } else if (modeChar == 'l') {
             if (modeSign == '+') {
                 if (!param.empty()) {
@@ -61,7 +57,6 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
     }
 }
 
-
 void CommandHandler::userModeHandler(ClientHandler *clientHandler, const std::string &mode) {
     try {
         clientHandler->getUser().setUserMode(mode);
@@ -84,14 +79,33 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
     std::string param = parts.size() > 3 ? parts[3] : "";
 
     try {
+        std::cout << "Handling mode for target: " << target << " with mode: " << mode << std::endl;
+
         if (target[0] == '#') {
             Channel &channel = clientHandler->getServer()->getChannel(target);
             if (!channel.checkIfClientIsInChannel(clientHandler)) {
                 MessageHandler::sendErrorNotInChannel(clientHandler, target);
                 return;
             }
-            channelModelHandler(clientHandler, channel, mode, param);
+
+            // Vérifiez si le client est opérateur pour tous les modes
+            if (mode[1] == 'o' || mode[1] == 'i' || mode[1] == 't' || mode[1] == 'k' || mode[1] == 'l') {
+                if (!channel.checkIfClientIsOperator(clientHandler)) {
+                    std::cerr << clientHandler->getUser().getNickname() << " is not an operator, denying request."
+                              << std::endl;
+                    MessageHandler::sendErrorNotChannelOperator(clientHandler);
+                    return; // Sortir immédiatement si ce n'est pas un opérateur
+                }
+            }
+
+            // Traitez les modes
+            if (mode[1] == 'o') {
+                handleOpMode(clientHandler, channel, mode, target);
+            } else {
+                channelModelHandler(clientHandler, channel, mode, param);
+            }
         } else {
+            // Gérer les modes pour les utilisateurs
             if (target != clientHandler->getUser().getNickname()) {
                 std::cerr << "Can't change mode for other users" << std::endl;
                 MessageHandler::sendErrorNoChangeModeForOther(clientHandler);
@@ -103,5 +117,56 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         MessageHandler::sendErrorNoSuchChannel(clientHandler, target);
+    }
+}
+
+
+void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
+                                  const std::string &target) {
+    std::cout << "Handling op mode for target: " << target << " with mode: " << mode << std::endl;
+    if (channel.checkIfClientIsOperator(clientHandler)) {
+        std::cout << clientHandler->getNickname() << " is an operator, proceeding." << std::endl;
+    } else {
+        std::cout << clientHandler->getNickname() << " is not an operator, denying request." << std::endl;
+        MessageHandler::sendErrorNotChannelOperator(clientHandler);
+        return;
+    }
+
+    if (mode[0] == '+') {
+        if (channel.checkIfClientIsOperator(clientHandler)) {
+            ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);
+            if (targetClient) {
+                channel.addOperator(targetClient);
+                targetClient->setOperator(true);
+                MessageHandler::sendOpMode(clientHandler, targetClient, channel);
+                std::cout << "Client " << targetClient->getNickname() << " is now an operator of channel "
+                          << channel.getName() << std::endl;
+            } else {
+                MessageHandler::sendErrorNoSuchNick(clientHandler, target);
+                std::cerr << "Client " << target << " not found" << std::endl;
+            }
+        } else {
+            MessageHandler::sendErrorNotChannelOperator(clientHandler);
+            std::cerr << "Client " << clientHandler->getNickname() << " is not an operator of channel "
+                      << channel.getName() << std::endl;
+        }
+    } else {
+        if (channel.checkIfClientIsOperator(clientHandler)) {
+            ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);
+            if (targetClient) {
+                channel.removeOperator(targetClient);
+                targetClient->setOperator(false);
+                MessageHandler::sendOpMode(clientHandler, targetClient, channel);
+                std::cout << "Client " << targetClient->getNickname() << " is no longer an operator of channel "
+                          << channel.getName() << std::endl;
+            } else {
+                MessageHandler::sendErrorNoSuchNick(clientHandler, target);
+                std::cerr << "Client " << target << " not found" << std::endl;
+            }
+        } else {
+            MessageHandler::sendErrorNotChannelOperator(clientHandler);
+            std::cerr << "Client " << clientHandler->getNickname() << " is not an operator of channel "
+                      << channel.getName() << std::endl;
+        }
     }
 }

@@ -56,6 +56,7 @@ public:
     static const int ERR_NOTINCHANNEL = 442; // 442: You're not on that channel
     static const int ERR_NOTFOROTHERS = 502; // 502: Can't change mode for other users
     static const int ERR_USERONCHANNEL = 443; // 443: is already on channel
+    static const int ERR_CHANOPRIVSNEEDED = 482; // 482: You're not channel operator
 };
 
 // from https://www.alien.net.au/irc/irc2numerics.html
