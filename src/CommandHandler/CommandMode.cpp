@@ -100,6 +100,9 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
 
             // Traitez les modes
             if (mode[1] == 'o') {
+                std::string target = parts[3];
+                std::cout << "Client " << clientHandler->getNickname() << " requested to change mode " << mode
+                          << " for target " << target << " in channel " << channel.getName() << std::endl;
                 handleOpMode(clientHandler, channel, mode, target);
             } else {
                 channelModelHandler(clientHandler, channel, mode, param);
@@ -137,7 +140,6 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);
             if (targetClient) {
                 channel.addOperator(targetClient);
-                targetClient->setOperator(true);
                 MessageHandler::sendOpMode(clientHandler, targetClient, channel);
                 std::cout << "Client " << targetClient->getNickname() << " is now an operator of channel "
                           << channel.getName() << std::endl;
@@ -155,7 +157,6 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);
             if (targetClient) {
                 channel.removeOperator(targetClient);
-                targetClient->setOperator(false);
                 MessageHandler::sendOpMode(clientHandler, targetClient, channel);
                 std::cout << "Client " << targetClient->getNickname() << " is no longer an operator of channel "
                           << channel.getName() << std::endl;
