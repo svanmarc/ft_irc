@@ -11,7 +11,7 @@ class Server;
 
 class CommandHandler {
 public:
-    // fichier CommandHandler.cpp
+    // CommandHandler.cpp
     CommandHandler(Server &server);
     void handleCommand_(const std::string &command, ClientHandler *clientHandler, int nbcmd, const std::string cmd[],
                         void (CommandHandler::*p[])(ClientHandler *, const std::string &));
@@ -33,40 +33,41 @@ private:
     static const int ERR_ALREADYREGISTERED = 462;
 
 
-    // fichier CommandWhois.cpp
+    // CommandWhois.cpp
     void handleUser(ClientHandler *clientHandler, const std::string &command);
     void handlePing(ClientHandler *clientHandler, const std::string &command);
     void handlePass(ClientHandler *clientHandler, const std::string &command);
     void completeRegistration(ClientHandler *clientHandler);
 
-    // fichier CommandHandler.cpp
+    // CommandHandler.cpp
     Server &getServer() const;
 
-    // fichier CommandsUsers.cpp
+    // CommandsUsers.cpp
     void handleWhois(ClientHandler *clientHandler, const std::string &command);
     std::string parseCommand(const std::string &fullCommand);
 
-    // fichier CommandHandlerNick.cpp
+    // CommandHandlerNick.cpp
     bool checkNickname(const std::string &nickname, ClientHandler *clientHandler);
     void handleNick(ClientHandler *clientHandler, const std::string &command);
 
-    // fichier CommandHandlerMsg
+    // CommandHandlerMsg
     void handlePrivMsg(ClientHandler *clientHandler, const std::string &command);
 
-    // fichier CommandHandlerChannels.cpp
+    // CommandHandlerChannels.cpp
     void handleJoinChannel(ClientHandler *clientHandler, const std::string &command);
     void handlePart(ClientHandler *clientHandler, const std::string &command);
 
-    // fichier CommandHandlerMode.cpp
+    // CommandHandlerMode.cpp
     void handleMode(ClientHandler *clientHandler, const std::string &command);
-    void channelModelHandler(Channel &channel, std::string mode);
-    void userModeHandler(ClientHandler *clientHandler, std::string mode);
+    void channelModelHandler(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
+                             const std::string &param);
+    void userModeHandler(ClientHandler *clientHandler, const std::string &mode);
 
-    // fichier CommandHandlerQuit.cpp
+    // CommandHandlerQuit.cpp
     void handleQuit(ClientHandler *clientHandler, const std::string &command);
     void handleCap(ClientHandler *clientHandler, const std::string &command);
 
-    // fichier CommandInvite.cpp
+    // CommandInvite.cpp
     void handleInvite(ClientHandler *clientHandler, const std::string &command);
 };
 

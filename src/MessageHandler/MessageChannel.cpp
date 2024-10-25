@@ -80,3 +80,31 @@ void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, Clien
     std::string notifyMessage = "You have invited " + invitedClient->getNickname() + " to " + channel.getName();
     sendMessage(invitingClient->getSocket(), notifyMessage);
 }
+
+void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel) {
+    std::string modes = "+";
+
+    if (channel.getInviteOnly())
+        modes += "i";
+    if (channel.getTopicProtection())
+        modes += "t";
+    if (!channel.getPassword().empty())
+        modes += "k";
+    if (channel.getUserLimit() > 0)
+        modes += "l";
+
+    std::string modeMessage =
+            ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() + " " + modes;
+
+    // Ajouter les paramètres pour les modes `k` et `l`
+    if (!channel.getPassword().empty())
+        modeMessage += " " + channel.getPassword();
+    if (channel.getUserLimit() > 0) {
+        std::stringstream ss;
+        ss << channel.getUserLimit();
+        modeMessage += " " + ss.str();
+    }
+
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
+    std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
+}
