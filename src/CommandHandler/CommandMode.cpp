@@ -43,11 +43,9 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
             }
         } else {
             throw std::invalid_argument("Unknown mode");
+            MessageHandler::sendErrorModeParams(clientHandler);
         }
-
-
         MessageHandler::sendChannelModes(clientHandler, channel, sign, modeStr);
-
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         throw std::invalid_argument("Failed to process mode for channel");

@@ -87,7 +87,7 @@ void MessageHandler::sendErrorNoChangeModeForOther(ClientHandler *clientHandler)
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTFOROTHERS,
                                  clientHandler->getNickname() + " :Can't change mode for other users");
 }
-void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
+void MessageHandler::    sendErrorModeParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
 }
 void MessageHandler::sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode) {
