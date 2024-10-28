@@ -49,3 +49,5 @@ void MessageHandler::sendModeChange(ClientHandler *clientHandler, const std::str
 void MessageHandler::sendGoodbye(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_QUIT, "Goodbye, welcome to the real world");
 }
+
+

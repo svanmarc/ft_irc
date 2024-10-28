@@ -37,6 +37,15 @@ void MessageHandler::MessageWhoisNoGiven(ClientHandler *clientHandler) {
 }
 
 void MessageHandler::sendPong(ClientHandler *clientHandler) {
+<<<<<<< Updated upstream
     std::string message = "PONG " + clientHandler->getServer()->getServerName() + " :" + clientHandler->getServer()->getServerName();
     MessageHandler::sendMessage(clientHandler->getSocket(), message);
+=======
+     std::string message = "PONG " + clientHandler->getServer()->getServerName() + " :" + clientHandler->getServer()->getServerName();
+     MessageHandler::sendMessage(clientHandler->getSocket(), message);
+}
+
+void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "PING :Not enough parameters");
+>>>>>>> Stashed changes
 }

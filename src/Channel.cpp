@@ -1,6 +1,11 @@
 #include "Channel.hpp"
 
+<<<<<<< Updated upstream:src/Channel.cpp
 Channel::Channel(const std::string &name, ClientHandler *owner) : m_name(name), m_owner(owner) {
+=======
+Channel::Channel(const std::string &name, ClientHandler *owner) :
+    m_name(name), m_owner(owner), m_inviteOnly(false), m_topicProtection(false), m_password(""), m_userLimit(0) {
+>>>>>>> Stashed changes:src/Channel/Channel.cpp
     m_topic = "";
     m_clients.push_back(owner);
 }

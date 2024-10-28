@@ -64,4 +64,61 @@ void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &c
     message += " :End of NAMES list";
     std::cout << "Sending End of NAMES list new client " << message << std::endl;
     sendResponse(clientHandler, IRCConstants::RPL_ENDOFNAMES, message);
+<<<<<<< Updated upstream
  }
+=======
+}
+
+void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, ClientHandler *invitedClient,
+                                            Channel &channel) {
+    // Construire le message d'invitation pour l'utilisateur invité
+    std::string inviteMessage = ":" + invitingClient->getNickname() + "!" + invitingClient->getUser().getUsername() +
+                                "@ircserver INVITE " + invitedClient->getNickname() + " :" + channel.getName();
+
+    // Envoyer l'invitation à l'utilisateur invité
+    sendMessage(invitedClient->getSocket(), inviteMessage);
+
+    // Optionnel : Notifier l'utilisateur qui a envoyé l'invitation
+    std::string notifyMessage = "You have invited " + invitedClient->getNickname() + " to " + channel.getName();
+    sendMessage(invitingClient->getSocket(), notifyMessage);
+}
+
+
+void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel,
+                                      const std::string &modifierNickname, const std::string &modeSign) {
+    std::string modes;
+    std::cout << "Sending modes for channel " << modifierNickname << std::endl;
+    // Vérification de l'état actuel des modes
+    if (channel.getInviteOnly())
+        modes += (modeSign == "+") ? "+i" : "-i";
+    if (channel.getTopicProtection())
+        modes += (modeSign == "+") ? "+t" : "-t";
+    if (!channel.getPassword().empty())
+        modes += (modeSign == "+") ? "+k" : "-k";
+    if (channel.getUserLimit() > 0)
+        modes += (modeSign == "+") ? "+l" : "-l";
+
+    // Construction du message sans crochets
+    std::string modeMessage = ":" + clientHandler->getUser().getNickname() + "!";
+    modeMessage += clientHandler->getUser().getUsername() + "@";
+    modeMessage += clientHandler->getUser().getHostname() + " MODE " + channel.getName() + " " + modes + " :";
+
+    // Ajouter les paramètres pour les modes `k` et `l`
+    if (!channel.getPassword().empty())
+        modeMessage += " " + channel.getPassword();
+    if (channel.getUserLimit() > 0) {
+        std::stringstream ss;
+        ss << channel.getUserLimit();
+        modeMessage += " " + ss.str();
+    }
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
+    std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
+}
+
+void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
+    std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +
+                              " +o " + targetClient->getNickname();
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
+    std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
+}
+>>>>>>> Stashed changes

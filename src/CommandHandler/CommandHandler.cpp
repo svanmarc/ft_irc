@@ -38,6 +38,7 @@ void CommandHandler::handleCommandNoRegister(const std::string &command, ClientH
 }
 
 void CommandHandler::handleCommandRegister(const std::string &command, ClientHandler *clientHandler) {
+<<<<<<< Updated upstream
     const int nbacceptableCmd = 14;
     const std::string acceptableCmd[nbacceptableCmd] = { "CAP", "NICK", "USER", "USERHOST", \
         "PASS", "MODE", "WHOIS", "JOIN", "PART", "QUIT", "PRIVMSG", "NOTICE", "MODE", "PING"
@@ -48,5 +49,18 @@ void CommandHandler::handleCommandRegister(const std::string &command, ClientHan
         &CommandHandler::handleWhois, &CommandHandler::handleJoinChannel, &CommandHandler::handlePart, \
         &CommandHandler::handleQuit, &CommandHandler::handlePrivMsg, &CommandHandler::handlePrivMsg, \
         &CommandHandler::handleMode, &CommandHandler::handlePing };
+=======
+    const int nbacceptableCmd = 16;
+    const std::string acceptableCmd[nbacceptableCmd] = {"CAP",     "NICK",   "USER", "USERHOST", "PASS",
+                                                        "MODE",    "WHOIS",  "JOIN", "PART",     "QUIT",
+                                                        "PRIVMSG", "NOTICE", "MODE", "INVITE",   "TOPIC", "PING"};
+    void (CommandHandler::*p[nbacceptableCmd])(ClientHandler *, const std::string &) = {
+            &CommandHandler::handleCap,   &CommandHandler::handleNick,        &CommandHandler::handleUser,
+            &CommandHandler::handleUser,  &CommandHandler::handlePass,        &CommandHandler::handleMode,
+            &CommandHandler::handleWhois, &CommandHandler::handleJoinChannel, &CommandHandler::handlePart,
+            &CommandHandler::handleQuit,  &CommandHandler::handlePrivMsg,     &CommandHandler::handlePrivMsg,
+            &CommandHandler::handleMode,  &CommandHandler::handleInvite,      &CommandHandler::handleTopic,
+            &CommandHandler::handlePing};
+>>>>>>> Stashed changes
     CommandHandler::handleCommand_(command, clientHandler, nbacceptableCmd, acceptableCmd, p);
 }

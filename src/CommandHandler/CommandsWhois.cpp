@@ -30,6 +30,7 @@ void CommandHandler::handleUser(ClientHandler *clientHandler, const std::string 
 }
 
 void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string &command) {
+<<<<<<< Updated upstream
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2) {
@@ -38,6 +39,16 @@ void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string 
     }
     const std::string serverName = parts[1];
     MessageHandler::sendPong(clientHandler);
+=======
+     std::vector<std::string> parts;
+     splitCommand(command, parts);
+     if (parts.size() < 2) {
+         MessageHandler::sendErrorNoPingParams(clientHandler);
+         return;
+     }
+     const std::string serverName = parts[1];
+     MessageHandler::sendPong(clientHandler);
+>>>>>>> Stashed changes
 }
 
 void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string &command) {
