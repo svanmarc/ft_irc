@@ -48,14 +48,15 @@ void CommandHandler::handleCommandNoRegister(const std::string &command, ClientH
 // }
 
 void CommandHandler::handleCommandRegister(const std::string &command, ClientHandler *clientHandler) {
-    const int nbacceptableCmd = 14;
-    const std::string acceptableCmd[nbacceptableCmd] = {"CAP",  "NICK", "USER", "USERHOST", "PASS",   "MODE", "WHOIS",
-                                                        "JOIN", "PART", "QUIT", "PRIVMSG",  "NOTICE", "MODE", "INVITE"};
+    const int nbacceptableCmd = 15;
+    const std::string acceptableCmd[nbacceptableCmd] = {"CAP",     "NICK",   "USER", "USERHOST", "PASS",
+                                                        "MODE",    "WHOIS",  "JOIN", "PART",     "QUIT",
+                                                        "PRIVMSG", "NOTICE", "MODE", "INVITE",   "TOPIC"};
     void (CommandHandler::*p[nbacceptableCmd])(ClientHandler *, const std::string &) = {
             &CommandHandler::handleCap,   &CommandHandler::handleNick,        &CommandHandler::handleUser,
             &CommandHandler::handleUser,  &CommandHandler::handlePass,        &CommandHandler::handleMode,
             &CommandHandler::handleWhois, &CommandHandler::handleJoinChannel, &CommandHandler::handlePart,
             &CommandHandler::handleQuit,  &CommandHandler::handlePrivMsg,     &CommandHandler::handlePrivMsg,
-            &CommandHandler::handleMode,  &CommandHandler::handleInvite};
+            &CommandHandler::handleMode,  &CommandHandler::handleInvite,      &CommandHandler::handleTopic};
     CommandHandler::handleCommand_(command, clientHandler, nbacceptableCmd, acceptableCmd, p);
 }

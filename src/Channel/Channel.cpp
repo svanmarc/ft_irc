@@ -48,6 +48,8 @@ void Channel::setName(const std::string &name) { this->m_name = name; }
 
 std::string Channel::getTopic() const { return m_topic; }
 
+void Channel::setTopic(const std::string &topic) { this->m_topic = topic; }
+
 bool Channel::checkIfClientIsInChannel(ClientHandler *client) const {
     for (std::vector<ClientHandler *>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
         if (*it == client) {

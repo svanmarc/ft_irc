@@ -72,6 +72,8 @@ private:
 
     void handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                       const std::string &target);
+
+    void handleTopic(ClientHandler *clientHandler, const std::string &command);
 };
 
 #endif
