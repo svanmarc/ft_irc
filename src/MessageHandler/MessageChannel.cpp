@@ -81,18 +81,22 @@ void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, Clien
     sendMessage(invitingClient->getSocket(), notifyMessage);
 }
 
-void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel) {
-    std::string modes = "+";
 
+void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel,
+                                      const std::string &modifierNickname, const std::string &modeSign) {
+    std::string modes;
+
+    // Vérification de l'état actuel des modes
     if (channel.getInviteOnly())
-        modes += "i";
+        modes += (modeSign == "+") ? "i" : "-i";
     if (channel.getTopicProtection())
-        modes += "t";
+        modes += (modeSign == "+") ? "t" : "-t";
     if (!channel.getPassword().empty())
-        modes += "k";
+        modes += (modeSign == "+") ? "k" : "-k";
     if (channel.getUserLimit() > 0)
-        modes += "l";
+        modes += (modeSign == "+") ? "l" : "-l";
 
+    // Construction du message sans crochets
     std::string modeMessage =
             ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() + " " + modes;
 
@@ -105,9 +109,12 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
         modeMessage += " " + ss.str();
     }
 
+    modeMessage += " by " + modifierNickname;
+
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
+
 
 void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
     std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +

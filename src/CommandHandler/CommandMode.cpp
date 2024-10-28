@@ -9,8 +9,10 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
 
         char modeChar = mode[1];
         char modeSign = mode[0];
+        std::string nickname = clientHandler->getUser().getNickname();
+        std::string sign(1, modeSign);
 
-        // Gestion des différents modes avec signe (+ ou -)
+        // Effectuer les modifications de mode
         if (modeChar == 'i') {
             channel.setInviteOnly(modeSign == '+');
         } else if (modeChar == 't') {
@@ -44,18 +46,14 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
             throw std::invalid_argument("Unknown mode");
         }
 
-        // Diffuser le changement de mode à tous les utilisateurs du canal
-        if (clientHandler) {
-            MessageHandler::sendChannelModes(clientHandler, channel);
-        } else {
-            std::cerr << "ClientHandler is null, cannot send mode update message." << std::endl;
-        }
+        MessageHandler::sendChannelModes(clientHandler, channel, nickname, sign);
 
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
         throw std::invalid_argument("Failed to process mode for channel");
     }
 }
+
 
 void CommandHandler::userModeHandler(ClientHandler *clientHandler, const std::string &mode) {
     try {
@@ -94,7 +92,7 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
                     std::cerr << clientHandler->getUser().getNickname() << " is not an operator, denying request."
                               << std::endl;
                     MessageHandler::sendErrorNotChannelOperator(clientHandler);
-                    return; // Sortir immédiatement si ce n'est pas un opérateur
+                    return;
                 }
             }
 
@@ -127,14 +125,6 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
 void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                                   const std::string &target) {
     std::cout << "Handling op mode for target: " << target << " with mode: " << mode << std::endl;
-    if (channel.checkIfClientIsOperator(clientHandler)) {
-        std::cout << clientHandler->getNickname() << " is an operator, proceeding." << std::endl;
-    } else {
-        std::cout << clientHandler->getNickname() << " is not an operator, denying request." << std::endl;
-        MessageHandler::sendErrorNotChannelOperator(clientHandler);
-        return;
-    }
-
     if (mode[0] == '+') {
         if (channel.checkIfClientIsOperator(clientHandler)) {
             ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);

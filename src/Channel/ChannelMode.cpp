@@ -12,9 +12,9 @@ void Channel::setPassword(const std::string &password) { m_password = password; 
 
 std::string Channel::getPassword() const { return m_password; }
 
-void Channel::setOperatorPrivileges(bool operatorPrivileges) { m_operatorPrivileges = operatorPrivileges; }
+// void Channel::setOperatorPrivileges(bool operatorPrivileges) { m_operatorPrivileges = operatorPrivileges; }
 
-bool Channel::getOperatorPrivileges() const { return m_operatorPrivileges; }
+// bool Channel::getOperatorPrivileges() const { return m_operatorPrivileges; }
 
 void Channel::setUserLimit(int userLimit) { m_userLimit = userLimit; }
 

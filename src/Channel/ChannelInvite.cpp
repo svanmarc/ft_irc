@@ -1,12 +1,5 @@
 #include "Channel.hpp"
 
-void Channel::printAllNicknamesInChannel() const {
-    std::cout << "Nicknames in channel " << m_name << ": ";
-    for (std::vector<ClientHandler *>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
-        std::cout << (*it)->getNickname() << " ";
-    }
-    std::cout << std::endl;
-}
 
 void Channel::inviteClient(ClientHandler *client) {
     if (isClientInvited(client)) {

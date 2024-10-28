@@ -7,7 +7,6 @@
 #include "MessageHandler.hpp"
 #include "Server.hpp"
 
-class Server;
 
 class CommandHandler {
 public:

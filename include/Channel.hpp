@@ -17,7 +17,7 @@ private:
     bool m_inviteOnly; // +i (invite only)
     bool m_topicProtection; // +t (topic protection)
     std::string m_password; // +k (password)
-    bool m_operatorPrivileges; // +o (operator privileges)
+    // bool m_operatorPrivileges; // +o (operator privileges)
     int m_userLimit; // +l (user limit)
 
 public:
@@ -54,8 +54,8 @@ public:
     bool getTopicProtection() const;
     void setPassword(const std::string &password);
     std::string getPassword() const;
-    void setOperatorPrivileges(bool operatorPrivileges);
-    bool getOperatorPrivileges() const;
+    // void setOperatorPrivileges(bool operatorPrivileges);
+    // bool getOperatorPrivileges() const;
     void setUserLimit(int userLimit);
     int getUserLimit() const;
     void removeUserLimit();

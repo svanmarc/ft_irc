@@ -78,7 +78,9 @@ public:
     static void sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel);
     static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
     static void sendInviteNotification(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
-    static void sendChannelModes(ClientHandler *clientHandler, Channel &channel);
+    // static void sendChannelModes(ClientHandler *clientHandler, Channel &channel);
+    static void sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &nickname,
+                                 const std::string &modeSign);
     static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
 };
 
