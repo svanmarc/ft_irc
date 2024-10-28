@@ -138,3 +138,11 @@ void MessageHandler::sendErrorNotChannelOperator(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANOPRIVSNEEDED,
                                  "Error: You're not a channel operator");
 }
+
+void MessageHandler::sendErrorNotEnoughParams(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
+}
+
+void MessageHandler::sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_KICKEDFROMCHAN, message);
+}

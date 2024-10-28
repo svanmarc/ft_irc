@@ -66,14 +66,12 @@ private:
     void handleQuit(ClientHandler *clientHandler, const std::string &command);
     void handleCap(ClientHandler *clientHandler, const std::string &command);
 
-    // CommandInvite.cpp
     void handleInvite(ClientHandler *clientHandler, const std::string &command);
-
-
+    void handleKick(ClientHandler *clientHandler, const std::string &command);
     void handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                       const std::string &target);
-
     void handleTopic(ClientHandler *clientHandler, const std::string &command);
+    void kickingClientFromChannel(ClientHandler *targetClient, Channel &channel);
 };
 
 #endif

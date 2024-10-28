@@ -27,43 +27,39 @@ void CommandHandler::handleInvite(ClientHandler *clientHandler, const std::strin
     // pour irssi
     else {
         if (clientHandler->getChannels().empty()) {
-            // L'utilisateur n'est dans aucun canal, envoyer une erreur
             MessageHandler::sendErrorNotInChannel(clientHandler, "current");
             return;
         }
-        // Utiliser le canal actuel de l'utilisateur
         channelName = clientHandler->getChannels().back();
     }
 
-    // Vérifier si le canal existe
     if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
         MessageHandler::sendErrorNoSuchChannel(clientHandler, channelName);
         return;
     }
 
-    // Vérifier si l'utilisateur qui envoie l'invitation est dans le canal
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
     if (!channel.checkIfClientIsInChannel(clientHandler)) {
         MessageHandler::sendErrorNotInChannel(clientHandler, channelName);
         return;
     }
 
-    // Récupérer l'utilisateur cible
     ClientHandler *targetClient = NULL;
     if (clientHandler->getServer()->getUserByNickname(targetNickname, targetClient)) {
-        // Vérifier si l'utilisateur cible est déjà dans le canal
+        if (channel.getInviteOnly() && !channel.checkIfClientIsOperator(clientHandler)) {
+            MessageHandler::sendErrorNotChannelOperator(clientHandler);
+            return;
+        }
         if (channel.checkIfClientIsInChannel(targetClient)) {
             MessageHandler::sendErrorAlreadyInChannel(clientHandler, targetNickname, channelName);
             return;
         }
 
-        // Vérifier si l'utilisateur est déjà invité
         if (channel.isClientInvited(targetClient)) {
             MessageHandler::sendErrorAlreadyInvited(clientHandler, targetNickname, channelName);
             return;
         }
 
-        // Envoyer l'invitation
         channel.inviteClient(targetClient);
         MessageHandler::sendInviteNotification(clientHandler, targetClient, channel);
         std::string message =

@@ -50,6 +50,8 @@ public:
     static void sendErrorAlreadyInvited(ClientHandler *clientHandler, const std::string &nickname,
                                         const std::string &channelName);
     static void sendErrorNotChannelOperator(ClientHandler *clientHandler);
+    static void sendErrorNotEnoughParams(ClientHandler *clientHandler);
+    static void sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);
@@ -82,6 +84,7 @@ public:
     static void sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &nickname,
                                  const std::string &modeSign);
     static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
+    static void sendMessageToClient(ClientHandler *clientHandler, const std::string &message);
 };
 
 

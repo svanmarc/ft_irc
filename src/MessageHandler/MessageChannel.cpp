@@ -122,3 +122,7 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
+
+void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std::string &message) {
+    sendMessage(clientHandler->getSocket(), message);
+}
