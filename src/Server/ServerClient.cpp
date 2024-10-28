@@ -80,6 +80,16 @@ ClientHandler *Server::findClient(const int clientSocket) const {
     return NULL;
 }
 
+ClientHandler *Server::findClientByNickname(const std::string &nickname) const {
+    for (std::vector<ClientHandler *>::const_iterator it = clients.begin(); it != clients.end(); ++it) {
+        if ((*it)->getNickname() == nickname) {
+            return *it;
+        }
+    }
+    return NULL;
+}
+
+
 // Vérifier le mot de passe du client
 bool Server::checkPassword(const std::string &clientPassword) const { return clientPassword == m_password; }
 
@@ -90,10 +100,18 @@ void Server::handleClientDisconnect(int clientSocket) {
     ClientHandler *client = findClient(clientSocket);
     if (client != NULL) {
         std::cout << "Client " << client->getNickname() << " disconnected" << std::endl;
+
+        // Libérer le pseudo (s'il est défini)
+        std::string nickname = client->getNickname();
+        if (!nickname.empty()) {
+            std::cout << "Releasing nickname: " << nickname << std::endl;
+        }
+
         // Retirer le client de tous les canaux
         for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
             it->removeClient(client);
         }
+
         // Supprimer le client du serveur
         removeClient(clientSocket);
     }

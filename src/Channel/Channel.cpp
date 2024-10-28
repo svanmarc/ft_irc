@@ -1,13 +1,9 @@
 #include "Channel.hpp"
-
-<<<<<<< Updated upstream:src/Channel.cpp
-Channel::Channel(const std::string &name, ClientHandler *owner) : m_name(name), m_owner(owner) {
-=======
 Channel::Channel(const std::string &name, ClientHandler *owner) :
     m_name(name), m_owner(owner), m_inviteOnly(false), m_topicProtection(false), m_password(""), m_userLimit(0) {
->>>>>>> Stashed changes:src/Channel/Channel.cpp
     m_topic = "";
     m_clients.push_back(owner);
+    m_operators.push_back(owner);
 }
 
 Channel::~Channel() {}
@@ -21,10 +17,6 @@ void Channel::addClient(ClientHandler *client) {
     }
     m_clients.push_back(client);
 }
-
-void Channel::setInviteOnly(bool inviteOnly) { m_mode.setInviteOnly(inviteOnly); }
-bool Channel::getInviteOnly() const { return m_mode.getInviteOnly(); }
-
 void Channel::removeClient(const ClientHandler *client) {
     std::cout << "Removing client " << client->getNickname() << " from channel " << m_name << std::endl;
 
@@ -45,6 +37,8 @@ std::string Channel::getName() const { return m_name; }
 void Channel::setName(const std::string &name) { this->m_name = name; }
 
 std::string Channel::getTopic() const { return m_topic; }
+
+void Channel::setTopic(const std::string &topic) { this->m_topic = topic; }
 
 bool Channel::checkIfClientIsInChannel(ClientHandler *client) const {
     for (std::vector<ClientHandler *>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it) {

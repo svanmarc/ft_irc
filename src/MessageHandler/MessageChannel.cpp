@@ -27,11 +27,8 @@ void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const st
 
 void MessageHandler::sendNewMemberToChannel(ClientHandler *clientHandler, Channel &channel) {
     //:tamm2!root@IP.hosted-by-42lausanne.ch JOIN #1
-    std::string message =  ":"+ clientHandler->getUser().getNickname() + "!";
-    message += clientHandler->getUser().getUsername() + "@";
-    message += clientHandler->getUser().getHostname();
-    message += " JOIN";
-    message += " " + channel.getName();
+    std::string tempMessage = "JOIN " + channel.getName();
+    std::string message = messageWithServerPrefixAndSender(clientHandler, tempMessage);
     std::cout << "Sending new member message to channel " << message << std::endl;
     sendMessageToAllClientsInChannel(channel, message, clientHandler, true);
 }
@@ -64,17 +61,13 @@ void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &c
     message += " :End of NAMES list";
     std::cout << "Sending End of NAMES list new client " << message << std::endl;
     sendResponse(clientHandler, IRCConstants::RPL_ENDOFNAMES, message);
-<<<<<<< Updated upstream
- }
-=======
 }
 
 void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, ClientHandler *invitedClient,
                                             Channel &channel) {
     // Construire le message d'invitation pour l'utilisateur invité
-    std::string inviteMessage = ":" + invitingClient->getNickname() + "!" + invitingClient->getUser().getUsername() +
-                                "@ircserver INVITE " + invitedClient->getNickname() + " :" + channel.getName();
-
+    std::string tempMessage = "INVITE " + invitedClient->getNickname() + " :" + channel.getName();
+    std::string inviteMessage = messageWithServerPrefixAndSender(invitingClient, tempMessage);
     // Envoyer l'invitation à l'utilisateur invité
     sendMessage(invitedClient->getSocket(), inviteMessage);
 
@@ -84,12 +77,9 @@ void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, Clien
 }
 
 
-void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel,
-                                      const std::string &modifierNickname, const std::string &modeSign) {
-    std::string modes;
-    std::cout << "Sending modes for channel " << modifierNickname << std::endl;
+void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign, const std::string mode) {
     // Vérification de l'état actuel des modes
-    if (channel.getInviteOnly())
+    /*if (channel.getInviteOnly())
         modes += (modeSign == "+") ? "+i" : "-i";
     if (channel.getTopicProtection())
         modes += (modeSign == "+") ? "+t" : "-t";
@@ -97,23 +87,26 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
         modes += (modeSign == "+") ? "+k" : "-k";
     if (channel.getUserLimit() > 0)
         modes += (modeSign == "+") ? "+l" : "-l";
+    */
 
     // Construction du message sans crochets
-    std::string modeMessage = ":" + clientHandler->getUser().getNickname() + "!";
-    modeMessage += clientHandler->getUser().getUsername() + "@";
-    modeMessage += clientHandler->getUser().getHostname() + " MODE " + channel.getName() + " " + modes + " :";
+    std::string modeMessage ="MODE " + channel.getName() + " " + modeSign + mode;
 
     // Ajouter les paramètres pour les modes `k` et `l`
+    modeMessage += " :";
     if (!channel.getPassword().empty())
         modeMessage += " " + channel.getPassword();
-    if (channel.getUserLimit() > 0) {
+    if (mode == "l") {
         std::stringstream ss;
         ss << channel.getUserLimit();
-        modeMessage += " " + ss.str();
+        modeMessage += ss.str();
     }
+
+    modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
+
 
 void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
     std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +
@@ -121,4 +114,3 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
->>>>>>> Stashed changes

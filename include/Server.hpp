@@ -23,6 +23,7 @@ public:
     const std::string &getServerName() const;
     const std::vector<ClientHandler *> &getClients() const { return clients; }
     bool authenticate(const std::string &clientPassword) const;
+    ClientHandler *findClientByNickname(const std::string &nickname) const;
 
 private:
     int m_serverSocket;

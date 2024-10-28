@@ -42,12 +42,11 @@ public:
     static const int ERR_UNKNOWNCOMMAND = 421; // 421: Unknown command
     static const int ERR_NICKNAMEINUSE = 433; // 433: Nickname is already in use
     static const int ERR_ERRONEUSNICKNAME = 432; // 432: Erroneous nickname
-    static const int ERR_NONICKNAMEGIVEN = 433; // 433: No nickname given
+    static const int ERR_NONICKNAMEGIVEN = 431; // 431: No nickname given
     static const int ERR_NEEDMOREPARAMS = 461; // 461: Not enough parameters
-    static const int ERR_ALREADYREGISTRED = 462; // 462: You may not reregister
-    static const int ERR_PASSWDMISMATCH = 464; // 464: Password incorrect
-    static const int ERR_NOPASSWORDGIVEN = 464; // 464: No password given
-    static const int ERR_TOOMANYATTEMPTS = 464; // 464: Too many attempts
+    static const int ERR_ALREADYREGISTERED = 462; // 462: You may not reregister
+    static const int ERR_PASSWDMISMATCH = 464; // 464: Password incorrect or not given
+    static const int ERR_TOOMANYATTEMPTS = 465; // 465: Too many attempts
     static const int ERR_NOSUCHNICK = 401; // 401: No such nick/channel
     static const int ERR_NOTREGISTERED = 451; // 451: You have not registered
     static const int ERR_CHANNELISFULL = 471; // 471: Cannot join channel (+l)
@@ -56,6 +55,8 @@ public:
     static const int ERR_BANNEDFROMCHAN = 474; // 474: Cannot join channel (+b)
     static const int ERR_NOTINCHANNEL = 442; // 442: You're not on that channel
     static const int ERR_NOTFOROTHERS = 502; // 502: Can't change mode for other users
+    static const int ERR_USERONCHANNEL = 443; // 443: is already on channel
+    static const int ERR_CHANOPRIVSNEEDED = 482; // 482: You're not channel operator
 };
 
 // from https://www.alien.net.au/irc/irc2numerics.html

@@ -1,7 +1,8 @@
 #include "MessageHandler.hpp"
 
 void MessageHandler::sendErrorNoAuthentification(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_PASSWDMISMATCH, "Error: You need to authenticate first");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_PASSWDMISMATCH,
+                                 "Error: You need to authenticate first");
 }
 void MessageHandler::sendErrorAlreadyRegistered(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTREGISTERED, "Error: You may not reregister");
@@ -44,7 +45,7 @@ void MessageHandler::sendErrorIncorrectPassword(ClientHandler *clientHandler, co
                                  "Error: Password incorrect, " + strAttempt + " attempts left");
 }
 void MessageHandler::sendErrorNoPasswordGiven(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOPASSWORDGIVEN, "Error: No password given");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_PASSWDMISMATCH, "Error: No password given");
 }
 void MessageHandler::sendErrorUnknownCommand(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNCOMMAND, "Error: Unknown command");
@@ -73,22 +74,25 @@ void MessageHandler::sendErrorNotInChannel(ClientHandler *clientHandler, const s
 }
 
 void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
+     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
 }
 
 void MessageHandler::sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName) {
     //:*.42irc.net 403 tamm2 #ttttt :No such channel
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, clientHandler->getNickname() +  " " + channelName +  " :No such channel/user ");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
+                                 clientHandler->getNickname() + " " + channelName + " :No such channel/user ");
 }
 void MessageHandler::sendErrorNoChangeModeForOther(ClientHandler *clientHandler) {
     //:*.42irc.net 502 tamm2 :Can't change mode for other users
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTFOROTHERS, clientHandler->getNickname() +  " :Can't change mode for other users");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTFOROTHERS,
+                                 clientHandler->getNickname() + " :Can't change mode for other users");
 }
 void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
 }
 void MessageHandler::sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Mode " + mode + " is already set");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE,
+                                 "Error: Mode " + mode + " is already set");
 }
 void MessageHandler::sendErrorUnknownMode(ClientHandler *clientHandler, const std::string &mode) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Unknown mode " + mode);
@@ -96,5 +100,41 @@ void MessageHandler::sendErrorUnknownMode(ClientHandler *clientHandler, const st
 
 void MessageHandler::sendErrorInviteOnly(ClientHandler *clientHandler, const std::string &channelName) {
     //:*.42irc.net 473 moi #t :Cannot join channel (+i)
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_INVITEONLYCHAN, clientHandler->getNickname() +  " " + channelName + " :Cannot join channel (+i)");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_INVITEONLYCHAN,
+                                 clientHandler->getNickname() + " " + channelName + " :Cannot join channel (+i)");
+}
+
+void MessageHandler::sendErrortooManyTargets(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_TOOMANYATTEMPTS, "Error: Too many targets");
+}
+
+// void MessageHandler::sendErrorAlreadyInChannel(ClientHandler *clientHandler, const std::string &nickname,
+//                                                const std::string &channelName) {
+//     //:*.42irc.net 443 tamm2 #t :is already on channel
+//     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_USERONCHANNEL,
+//                                  clientHandler->getNickname() + " " + channelName + " :is already on channel");
+// }
+
+// void MessageHandler::sendErrorAlreadyInvited(ClientHandler *clientHandler, const std::string &nickname,
+//                                              const std::string &channelName) {
+//     //:*.42irc.net 443 tamm2 #t :is already on channel
+//     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_USERONCHANNEL,
+//                                  clientHandler->getNickname() + " " + channelName + " :is already on channel");
+// }
+
+void MessageHandler::sendErrorAlreadyInChannel(ClientHandler *clientHandler, const std::string &nickname,
+                                               const std::string &channelName) {
+    std::string message = "User " + nickname + " is already in channel " + channelName;
+    sendResponse(clientHandler, IRCConstants::ERR_USERONCHANNEL, message);
+}
+
+void MessageHandler::sendErrorAlreadyInvited(ClientHandler *clientHandler, const std::string &nickname,
+                                             const std::string &channelName) {
+    std::string message = "User " + nickname + " is already invited to channel " + channelName;
+    sendResponse(clientHandler, IRCConstants::ERR_USERONCHANNEL, message);
+}
+
+void MessageHandler::sendErrorNotChannelOperator(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANOPRIVSNEEDED,
+                                 "Error: You're not a channel operator");
 }

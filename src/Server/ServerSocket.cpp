@@ -25,8 +25,17 @@ int Server::createSocket() {
         std::cerr << "Failed to create server socket: " << std::strerror(errno) << std::endl;
         return -1;
     }
+
+    // Rendre le socket non-bloquant
+    if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
+        std::cerr << "Failed to set non-blocking socket: " << std::strerror(errno) << std::endl;
+        close(sock);
+        return -1;
+    }
+
     return sock;
 }
+
 
 // Configurer les options du socket
 int Server::setSocketOptions() const {
