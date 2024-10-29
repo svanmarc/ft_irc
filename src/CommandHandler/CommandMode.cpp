@@ -3,7 +3,7 @@
 void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                                          const std::string &param) {
     try {
-        if (mode.size() < 2 || (mode[0] != '+' && mode[0] != '-' )) {
+        if (mode.size() < 2 || (mode[0] != '+' && mode[0] != '-')) {
             throw std::invalid_argument("Invalid mode format");
         }
 
@@ -17,17 +17,18 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
         } else if (modeChar == 't') {
             channel.setTopicProtection(modeSign == '+');
         } else if (modeChar == 'k') {
-            if (modeSign == '+') {
-                if (!param.empty()) {
-                    channel.setPassword(param);
-                    std::cout << "Password set for channel: " << param << std::endl;
-                } else {
-                    throw std::invalid_argument("Password required for +k mode");
-                }
-            } else {
-                channel.setPassword("");
-                std::cout << "Password removed for channel" << std::endl;
-            }
+            handlePasswordMode(clientHandler, channel, modeSign, modeChar, param);
+            // if (modeSign == '+') {
+            //     if (!param.empty()) {
+            //         channel.setPassword(param);
+            //         std::cout << "Password set for channel: " << param << std::endl;
+            //     } else {
+            //         throw std::invalid_argument("Password required for +k mode");
+            //     }
+            // } else {
+            //     channel.setPassword("");
+            //     std::cout << "Password removed for channel" << std::endl;
+            // }
         } else if (modeChar == 'l') {
             if (modeSign == '+') {
                 if (!param.empty()) {
@@ -157,5 +158,28 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             std::cerr << "Client " << clientHandler->getNickname() << " is not an operator of channel "
                       << channel.getName() << std::endl;
         }
+    }
+}
+
+void CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
+                                        const char modeChar, const std::string &param) {
+
+    if (modeChar != 'k') {
+        throw std::invalid_argument("Invalid mode character");
+    }
+    if (clientHandler->getUser().getNickname() != channel.getOwner()->getUser().getNickname()) {
+        MessageHandler::sendErrorNotChannelOperator(clientHandler);
+        return;
+    }
+    if (modeSign == '+') {
+        if (!param.empty()) {
+            channel.setPassword(param);
+            std::cout << "Password set for channel: " << param << std::endl;
+        } else {
+            throw std::invalid_argument("Password required for +k mode");
+        }
+    } else {
+        channel.setPassword("");
+        std::cout << "Password removed for channel" << std::endl;
     }
 }

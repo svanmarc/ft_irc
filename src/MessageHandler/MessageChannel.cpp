@@ -8,8 +8,10 @@ void MessageHandler::sendWelcomeToChannel(ClientHandler *clientHandler, const Ch
     MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WELCOME, message);
 }
 
-void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const std::string &message, ClientHandler *clientHandler, bool sendToSender) {
-    std::cout << clientHandler->getUser().getNickname() << " :Sending message to all clients in channel: " << message << std::endl;
+void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const std::string &message,
+                                                      ClientHandler *clientHandler, bool sendToSender) {
+    std::cout << clientHandler->getUser().getNickname() << " :Sending message to all clients in channel: " << message
+              << std::endl;
     std::vector<ClientHandler *> clients = channel.getClients();
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         ClientHandler *client = *it;
@@ -26,7 +28,7 @@ void MessageHandler::sendMessageToAllClientsInChannel(Channel &channel, const st
 }
 
 void MessageHandler::sendNewMemberToChannel(ClientHandler *clientHandler, Channel &channel) {
-    //:tamm2!root@IP.hosted-by-42lausanne.ch JOIN #1
+    //: tamm2!root@IP.hosted-by-42lausanne.ch JOIN #1
     std::string tempMessage = "JOIN " + channel.getName();
     std::string message = messageWithServerPrefixAndSender(clientHandler, tempMessage);
     std::cout << "Sending new member message to channel " << message << std::endl;
@@ -42,7 +44,7 @@ void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Ch
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
-        currentUserString += "@"+ client->getUser().getNickname() + " ";
+        currentUserString += "@" + client->getUser().getNickname() + " ";
     }
     std::string message = clientHandler->getUser().getNickname();
     message += " = ";
@@ -53,9 +55,8 @@ void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Ch
     sendResponse(clientHandler, IRCConstants::RPL_NAMREPLY, message);
 }
 
-void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel)
-{
-    //:irc.example.com 366 yourNick #test :End of NAMES list
+void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel) {
+    //: irc.example.com 366 yourNick #test :End of NAMES list
     std::string message = clientHandler->getUser().getNickname();
     message += " " + channel.getName();
     message += " :End of NAMES list";
@@ -77,20 +78,11 @@ void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, Clien
 }
 
 
-void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign, const std::string mode) {
-    // Vérification de l'état actuel des modes
-    /*if (channel.getInviteOnly())
-        modes += (modeSign == "+") ? "+i" : "-i";
-    if (channel.getTopicProtection())
-        modes += (modeSign == "+") ? "+t" : "-t";
-    if (!channel.getPassword().empty())
-        modes += (modeSign == "+") ? "+k" : "-k";
-    if (channel.getUserLimit() > 0)
-        modes += (modeSign == "+") ? "+l" : "-l";
-    */
+void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
+                                      const std::string mode) {
 
     // Construction du message sans crochets
-    std::string modeMessage ="MODE " + channel.getName() + " " + modeSign + mode;
+    std::string modeMessage = "MODE " + channel.getName() + " " + modeSign + mode;
 
     // Ajouter les paramètres pour les modes `k` et `l`
     modeMessage += " :";
@@ -101,7 +93,6 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
         ss << channel.getUserLimit();
         modeMessage += ss.str();
     }
-
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
@@ -109,11 +100,15 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
 
 
 void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
-    std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +
-                              " +o " + targetClient->getNickname();
+    // std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +
+    //                           " +o " + targetClient->getNickname();
+    // sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
+    std::string modeMessage = "MODE " + channel.getName() + " +o " + targetClient->getNickname();
+    modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
+
 
 void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std::string &message) {
     sendMessage(clientHandler->getSocket(), message);

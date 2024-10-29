@@ -72,6 +72,8 @@ private:
                       const std::string &target);
     void handleTopic(ClientHandler *clientHandler, const std::string &command);
     void kickingClientFromChannel(ClientHandler *targetClient, Channel &channel);
+    void handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign, const char modeChar,
+                            const std::string &param);
 };
 
 #endif
