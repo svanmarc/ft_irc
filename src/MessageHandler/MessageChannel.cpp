@@ -44,7 +44,8 @@ void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Ch
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
-        currentUserString += "@" + client->getUser().getNickname() + " ";
+        channel.checkIfClientIsOperator(client) ? currentUserString += "@" : currentUserString += "";
+        currentUserString += client->getUser().getNickname() + " ";
     }
     std::string message = clientHandler->getUser().getNickname();
     message += " = ";
