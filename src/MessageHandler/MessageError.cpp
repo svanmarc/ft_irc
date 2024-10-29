@@ -151,3 +151,27 @@ void MessageHandler::sendErrorKickOwner(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANOWNPRIVNEEDED,
                                  "Error: You can't kick the owner of the channel");
 }
+
+void MessageHandler::sendErrorChannelFull(ClientHandler *clientHandler, const std::string &channelName) {
+    std::string message =
+            clientHandler->getUser().getNickname() + " " + channelName + " :Cannot join channel (Channel is full)";
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANNELISFULL, message);
+}
+
+void MessageHandler::sendErrorBadChannelKey(ClientHandler *clientHandler, const std::string &channelName) {
+    std::string message =
+            clientHandler->getUser().getNickname() + " " + channelName + " :Cannot join channel (Bad channel key)";
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_BADCHANNELKEY, message);
+}
+
+void MessageHandler::sendErrorBadFormatPwd(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_PASSWDMISMATCH, "Error: Bad password format");
+}
+
+void MessageHandler::sendErrorPwdNeeded(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_PASSWDMISMATCH, "Error: Password needed");
+}
+
+void MessageHandler::sendErrorBadMode(ClientHandler *clientHandler, const std::string &mode) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Bad mode " + mode);
+}

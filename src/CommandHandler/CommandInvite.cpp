@@ -33,6 +33,7 @@ void CommandHandler::handleInvite(ClientHandler *clientHandler, const std::strin
         channelName = clientHandler->getChannels().back();
     }
 
+
     if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
         MessageHandler::sendErrorNoSuchChannel(clientHandler, channelName);
         return;

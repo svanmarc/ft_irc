@@ -17,39 +17,32 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
         } else if (modeChar == 't') {
             channel.setTopicProtection(modeSign == '+');
         } else if (modeChar == 'k') {
-            handlePasswordMode(clientHandler, channel, modeSign, modeChar, param);
-            // if (modeSign == '+') {
-            //     if (!param.empty()) {
-            //         channel.setPassword(param);
-            //         std::cout << "Password set for channel: " << param << std::endl;
-            //     } else {
-            //         throw std::invalid_argument("Password required for +k mode");
-            //     }
-            // } else {
-            //     channel.setPassword("");
-            //     std::cout << "Password removed for channel" << std::endl;
+            // if (modeSign == '+' && param.empty()) {
+            //     MessageHandler::sendErrorNotEnoughParams(clientHandler);
+            //     return;
             // }
+            if (!handlePasswordMode(clientHandler, channel, modeSign, param)) {
+                return;
+            }
         } else if (modeChar == 'l') {
             if (modeSign == '+') {
                 if (!param.empty()) {
                     int limit = std::atoi(param.c_str());
                     channel.setUserLimit(limit);
-                    std::cout << "User limit set to: " << limit << std::endl;
                 } else {
-                    throw std::invalid_argument("User limit required for +l mode");
+                    MessageHandler::sendErrorNotEnoughParams(clientHandler);
+                    return;
                 }
             } else {
                 channel.removeUserLimit();
-                std::cout << "User limit removed for channel" << std::endl;
             }
         } else {
-            throw std::invalid_argument("Unknown mode");
             MessageHandler::sendErrorModeParams(clientHandler);
+            return;
         }
         MessageHandler::sendChannelModes(clientHandler, channel, sign, modeStr);
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        throw std::invalid_argument("Failed to process mode for channel");
     }
 }
 
@@ -74,6 +67,15 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
     std::string mode = parts[2];
     std::string target = parts[1];
     std::string param = parts.size() > 3 ? parts[3] : "";
+    // if (parts.size() > 4) {
+    //     MessageHandler::sendErrorModeParams(clientHandler);
+    //     return;
+    // }
+
+    if (mode.size() != 2) {
+        MessageHandler::sendErrorBadMode(clientHandler, mode);
+        return;
+    }
 
     try {
         std::cout << "Handling mode for target: " << target << " with mode: " << mode << std::endl;
@@ -84,7 +86,6 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
                 MessageHandler::sendErrorNotInChannel(clientHandler, target);
                 return;
             }
-
             // Vérifiez si le client est opérateur pour tous les modes
             if (mode[1] == 'o' || mode[1] == 'i' || mode[1] == 't' || mode[1] == 'k' || mode[1] == 'l') {
                 if (!channel.checkIfClientIsOperator(clientHandler)) {
@@ -94,7 +95,6 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
                     return;
                 }
             }
-
             // Traitez les modes
             if (mode[1] == 'o') {
                 std::string target = parts[3];
@@ -161,25 +161,53 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
     }
 }
 
-void CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
-                                        const char modeChar, const std::string &param) {
+bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
+                                        const std::string &param) {
 
-    if (modeChar != 'k') {
-        throw std::invalid_argument("Invalid mode character");
-    }
-    if (clientHandler->getUser().getNickname() != channel.getOwner()->getUser().getNickname()) {
-        MessageHandler::sendErrorNotChannelOperator(clientHandler);
-        return;
-    }
+    std::string pwError = "MODE " + channel.getName() + " +k " + param;
+
     if (modeSign == '+') {
-        if (!param.empty()) {
-            channel.setPassword(param);
-            std::cout << "Password set for channel: " << param << std::endl;
-        } else {
-            throw std::invalid_argument("Password required for +k mode");
+        if (param.empty()) {
+            pwError += ":Password cannot be empty";
+            pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
+            MessageHandler::sendMessageToClient(clientHandler, pwError);
+            return false;
         }
+
+        if (param.find(' ') != std::string::npos) {
+            pwError += ":Password cannot contain spaces";
+            pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
+            MessageHandler::sendMessageToClient(clientHandler, pwError);
+            return false;
+        }
+        for (std::string::size_type i = 0; i < param.size(); ++i) {
+            char c = param[i];
+            if (!isalnum(c)) {
+                pwError += ":Password must contain only alphanumeric characters";
+                pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
+                MessageHandler::sendMessageToClient(clientHandler, pwError);
+                return false;
+            }
+        }
+        if (param.size() < 3 || param.size() > 20) {
+            pwError += ":Password must be between 3 and 20 characters";
+            pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
+            MessageHandler::sendMessageToClient(clientHandler, pwError);
+            return false;
+        }
+        channel.setPassword(param);
+        std::cout << "Password set for channel: " << param << std::endl;
+        std::string modeMessage = "MODE " + channel.getName() + " +k";
+        modeMessage = MessageHandler::messageWithServerPrefixAndSender(clientHandler, modeMessage);
+        MessageHandler::sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
+        return true;
+
     } else {
         channel.setPassword("");
         std::cout << "Password removed for channel" << std::endl;
+        std::string modeMessage = "MODE " + channel.getName() + " -k";
+        modeMessage = MessageHandler::messageWithServerPrefixAndSender(clientHandler, modeMessage);
+        MessageHandler::sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
+        return true;
     }
 }

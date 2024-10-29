@@ -53,6 +53,11 @@ public:
     static void sendErrorNotEnoughParams(ClientHandler *clientHandler);
     static void sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message);
     static void sendErrorKickOwner(ClientHandler *clientHandler);
+    static void sendErrorBadChannelKey(ClientHandler *clientHandler, const std::string &channelName);
+    static void sendErrorChannelFull(ClientHandler *clientHandler, const std::string &channelName);
+    static void sendErrorBadFormatPwd(ClientHandler *clientHandler);
+    static void sendErrorPwdNeeded(ClientHandler *clientHandler);
+    static void sendErrorBadMode(ClientHandler *clientHandler, const std::string &mode);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);

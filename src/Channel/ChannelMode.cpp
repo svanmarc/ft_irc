@@ -12,6 +12,8 @@ void Channel::setPassword(const std::string &password) { m_password = password; 
 
 std::string Channel::getPassword() const { return m_password; }
 
+bool Channel::isPasswordProtected() const { return !m_password.empty(); }
+
 // void Channel::setOperatorPrivileges(bool operatorPrivileges) { m_operatorPrivileges = operatorPrivileges; }
 
 // bool Channel::getOperatorPrivileges() const { return m_operatorPrivileges; }

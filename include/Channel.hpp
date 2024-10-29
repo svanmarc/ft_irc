@@ -55,6 +55,7 @@ public:
     bool getTopicProtection() const;
     void setPassword(const std::string &password);
     std::string getPassword() const;
+    bool isPasswordProtected() const;
     // void setOperatorPrivileges(bool operatorPrivileges);
     // bool getOperatorPrivileges() const;
     void setUserLimit(int userLimit);

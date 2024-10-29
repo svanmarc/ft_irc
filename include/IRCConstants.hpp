@@ -53,13 +53,13 @@ public:
     static const int ERR_CHANNELISFULL = 471; // 471: Cannot join channel (+l)
     static const int ERR_UNKNOWNMODE = 472; // 472: Unknown mode
     static const int ERR_INVITEONLYCHAN = 473; // 473: Cannot join channel (+i)
-    static const int ERR_BANNEDFROMCHAN = 474; // 474: Cannot join channel (+b)
     static const int ERR_NOTINCHANNEL = 442; // 442: You're not on that channel
     static const int ERR_NOTFOROTHERS = 502; // 502: Can't change mode for other users
     static const int ERR_USERONCHANNEL = 443; // 443: is already on channel
     static const int ERR_CHANOPRIVSNEEDED = 482; // 482: You're not channel operator
     static const int ERR_KICKEDFROMCHAN = 470; // 470: You have been kicked from the channel
     static const int ERR_CHANOWNPRIVNEEDED = 499; // 499: You're not channel owner
+    static const int ERR_BADCHANNELKEY = 475; // 475: Cannot join channel (+k)
 };
 
 // from https://www.alien.net.au/irc/irc2numerics.html

@@ -16,17 +16,31 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
         return;
     }
 
+    std::string channelPwdClientGiven = (parts.size() > 2) ? parts[2] : "";
+
     // Vérification si le canal existe et gestion des permissions
     try {
         Channel &channel = clientHandler->getServer()->getChannel(channelName);
-        if (channel.getInviteOnly()) {
-            if (!channel.isClientInvited(clientHandler)) {
-                MessageHandler::sendErrorInviteOnly(clientHandler, channelName);
-                return;
-            }
+
+        if (channel.getInviteOnly() && !channel.isClientInvited(clientHandler)) {
+            MessageHandler::sendErrorInviteOnly(clientHandler, channelName);
+            return;
         }
+
+        if (channel.isPasswordProtected() && channel.getPassword() != channelPwdClientGiven) {
+            MessageHandler::sendErrorBadChannelKey(clientHandler, channelName);
+            return;
+        }
+
+        std::vector<ClientHandler *>::size_type userLimit =
+                static_cast<std::vector<ClientHandler *>::size_type>(channel.getUserLimit());
+        if (userLimit > 0 && channel.getClients().size() >= userLimit) {
+            MessageHandler::sendErrorChannelFull(clientHandler, channelName);
+            return;
+        }
+
     } catch (const std::runtime_error &e) {
-        // Le canal n'existe pas encore, nous allons le créer
+        // Si le canal n'existe pas encore, nous allons le créer
         std::cout << "Channel not found. Creating new channel." << std::endl;
     }
 
@@ -35,11 +49,11 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
         return;
     }
 
-    // Une fois la connexion validée, ajouter le client à la liste des canaux
+    // Ajouter le client à la liste des canaux
     Channel &newChannel = clientHandler->getServer()->getChannel(channelName);
     clientHandler->addChannelToList(channelName);
 
-    // Envoi des messages aux autres membres du canal
+    // Envoyer les messages aux autres membres du canal
     MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
     MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
     MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
