@@ -86,8 +86,8 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
 
     // Ajouter les paramètres pour les modes `k` et `l`
     modeMessage += " :";
-    if (!channel.getPassword().empty())
-        modeMessage += " " + channel.getPassword();
+    if (mode == "k")
+        modeMessage += channel.getPassword();
     if (mode == "l") {
         std::stringstream ss;
         ss << channel.getUserLimit();
@@ -100,9 +100,6 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
 
 
 void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
-    // std::string modeMessage = ":" + clientHandler->getServer()->getServerName() + " MODE " + channel.getName() +
-    //                           " +o " + targetClient->getNickname();
-    // sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::string modeMessage = "MODE " + channel.getName() + " +o " + targetClient->getNickname();
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
