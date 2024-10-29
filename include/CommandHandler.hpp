@@ -74,6 +74,8 @@ private:
     void kickingClientFromChannel(ClientHandler *targetClient, Channel &channel);
     void handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign, const char modeChar,
                             const std::string &param);
+    //fichier CommandName.cpp
+    void handleName(ClientHandler *clientHandler, const std::string &command);
 };
 
 #endif
