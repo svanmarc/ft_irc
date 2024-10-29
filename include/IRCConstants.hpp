@@ -38,6 +38,7 @@ public:
     static const int RPL_ENDOFMOTD = 376; // 376: End of MOTD command
     static const int RPL_QUIT = 0; // 0: Quit
 
+
     // Erreurs
     static const int ERR_UNKNOWNCOMMAND = 421; // 421: Unknown command
     static const int ERR_NICKNAMEINUSE = 433; // 433: Nickname is already in use
@@ -57,6 +58,7 @@ public:
     static const int ERR_NOTFOROTHERS = 502; // 502: Can't change mode for other users
     static const int ERR_USERONCHANNEL = 443; // 443: is already on channel
     static const int ERR_CHANOPRIVSNEEDED = 482; // 482: You're not channel operator
+    static const int ERR_KICKEDFROMCHAN = 470; // 470: You have been kicked from the channel
 };
 
 // from https://www.alien.net.au/irc/irc2numerics.html

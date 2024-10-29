@@ -50,6 +50,8 @@ public:
     static void sendErrorAlreadyInvited(ClientHandler *clientHandler, const std::string &nickname,
                                         const std::string &channelName);
     static void sendErrorNotChannelOperator(ClientHandler *clientHandler);
+    static void sendErrorNotEnoughParams(ClientHandler *clientHandler);
+    static void sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);
@@ -78,12 +80,14 @@ public:
     static void sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel);
     static void sendEndOfNamesList(ClientHandler *clientHandler, Channel &channel);
     static void sendInviteNotification(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
-    static void sendChannelModes(ClientHandler *clientHandler, Channel &channel,const std::string &modeSign, const std::string mode);
+    static void sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
+                                 const std::string mode);
     static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
 
-    //Fichier MessageFormater
+    // Fichier MessageFormater
     static std::string messageWithServerPrefixAndSender(ClientHandler *clientHandler, std::string &originalMessage);
 
+    static void sendMessageToClient(ClientHandler *clientHandler, const std::string &message);
 };
 
 

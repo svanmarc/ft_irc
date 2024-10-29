@@ -7,6 +7,9 @@ void Channel::addOperator(ClientHandler *client) {
     }
     m_operators.push_back(client);
     client->setOperator(true);
+    if (!isClientInvited(client)) {
+        inviteClient(client);
+    }
     std::cout << "Client " << client->getNickname() << " is now an operator of channel " << m_name << std::endl;
 }
 
@@ -20,6 +23,9 @@ void Channel::removeOperator(ClientHandler *client) {
         m_operators.erase(it);
         client->setOperator(false);
         std::cout << "Client " << client->getNickname() << " removed from operators of channel " << m_name << std::endl;
+        if (isClientInvited(client)) {
+            removeInvitedClient(client);
+        }
     } else {
         std::cerr << "Client " << client->getNickname() << " is not an operator of channel " << m_name << std::endl;
     }
