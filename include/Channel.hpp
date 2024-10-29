@@ -60,6 +60,7 @@ public:
     void setUserLimit(int userLimit);
     int getUserLimit() const;
     void removeUserLimit();
+    ClientHandler *getOwner() const;
 };
 
 #endif // CHANNEL_HPP

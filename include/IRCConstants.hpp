@@ -59,6 +59,7 @@ public:
     static const int ERR_USERONCHANNEL = 443; // 443: is already on channel
     static const int ERR_CHANOPRIVSNEEDED = 482; // 482: You're not channel operator
     static const int ERR_KICKEDFROMCHAN = 470; // 470: You have been kicked from the channel
+    static const int ERR_CHANOWNPRIVNEEDED = 499; // 499: You're not channel owner
 };
 
 // from https://www.alien.net.au/irc/irc2numerics.html

@@ -74,7 +74,7 @@ void MessageHandler::sendErrorNotInChannel(ClientHandler *clientHandler, const s
 }
 
 void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
-     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: No servername given");
 }
 
 void MessageHandler::sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName) {
@@ -87,7 +87,7 @@ void MessageHandler::sendErrorNoChangeModeForOther(ClientHandler *clientHandler)
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTFOROTHERS,
                                  clientHandler->getNickname() + " :Can't change mode for other users");
 }
-void MessageHandler::    sendErrorModeParams(ClientHandler *clientHandler) {
+void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
 }
 void MessageHandler::sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode) {
@@ -145,4 +145,9 @@ void MessageHandler::sendErrorNotEnoughParams(ClientHandler *clientHandler) {
 
 void MessageHandler::sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_KICKEDFROMCHAN, message);
+}
+
+void MessageHandler::sendErrorKickOwner(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANOWNPRIVNEEDED,
+                                 "Error: You can't kick the owner of the channel");
 }

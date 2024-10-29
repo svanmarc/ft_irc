@@ -52,6 +52,7 @@ public:
     static void sendErrorNotChannelOperator(ClientHandler *clientHandler);
     static void sendErrorNotEnoughParams(ClientHandler *clientHandler);
     static void sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message);
+    static void sendErrorKickOwner(ClientHandler *clientHandler);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);

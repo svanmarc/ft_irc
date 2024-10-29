@@ -21,3 +21,5 @@ void Channel::setUserLimit(int userLimit) { m_userLimit = userLimit; }
 int Channel::getUserLimit() const { return m_userLimit; }
 
 void Channel::removeUserLimit() { m_userLimit = 0; }
+
+ClientHandler *Channel::getOwner() const { return m_owner; }
