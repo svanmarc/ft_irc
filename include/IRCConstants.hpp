@@ -1,8 +1,29 @@
 #ifndef IRCCONSTANTS_H
 #define IRCCONSTANTS_H
 
+#include <string>
+
+
 class IRCConstants {
 public:
+
+    //colors
+    static const std::string COLOR_WHITE;
+    static const std::string COLOR_BLACK;
+    static const std::string COLOR_BLUE;
+    static const std::string COLOR_GREEN;
+    static const std::string COLOR_RED;
+    static const std::string COLOR_BROWN;
+    static const std::string COLOR_PURPLE;
+    static const std::string COLOR_ORANGE;
+    static const std::string COLOR_YELLOW;
+    static const std::string COLOR_LIGHT_GREEN;
+    static const std::string COLOR_TEAL;
+    static const std::string COLOR_LIGHT_BLUE;
+    static const std::string COLOR_PINK;
+    static const std::string COLOR_GREY;
+    static const std::string COLOR_RESET;
+    //irc commands
     static const int RPL_WELCOME = 001; // 001: Welcome to the Internet Relay Network
     static const int RPL_YOURHOST = 002; // 002: Your host is <server>, running version <version>
     static const int RPL_CREATED = 003; // 003: This server was created <date>

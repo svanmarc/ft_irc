@@ -25,7 +25,7 @@ void Channel::removeUserLimit() { m_userLimit = 0; }
 ClientHandler *Channel::getOwner() const { return m_owner; }
 
 std::string Channel::getModes() const {
-    std::string modes = "+";
+    std::string modes = "";
     if (m_inviteOnly) {
         modes += "i";
     }
@@ -38,5 +38,9 @@ std::string Channel::getModes() const {
     if (m_userLimit > 0) {
         modes += "l";
     }
+    if (modes.size() > 0) {
+        return "+" + modes;
+    }
     return modes;
+
 }

@@ -46,5 +46,5 @@ void CommandHandler::handleList(ClientHandler *clientHandler, const std::string 
 
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
     MessageHandler::sendChannelList(clientHandler, channel);
-    MessageHandler::sendEndOfList(clientHandler, channel);
+    MessageHandler::sendEndOfList(clientHandler);
 }

@@ -108,27 +108,27 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
 
 void MessageHandler::sendChannelList(ClientHandler *clientHandler, Channel &channel) {
     std::stringstream ss;
-    ss << channel.getName() << " " << static_cast<int>(channel.getNumberOfClients()) << " [" << channel.getModes() << "]";
-    sendResponse(clientHandler, IRCConstants::RPL_LIST, ss.str());
+    ss << clientHandler->getNickname() + " " + channel.getName() << " " << static_cast<int>(channel.getNumberOfClients()) << " [modes : " << channel.getModes() << "] :" + channel.getTopic();
+    sendResponse(clientHandler,322, ss.str());
+}
+
+void MessageHandler::sendEndOfList(ClientHandler *clientHandler) {
+    sendResponse(clientHandler, 323, clientHandler->getNickname() +  ": " + IRCConstants::COLOR_YELLOW + "End of list" + IRCConstants::COLOR_RESET);
+}
+
+void MessageHandler::sendStartOfList(ClientHandler *clientHandler) {
+    sendResponse(clientHandler, 321, clientHandler->getNickname() +  " Channel :Users Name");
 }
 
 void MessageHandler::sendChannelsList(ClientHandler *clientHandler) {
-    std::string message = "Channel list: ";
+    sendStartOfList(clientHandler);
     std::vector<Channel> channels = clientHandler->getServer()->getChannels();
+    sendResponse(clientHandler, 322,clientHandler->getNickname() + ": " + IRCConstants::COLOR_GREEN +  "List of Channels"  + IRCConstants::COLOR_RESET) ;
     for (std::vector<Channel>::iterator it = channels.begin(); it != channels.end(); ++it) {
         Channel channel = *it;
         sendChannelList(clientHandler, channel);
     }
-    sendResponse(clientHandler, 0, message);
-}
-
-void MessageHandler::sendEndOfList(ClientHandler *clientHandler, Channel &channel) {
-    //: irc.example.com 366 yourNick #test :End of NAMES list
-    std::string message = clientHandler->getUser().getNickname();
-    message += " " + channel.getName();
-    message += " :End of LIST";
-    std::cout << "Sending End of NAMES list new client " << message << std::endl;
-    sendResponse(clientHandler, IRCConstants::RPL_ENDOFNAMES, message);
+    sendEndOfList(clientHandler);
 }
 
 void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std::string &message) {

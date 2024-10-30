@@ -39,7 +39,7 @@ void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(
         clientHandler, 0,
         " 001 " + clientHandler->getUser().getNickname() +
-        " :Welcome to the Internet Relay Network " +
+        " :" + IRCConstants::COLOR_BROWN +  "Welcome to the Internet Relay Network " + IRCConstants::COLOR_BROWN +
         clientHandler->getUser().getNickname() + "!" +
         clientHandler->getUser().getUsername() + "@localhost"
     );
@@ -91,7 +91,7 @@ void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(
         clientHandler, 0,
         std::string(" 251 ") + clientHandler->getUser().getNickname() +
-        " :There are " + nbClients + " users and 0 services on 1 servers"
+        " :" + IRCConstants::COLOR_LIGHT_BLUE + "There are " + nbClients + " users and 0 services on 1 servers" + IRCConstants::COLOR_RESET
     );
 
     std::stringstream ss2;
@@ -109,14 +109,14 @@ void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(
         clientHandler, 0,
         " 375 " + clientHandler->getUser().getNickname() +
-        " :- irc.localhost Message of the Day - " + randomMessage
+        " :- irc.localhost Message of the Day - " +  IRCConstants::COLOR_ORANGE  +randomMessage + IRCConstants::COLOR_RESET
     );
 
     // MOTD Content
     MessageHandler::sendResponse(
         clientHandler, 0,
         " 372 " + clientHandler->getUser().getNickname() +
-        " :-                          [ Don't Panic! ]"
+        " : " + IRCConstants::COLOR_PINK  + " -                          [ Don't Panic! ]" + IRCConstants::COLOR_RESET
     );
 
     // MOTD End
