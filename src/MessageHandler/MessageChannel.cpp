@@ -99,7 +99,6 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
 
-
 void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
     std::string modeMessage = "MODE " + channel.getName() + " +o " + targetClient->getNickname();
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
@@ -107,6 +106,30 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
     std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
 
+void MessageHandler::sendChannelList(ClientHandler *clientHandler, Channel &channel) {
+    std::stringstream ss;
+    ss << channel.getName() << " " << static_cast<int>(channel.getNumberOfClients()) << " [" << channel.getModes() << "]";
+    sendResponse(clientHandler, IRCConstants::RPL_LIST, ss.str());
+}
+
+void MessageHandler::sendChannelsList(ClientHandler *clientHandler) {
+    std::string message = "Channel list: ";
+    std::vector<Channel> channels = clientHandler->getServer()->getChannels();
+    for (std::vector<Channel>::iterator it = channels.begin(); it != channels.end(); ++it) {
+        Channel channel = *it;
+        sendChannelList(clientHandler, channel);
+    }
+    sendResponse(clientHandler, 0, message);
+}
+
+void MessageHandler::sendEndOfList(ClientHandler *clientHandler, Channel &channel) {
+    //: irc.example.com 366 yourNick #test :End of NAMES list
+    std::string message = clientHandler->getUser().getNickname();
+    message += " " + channel.getName();
+    message += " :End of LIST";
+    std::cout << "Sending End of NAMES list new client " << message << std::endl;
+    sendResponse(clientHandler, IRCConstants::RPL_ENDOFNAMES, message);
+}
 
 void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std::string &message) {
     sendMessage(clientHandler->getSocket(), message);

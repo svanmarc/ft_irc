@@ -76,6 +76,7 @@ private:
                             const std::string &param);
     //fichier CommandName.cpp
     void handleName(ClientHandler *clientHandler, const std::string &command);
+    void handleList(ClientHandler *clientHandler, const std::string &command);
 };
 
 #endif

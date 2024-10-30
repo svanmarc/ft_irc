@@ -4,6 +4,7 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
                                          const std::string &param) {
     try {
         if (mode.size() < 2 || (mode[0] != '+' && mode[0] != '-')) {
+            std::cout << "Invalid mode format" << mode[0] << std::endl;
             throw std::invalid_argument("Invalid mode format");
         }
 

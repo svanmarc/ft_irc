@@ -84,7 +84,9 @@ public:
     static void sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
                                  const std::string mode);
     static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
-
+    static void sendChannelList(ClientHandler *clientHandler, Channel &channel);
+    static void sendChannelsList(ClientHandler *clientHandler);
+    static void sendEndOfList(ClientHandler *clientHandler, Channel &channel);
     // Fichier MessageFormater
     static std::string messageWithServerPrefixAndSender(ClientHandler *clientHandler, std::string &originalMessage);
 

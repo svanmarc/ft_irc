@@ -110,6 +110,7 @@ bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
     }
 }
 
+std::vector<Channel> &Server::getChannels() { return m_channels; }
 // bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
 //     try {
 //         if (checkIfChannelExists(name)) {

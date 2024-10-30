@@ -9,26 +9,122 @@ void MessageHandler::sendCAP(ClientHandler *clientHandler) {
 
 void MessageHandler::sendNothing(std::string &cmd) { std::cout << "CMD : " + cmd + " : NO REPONSE" << std::endl; }
 
+const char* messages[] = {
+    "Don't Panic! And Welcome to our IRC Server",
+    "Time is an illusion. IRC time doubly so",
+    "So long, and thanks for all the messages!",
+    "Welcome to IRC - Better than the Infinite Improbability Drive",
+    "The Answer to IRC, the Universe and Everything is 42",
+    "Beware of the Leopard... and spam bots",
+    "Share and Enjoy - Sirius Cybernetics Corporation",
+    "Warning: IRC may contain traces of Pan Galactic Gargle Blaster",
+    "Our IRC is mostly harmless",
+    "Welcome! Did you bring your towel?",
+    "Powered by Babel Fish Technology",
+    "This IRC server was not made by the Vogons",
+    "Please do not feed the Bugblatter Beast of Traal",
+    "Today's special: Tea. Almost, but not quite, entirely unlike real tea",
+    "Warning: Channel names longer than 30 letters can cause the end of the universe"
+};
+
+std::string getRandomMOTD() {
+    int index = std::rand() % 15;
+    return std::string(messages[index]);
+}
+
+
 void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
-    //:*.localhost 001 client2 :Welcome to the Internet Relay Network client2!root@127.0.0.1.hosted-by-42lausanne.ch
+    // Basic welcome messages (001-004)
+    std::string randomMessage = getRandomMOTD();
     MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 001 " + clientHandler->getUser().getNickname() +
+        " :Welcome to the Internet Relay Network " +
+        clientHandler->getUser().getNickname() + "!" +
+        clientHandler->getUser().getUsername() + "@localhost"
+    );
+
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 002 " + clientHandler->getUser().getNickname() +
+        " :Your host is irc.localhost, running version 2.11.2p3"
+    );
+
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 003 " + clientHandler->getUser().getNickname() +
+        " :This server was created Sun Oct 3 2021 at 19:41:26 UTC"
+    );
+
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 004 " + clientHandler->getUser().getNickname() +
+        " :irc.localhost 2.11.2p3 aoOirw abeiIklmnoOpqrRstv"
+    );
+
+    // Server capabilities (005)
+    std::string capabilities[] = {
+        "RFC2812 PREFIX=(ov)@+ CHANTYPES=#&!+ MODES=3 CHANLIMIT=#&!+:21 NICKLEN=15 TOPICLEN=255 KICKLEN=255 MAXLIST=beIR:64 CHANNELLEN=50",
+        "IDCHAN=!:5 CHANMODES=beIR,k,l,imnpstaqr",
+        "PENALTY FNC EXCEPTS=e INVEX=I CASEMAPPING=ascii NETWORK=ExampleNet"
+    };
+
+    for (size_t i = 0; i < 3; ++i) {
+        MessageHandler::sendResponse(
             clientHandler, 0,
-            " 001 " + clientHandler->getUser().getNickname() + " :Welcome to the Internet Relay Network " +
-                    clientHandler->getUser().getNickname() + "!" + clientHandler->getUser().getUsername() + "@" +
-                    clientHandler->getUser().getHostname());
-    //:*.localhost 002 client2 :Your host is *.localhost, running version 1.0
-    MessageHandler::sendResponse(clientHandler, 0,
-                                 " 002 " + clientHandler->getUser().getNickname() + " :Your host is " +
-                                         clientHandler->getServer()->getServerName() + ", running version 1.0");
-    //:*.42irc.net 003 client2 :This server was created Thu Oct 17 14:16:27 2024
-    MessageHandler::sendResponse(clientHandler, 0,
-                                 " 003 " + clientHandler->getUser().getNickname() +
-                                         " :This server was created This server was created Thu Oct 17 14:16:27 2024");
-    //:*.localhost 004 client2 :*.42irc.net 1.0 Channel modes +ntikl
-    MessageHandler::sendResponse(clientHandler, 0,
-                                 " 004 " + clientHandler->getUser().getNickname() + " :" +
-                                         clientHandler->getServer()->getServerName() + " 1.0 Channel modes +ntikl");
-    sendCAP(clientHandler);
+            std::string(" 005 ") + clientHandler->getUser().getNickname() +
+            " :" + capabilities[i] + " are supported by this server"
+        );
+    }
+
+    // Unique ID (deterministic or random as needed)
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 042 " + clientHandler->getUser().getNickname() + " :000AAAAAI your unique ID"
+    );
+
+    // Server statistics
+
+    std::stringstream ss;
+    ss << clientHandler->getServer()->getClients().size();
+    std::string nbClients = ss.str();
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        std::string(" 251 ") + clientHandler->getUser().getNickname() +
+        " :There are " + nbClients + " users and 0 services on 1 servers"
+    );
+
+    std::stringstream ss2;
+    ss2 << clientHandler->getServer()->getChannels().size();
+    std::string nbChannels = ss2.str();
+
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 254 " + clientHandler->getUser().getNickname() +
+        " :" + nbChannels + " channels formed"
+    );
+
+
+    // MOTD Header
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 375 " + clientHandler->getUser().getNickname() +
+        " :- irc.localhost Message of the Day - " + randomMessage
+    );
+
+    // MOTD Content
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 372 " + clientHandler->getUser().getNickname() +
+        " :-                          [ Don't Panic! ]"
+    );
+
+    // MOTD End
+    MessageHandler::sendResponse(
+        clientHandler, 0,
+        " 376 " + clientHandler->getUser().getNickname() +
+        " :- "
+    );
 }
 void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std::string &oldNickName,
                                         const std::string &newNickName) {
