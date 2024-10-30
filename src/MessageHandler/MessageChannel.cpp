@@ -108,7 +108,7 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
 
 void MessageHandler::sendChannelList(ClientHandler *clientHandler, Channel &channel) {
     std::stringstream ss;
-    ss << clientHandler->getNickname() + " " + channel.getName() << " " << static_cast<int>(channel.getNumberOfClients()) << " [modes : " << channel.getModes() << "] :" + channel.getTopic();
+    ss << clientHandler->getNickname() + " " + channel.getName() << " " << static_cast<int>(channel.getNumberOfClients()) << " [modes ::" << channel.getModes() << "] :" + channel.getTopic();
     sendResponse(clientHandler,322, ss.str());
 }
 
