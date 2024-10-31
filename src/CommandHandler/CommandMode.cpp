@@ -113,7 +113,6 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
             }
             userModeHandler(clientHandler, mode);
         }
-        MessageHandler::sendModeChange(clientHandler, mode, target);
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         MessageHandler::sendErrorNoSuchChannel(clientHandler, target);
@@ -197,17 +196,11 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
         }
         channel.setPassword(param);
         std::cout << "Password set for channel: " << param << std::endl;
-        std::string modeMessage = "MODE " + channel.getName() + " +k";
-        modeMessage = MessageHandler::messageWithServerPrefixAndSender(clientHandler, modeMessage);
-        MessageHandler::sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
         return true;
 
     } else {
         channel.setPassword("");
         std::cout << "Password removed for channel" << std::endl;
-        std::string modeMessage = "MODE " + channel.getName() + " -k";
-        modeMessage = MessageHandler::messageWithServerPrefixAndSender(clientHandler, modeMessage);
-        MessageHandler::sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
         return true;
     }
 }
