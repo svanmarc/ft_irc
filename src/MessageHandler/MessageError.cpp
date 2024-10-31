@@ -175,3 +175,11 @@ void MessageHandler::sendErrorPwdNeeded(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorBadMode(ClientHandler *clientHandler, const std::string &mode) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE, "Error: Bad mode " + mode);
 }
+
+void MessageHandler::sendError(ClientHandler *clientHandler, int code, const std::string &channel,
+                               const std::string &message) {
+    std::ostringstream response;
+    response << ":" << clientHandler->getServer()->getServerName() << " " << code << " " << clientHandler->getNickname()
+             << " " << channel << " :" << message;
+    sendMessage(clientHandler->getSocket(), response.str());
+}

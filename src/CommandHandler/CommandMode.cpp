@@ -17,10 +17,6 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
         } else if (modeChar == 't') {
             channel.setTopicProtection(modeSign == '+');
         } else if (modeChar == 'k') {
-            // if (modeSign == '+' && param.empty()) {
-            //     MessageHandler::sendErrorNotEnoughParams(clientHandler);
-            //     return;
-            // }
             if (!handlePasswordMode(clientHandler, channel, modeSign, param)) {
                 return;
             }
@@ -67,10 +63,6 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
     std::string mode = parts[2];
     std::string target = parts[1];
     std::string param = parts.size() > 3 ? parts[3] : "";
-    // if (parts.size() > 4) {
-    //     MessageHandler::sendErrorModeParams(clientHandler);
-    //     return;
-    // }
 
     if (mode.size() != 2) {
         MessageHandler::sendErrorBadMode(clientHandler, mode);
@@ -82,20 +74,26 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
 
         if (target[0] == '#') {
             Channel &channel = clientHandler->getServer()->getChannel(target);
+            std::string errormsg = "Mode " + channel.getName();
             if (!channel.checkIfClientIsInChannel(clientHandler)) {
-                MessageHandler::sendErrorNotInChannel(clientHandler, target);
+                errormsg += " :You're not in that channel";
+                MessageHandler::sendMessageToClient(clientHandler, errormsg);
                 return;
             }
-            // Vérifiez si le client est opérateur pour tous les modes
-            if (mode[1] == 'o' || mode[1] == 'i' || mode[1] == 't' || mode[1] == 'k' || mode[1] == 'l') {
+            if (isValidModeChar(mode[1])) {
                 if (!channel.checkIfClientIsOperator(clientHandler)) {
                     std::cerr << clientHandler->getUser().getNickname() << " is not an operator, denying request."
                               << std::endl;
-                    MessageHandler::sendErrorNotChannelOperator(clientHandler);
+                    errormsg += " :You're not a channel operator";
+                    MessageHandler::sendMessageToClient(clientHandler, errormsg);
                     return;
                 }
+            } else {
+                errormsg += " :Unknown mode";
+                MessageHandler::sendMessageToClient(clientHandler, errormsg);
+                return;
             }
-            // Traitez les modes
+
             if (mode[1] == 'o') {
                 std::string target = parts[3];
                 std::cout << "Client " << clientHandler->getNickname() << " requested to change mode " << mode
@@ -168,14 +166,12 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
     if (modeSign == '+') {
         if (param.empty()) {
             pwError += ":Password cannot be empty";
-            pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
             MessageHandler::sendMessageToClient(clientHandler, pwError);
             return false;
         }
 
         if (param.find(' ') != std::string::npos) {
             pwError += ":Password cannot contain spaces";
-            pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
             MessageHandler::sendMessageToClient(clientHandler, pwError);
             return false;
         }
@@ -183,14 +179,12 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
             char c = param[i];
             if (!isalnum(c)) {
                 pwError += ":Password must contain only alphanumeric characters";
-                pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
                 MessageHandler::sendMessageToClient(clientHandler, pwError);
                 return false;
             }
         }
         if (param.size() < 3 || param.size() > 20) {
             pwError += ":Password must be between 3 and 20 characters";
-            pwError = MessageHandler::messageWithServerPrefixAndSender(clientHandler, pwError);
             MessageHandler::sendMessageToClient(clientHandler, pwError);
             return false;
         }
@@ -203,4 +197,8 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
         std::cout << "Password removed for channel" << std::endl;
         return true;
     }
+}
+
+bool CommandHandler::isValidModeChar(char modeChar) {
+    return modeChar == 'o' || modeChar == 'i' || modeChar == 't' || modeChar == 'k' || modeChar == 'l';
 }

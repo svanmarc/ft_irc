@@ -94,7 +94,7 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
         modeMessage += ss.str();
     }
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
-    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
 
@@ -108,5 +108,7 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
 
 
 void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std::string &message) {
-    sendMessage(clientHandler->getSocket(), message);
+    std::string msgToSend = message;
+    msgToSend = messageWithServerPrefixAndSender(clientHandler, msgToSend);
+    sendMessage(clientHandler->getSocket(), msgToSend);
 }

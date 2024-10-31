@@ -28,10 +28,11 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
         }
 
         if (channel.isPasswordProtected() && channel.getPassword() != channelPwdClientGiven) {
-            MessageHandler::sendErrorBadChannelKey(clientHandler, channelName);
-            return;
+            if (!channel.isClientInvited(clientHandler)) {
+                MessageHandler::sendErrorBadChannelKey(clientHandler, channelName);
+                return;
+            }
         }
-
         std::vector<ClientHandler *>::size_type userLimit =
                 static_cast<std::vector<ClientHandler *>::size_type>(channel.getUserLimit());
         if (userLimit > 0 && channel.getClients().size() >= userLimit) {

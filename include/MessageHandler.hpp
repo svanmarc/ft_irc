@@ -58,6 +58,8 @@ public:
     static void sendErrorBadFormatPwd(ClientHandler *clientHandler);
     static void sendErrorPwdNeeded(ClientHandler *clientHandler);
     static void sendErrorBadMode(ClientHandler *clientHandler, const std::string &mode);
+    static void sendError(ClientHandler *clientHandler, int code, const std::string &channel,
+                          const std::string &message);
 
     // fichier MessageUser.cpp
     static void sendCAP(ClientHandler *client_handler);

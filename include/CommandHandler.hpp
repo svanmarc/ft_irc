@@ -61,6 +61,7 @@ private:
     void channelModelHandler(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                              const std::string &param);
     void userModeHandler(ClientHandler *clientHandler, const std::string &mode);
+    bool isValidModeChar(const char modeChar);
 
     // CommandQuit.cpp
     void handleQuit(ClientHandler *clientHandler, const std::string &command);
