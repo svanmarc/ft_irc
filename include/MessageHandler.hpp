@@ -63,12 +63,13 @@ public:
     static void sendAuthentificationSuccess(ClientHandler *clientHandler);
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget, const std::string &message,
                                   bool notice);
+    static void sendModeChannel(ClientHandler *clientHandler, Channel &channel);
     static void sendModeChange(ClientHandler *clientHandler, const std::string &mode, const std::string &target);
     static void sendGoodbye(ClientHandler *clientHandler);
 
     // Fichier MessageWhois
-    static void MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
+    static void MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
     static void MessageWhoisNoGiven(ClientHandler *clientHandler);
     static void sendPong(ClientHandler *clientHandler);
@@ -92,7 +93,7 @@ public:
 
     // Fichier MessageFormater
     static std::string messageWithServerPrefixAndSender(ClientHandler *clientHandler, std::string &originalMessage);
-
+    static std::string MessageWhoisFormat(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void sendMessageToClient(ClientHandler *clientHandler, const std::string &message);
 };
 

@@ -53,3 +53,5 @@ void User::Register(const std::string &nickname, const std::string &userMode, co
     m_connectionTime = std::time(0);
     m_lastActivityTime = std::time(0);
 }
+std::time_t User::getConnectionTime() const { return m_connectionTime; }
+std::time_t User::getLastActivityTime() const { return m_lastActivityTime; }

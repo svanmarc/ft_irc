@@ -35,7 +35,7 @@ public:
     static const int RPL_UNAWAY = 305; // 305: You are no longer marked as being away
     static const int RPL_NOWAWAY = 306; // 306: You have been marked as being away
     static const int RPL_WHOISUSER = 311; // 311: <nick> <user> <host> * :<real name>
-    static const int RPL_WHOISSERVER = 312; // 312: <nick> <server> :<server info>
+    static const int RPL_WHOISSERVER = 378; // 312: <nick> <server> :<server info>
     static const int RPL_WHOISOPERATOR = 313; // 313: <nick> :is an IRC operator
     static const int RPL_WHOISIDLE = 317; // 317: <nick> <seconds> :seconds idle
     static const int RPL_ENDOFWHOIS = 318; // 318: End of WHOIS list

@@ -27,6 +27,8 @@ public:
     bool isAuthenticated() const;
     void setAuthenticated(bool isAuthenticated);
     bool operator==(const User &other) const;
+    std::time_t getConnectionTime() const;
+    std::time_t getLastActivityTime() const;
     void Register(const std::string &nickname, const std::string &userMode, const std::string &username,
                   const std::string &realname, const std::string &hostname, const std::string &servername);
 

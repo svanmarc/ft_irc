@@ -66,6 +66,18 @@ void CommandHandler::userModeHandler(ClientHandler *clientHandler, const std::st
 void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
+    std::cout << "Handling mode command" << std::endl;
+     if (parts.size() == 2  && parts[1].find("#") == 0) {
+        std::cout << "Mode for channel"<< parts[1].find("#") << std::endl;
+        std::string channelName = parts[1];
+        Channel &channel = clientHandler->getServer()->getChannel(channelName);
+        if (!channel.checkIfClientIsInChannel(clientHandler)) {
+            MessageHandler::sendErrorNotInChannel(clientHandler, channelName);
+            return;
+        }
+        MessageHandler::sendModeChannel(clientHandler, channel);
+        return;
+    }
 
     if (parts.size() < 3 || parts[1].empty() || parts[2].empty()) {
         MessageHandler::sendErrorModeParams(clientHandler);
@@ -75,7 +87,6 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
     std::string mode = parts[2];
     std::string target = parts[1];
     std::string param = parts.size() > 3 ? parts[3] : "";
-
     try {
         std::cout << "Handling mode for target: " << target << " with mode: " << mode << std::endl;
 

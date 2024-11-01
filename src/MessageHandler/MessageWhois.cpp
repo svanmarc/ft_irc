@@ -1,31 +1,58 @@
 #include "MessageHandler.hpp"
 
 
-void MessageHandler::MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient) {
-    std::string response = std::string(clientHandler->getNickname() + " ");
-    response += std::string(targetClient->getNickname() + " ");
-    response += std::string(targetClient->getUser().getUsername() + " ");
-    response += std::string(targetClient->getUser().getHostname() + " * :");
-    response += std::string(targetClient->getUser().getRealname());
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WHOISUSER, response);
 
+
+void MessageHandler::MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient) {
+    std::string response = MessageHandler::MessageWhoisFormat(clientHandler, targetClient);
+    response += std::string(targetClient->getUser().getRealname()) + " " + targetClient->getServer()->getServerName() + " ";
+    response += std::string(" * :") + targetClient->getUser().getNickname();
+    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WHOISUSER, response);
 }
 
+
 void MessageHandler::MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient) {
-    MessageWhoisUser(clientHandler, targetClient);
-    std::string const repWhoisserver = std::string(targetClient->getNickname() + " localhost :Server description");
-    std::string const repWhoisChannels = std::string(targetClient->getNickname() + " :{[@|+]<channel><space>}");
-    std::string const repWhoisIdl = std::string(targetClient->getNickname() + " 0 0 :seconds idle, signon time");
-    std::string const repWhoisEnd = std::string(targetClient->getNickname() + " :End of /WHOIS list");
+    std::string serverName = clientHandler->getServer()->getServerName();
+    std::string templagte = ":" + serverName + " ";
+    std::string nickName = targetClient->getUser().getNickname();
+    std::string realname = targetClient->getUser().getRealname();
+    std::string userServer = targetClient->getServer()->getServerName();
+    std::string realnameTile = " ~" + realname;
 
+    std::string w1 = templagte +  "311 " + nickName + " " +  nickName + realname + realnameTile + " " + userServer + " * :" + realname;
+    std::string w3 = templagte + "312 " + nickName + " " + nickName + serverName + ": ubuntu-linux default configuration";
 
-    MessageWhoisUser(clientHandler, targetClient);
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WHOISSERVER, repWhoisserver);
-    //A faire le calcul du temps de connexion
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WHOISIDLE, repWhoisIdl);
-    // A FAIRE quand on onra fait les channels
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_WHOISCHANNELS, repWhoisChannels);
-    MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_ENDOFWHOIS, repWhoisEnd);
+    // Calculer le temps d'inactivité
+    std::time_t now = std::time(0);
+    std::time_t signonTime = clientHandler->getUser().getConnectionTime();
+
+    std::time_t idleTime = std::difftime(now, signonTime);
+    std::ostringstream idleTimeStr;
+    std::ostringstream signonTimeStr;
+    idleTimeStr << static_cast<long>(idleTime);
+    signonTimeStr << static_cast<long>(signonTime);
+
+    std::string w4 = templagte + "317 " + nickName + " " + nickName + " " +
+                     idleTimeStr.str() + " " + signonTimeStr.str() + " :seconds idle, signon time";
+    std::string w5 = templagte + "318 " + nickName + " " + nickName + " :End of /WHOIS list.";
+
+    std::cout << "MessageWhois " << targetClient->getUser().getNickname() << std::endl;
+
+    std::vector<std::string> channels = targetClient->getChannels();
+    std::string targetChannels = "";
+    for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it) {
+        targetChannels += *it + " ";
+    }
+    //:irc.localhost 319 u u :#t #e
+    std::string w6 = templagte + "319 " + nickName + " " + nickName + " :" + targetChannels;
+
+    MessageHandler::sendMessage(clientHandler->getSocket(), w1);
+    if (channels.size() > 0)
+        MessageHandler::sendMessage(clientHandler->getSocket(), w6);
+    MessageHandler::sendMessage(clientHandler->getSocket(), w3);
+    MessageHandler::sendMessage(clientHandler->getSocket(), w4);
+    MessageHandler::sendMessage(clientHandler->getSocket(), w5);
+
 }
 
 void MessageHandler::MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname) {

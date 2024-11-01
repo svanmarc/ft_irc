@@ -147,15 +147,15 @@ void MessageHandler::sendMessageToUser(ClientHandler *clientHandlerSender, Clien
     MessageHandler::sendUserMsg(clientTarget, message, clientHandlerSender, notice);
 }
 
-
-// void MessageHandler::sendModeChange(ClientHandler *clientHandler, const std::string &mode, const std::string &target)
-// {
-//     const std::string response = ":" + clientHandler->getUser().getNickname() + "!" +
-//                                  clientHandler->getUser().getUsername() + "@" +
-//                                  clientHandler->getServer()->getServerName() + " MODE " + target + " " + mode;
-//     MessageHandler::sendMessage(clientHandler->getSocket(), response);
-// }
-
+void MessageHandler::sendModeChannel(ClientHandler *clientHandler, Channel &channel) {
+    std::string response = " MODE ";
+    response += channel.getName();
+    response += " +";
+    response += channel.getModes();
+    response += " ";
+    response += channel.getTopic();
+    MessageHandler::sendResponse(clientHandler, messageWithServerPrefixAndSender(clientHandler, response));
+}
 void MessageHandler::sendModeChange(ClientHandler *clientHandler, const std::string &mode, const std::string &target) {
     std::string modeMessage = "MODE " + target + " " + mode;
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);

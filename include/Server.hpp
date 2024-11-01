@@ -25,6 +25,7 @@ public:
     const std::vector<ClientHandler *> &getClients() const { return clients; }
     bool authenticate(const std::string &clientPassword) const;
     ClientHandler *findClientByNickname(const std::string &nickname) const;
+    std::time_t getStartTime() const;
 
 private:
     int m_serverSocket;
@@ -35,6 +36,7 @@ private:
     CommandHandler *commandHandler;
     std::vector<Channel> m_channels;
     std::string m_serverName;
+    std::time_t m_startTime;
 
     // Fonctions pour les sockets
     void setupSocket(int port);

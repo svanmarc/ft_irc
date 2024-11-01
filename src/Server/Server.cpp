@@ -7,7 +7,7 @@ Server::Server(const int port, const std::string &password) : m_password(passwor
     commandHandler = new CommandHandler(*this);
     // Ajouter le socket d'écoute à la liste des descripteurs surveillés par `poll`
     const struct pollfd serverPollFD = {m_serverSocket, POLLIN, 0};
-    // Ajouter au vecteur `fds`
+    m_startTime = std::time(0);
     fds.push_back(serverPollFD);
 }
 
@@ -111,34 +111,7 @@ bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
 }
 
 std::vector<Channel> &Server::getChannels() { return m_channels; }
-// bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
-//     try {
-//         if (checkIfChannelExists(name)) {
-//             std::cout << "Channel already exists, adding user" << std::endl;
-//             // Récupérer une référence au canal existant et ajouter le client
-//             Channel &existingChannel = getChannel(name);
-//             if (existingChannel.checkIfClientIsInChannel(newClient)) {
-//                 std::cerr << "User already in channel" << std::endl;
-//                 return false;
-//             }
-//             if (existingChannel.getInviteOnly() && !existingChannel.isClientInvited(newClient)) {
-//                 MessageHandler::sendErrorInviteOnly(newClient, name);
-//                 std::cerr << "Channel is invite only and client is not invited" << std::endl;
-//                 return false;
-//             }
-//             existingChannel.addClient(newClient);
-//             return true;
-//         }
-//         // Si le canal n'existe pas, créer un nouveau canal et ajouter le client
-//         Channel newChannel(name, newClient);
-//         m_channels.push_back(newChannel);
-//         return true;
-//     } catch (const std::exception &e) {
-//         std::cerr << "Exception: " << e.what() << std::endl;
-//         return false;
-//     }
-// }
-
+std::time_t Server::getStartTime() const { return m_startTime; }
 bool Server::checkNickname(const std::string &nickname) {
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getUser().getNickname() == nickname) {
