@@ -21,23 +21,16 @@ void MessageHandler::MessageWhois(ClientHandler *clientHandler, ClientHandler *t
 
     std::string w1 = templagte +  "311 " + nickName + " " +  nickName + realname + realnameTile + " " + userServer + " * :" + realname;
     std::string w3 = templagte + "312 " + nickName + " " + nickName + serverName + ": ubuntu-linux default configuration";
-
-    // Calculer le temps d'inactivité
     std::time_t now = std::time(0);
     std::time_t signonTime = clientHandler->getUser().getConnectionTime();
-
     std::time_t idleTime = std::difftime(now, signonTime);
     std::ostringstream idleTimeStr;
     std::ostringstream signonTimeStr;
     idleTimeStr << static_cast<long>(idleTime);
     signonTimeStr << static_cast<long>(signonTime);
-
     std::string w4 = templagte + "317 " + nickName + " " + nickName + " " +
                      idleTimeStr.str() + " " + signonTimeStr.str() + " :seconds idle, signon time";
     std::string w5 = templagte + "318 " + nickName + " " + nickName + " :End of /WHOIS list.";
-
-    std::cout << "MessageWhois " << targetClient->getUser().getNickname() << std::endl;
-
     std::vector<std::string> channels = targetClient->getChannels();
     std::string targetChannels = "";
     for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it) {
