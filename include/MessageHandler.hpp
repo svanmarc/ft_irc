@@ -90,7 +90,8 @@ public:
     static void sendInviteNotification(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
     static void sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
                                  const std::string mode);
-    static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
+    static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel,
+                           const std::string &modeSign);
 
     // Fichier MessageFormater
     static std::string messageWithServerPrefixAndSender(ClientHandler *clientHandler, std::string &originalMessage);

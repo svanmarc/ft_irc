@@ -66,13 +66,10 @@ void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &c
 
 void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, ClientHandler *invitedClient,
                                             Channel &channel) {
-    // Construire le message d'invitation pour l'utilisateur invité
     std::string tempMessage = "INVITE " + invitedClient->getNickname() + " :" + channel.getName();
     std::string inviteMessage = messageWithServerPrefixAndSender(invitingClient, tempMessage);
-    // Envoyer l'invitation à l'utilisateur invité
     sendMessage(invitedClient->getSocket(), inviteMessage);
 
-    // Optionnel : Notifier l'utilisateur qui a envoyé l'invitation
     std::string notifyMessage = "You have invited " + invitedClient->getNickname() + " to " + channel.getName();
     sendMessage(invitingClient->getSocket(), notifyMessage);
 }
@@ -81,10 +78,8 @@ void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, Clien
 void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
                                       const std::string mode) {
 
-    // Construction du message sans crochets
     std::string modeMessage = "MODE " + channel.getName() + " " + modeSign + mode;
 
-    // Ajouter les paramètres pour les modes `k` et `l`
     modeMessage += " :";
     if (mode == "k")
         modeMessage += channel.getPassword();
@@ -99,8 +94,9 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
 }
 
 
-void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel) {
-    std::string modeMessage = "MODE " + channel.getName() + " +o " + targetClient->getNickname();
+void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel,
+                                const std::string &modeSign) {
+    std::string modeMessage = "MODE " + channel.getName() + " " + modeSign + "o " + targetClient->getNickname();
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
     sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
     std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
