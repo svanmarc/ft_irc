@@ -23,7 +23,8 @@ public:
     static void sendErrorNoAuth(ClientHandler *clientHandler, const std::string &command);
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoNickNameGiven(ClientHandler *clientHandler);
-    static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
+    // static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
+    static void sendErrorNoSuchNick(ClientHandler *clientHandler);
     static void sendErrorNickNameTooLong(ClientHandler *clientHandler);
     static void sendErrorNickNameInvalidCharacters(ClientHandler *clientHandler);
     static void sendErrorNoUserParams(ClientHandler *clientHandler);
@@ -38,7 +39,7 @@ public:
     static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
     static void sendErrorNoPingParams(ClientHandler *clientHandler);
-    static void sendErrorModeParams(ClientHandler *clientHandler);
+    static void sendErrorModeNeedMoreParams(ClientHandler *clientHandler);
     static void sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode);
     static void sendErrorNoChangeModeForOther(ClientHandler *clientHandler);
     static void sendErrorUnknownMode(ClientHandler *clientHandler, const std::string &mode);

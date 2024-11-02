@@ -40,11 +40,13 @@ void CommandHandler::handleKick(ClientHandler *clientHandler, const std::string 
         // Retirez le client du canal
         targetClient->leaveChannel(channelName);
         channel.removeClient(targetClient);
+        channel.removeInvitedClient(targetClient);
         targetClient->setInvited(false);
 
         std::cout << "Client " << targetClient->getNickname() << " a été expulsé du canal " << channelName << std::endl;
     } else {
-        MessageHandler::sendErrorNoSuchNick(clientHandler, targetNickname);
+        // MessageHandler::sendErrorNoSuchNick(clientHandler, targetNickname);
+        MessageHandler::sendErrorNoSuchNick(clientHandler);
     }
 }
 

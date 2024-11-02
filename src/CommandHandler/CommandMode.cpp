@@ -1,16 +1,93 @@
 #include "CommandHandler.hpp"
 
+void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string &command) {
+    std::vector<std::string> parts;
+    splitCommand(command, parts);
+
+    if (parts.size() < 3) {
+        std::string errorMsg = "Mode :Not enough parameters";
+        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+        MessageHandler::sendErrorModeNeedMoreParams(clientHandler);
+        return;
+    }
+
+    std::string target = parts[1];
+    std::string mode = parts[2];
+    std::string param = parts.size() > 3 ? parts[3] : "";
+
+    // Vérifier si la cible est un canal
+    if (target[0] == '#') {
+        if (!verifyClientInChannel(clientHandler, target))
+            return;
+
+        Channel &channel = clientHandler->getServer()->getChannel(target);
+
+        if (!verifyClientIsOperator(clientHandler, channel))
+            return;
+        if (!validateModeFormat(mode)) {
+            std::string errorMsg = "Mode " + mode + " :Unknown mode";
+            MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+            MessageHandler::sendErrorBadMode(clientHandler, mode);
+            return;
+        }
+        applyModeToChannel(clientHandler, channel, mode, param);
+    } else {
+        handleUserMode(clientHandler, target, mode);
+    }
+}
+
+bool CommandHandler::verifyClientInChannel(ClientHandler *clientHandler, std::string &channelName) {
+    try {
+        Channel &channel = clientHandler->getServer()->getChannel(channelName);
+        if (!channel.checkIfClientIsInChannel(clientHandler)) {
+            std::string errorMsg = "Mode " + channelName + " :You're not in that channel";
+            MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+            MessageHandler::sendErrorNotInChannel(clientHandler, channelName);
+            return false;
+        }
+        return true;
+    } catch (const std::exception &) {
+        MessageHandler::sendErrorNoSuchChannel(clientHandler, channelName);
+        return false;
+    }
+}
+
+bool CommandHandler::verifyClientIsOperator(ClientHandler *clientHandler, Channel &channel) {
+    if (!channel.checkIfClientIsOperator(clientHandler)) {
+        std::string errorMsg = "Mode " + channel.getName() + " :You're not a channel operator";
+        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+        MessageHandler::sendErrorNotChannelOperator(clientHandler);
+        return false;
+    }
+    return true;
+}
+
+bool CommandHandler::validateModeFormat(const std::string &mode) {
+    return (mode.size() == 2 && (mode[0] == '+' || mode[0] == '-') && isValidModeChar(mode[1]));
+}
+
+void CommandHandler::applyModeToChannel(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
+                                        const std::string &param) {
+    if (mode[1] == 'o') {
+        handleOpMode(clientHandler, channel, mode, param);
+    } else {
+        channelModelHandler(clientHandler, channel, mode, param);
+    }
+}
+
+void CommandHandler::handleUserMode(ClientHandler *clientHandler, const std::string &target, const std::string &mode) {
+    if (target != clientHandler->getUser().getNickname()) {
+        MessageHandler::sendErrorNoChangeModeForOther(clientHandler);
+        return;
+    }
+    userModeHandler(clientHandler, mode);
+}
+
 void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
                                          const std::string &param) {
     try {
-        if (mode.size() < 2 || (mode[0] != '+' && mode[0] != '-')) {
-            throw std::invalid_argument("Invalid mode format");
-        }
-
-        const char modeChar = mode[1];
-        const char modeSign = mode[0];
-        std::string sign(1, modeSign);
-        std::string modeStr(1, modeChar);
+        char modeChar = mode[1];
+        char modeSign = mode[0];
 
         if (modeChar == 'i') {
             channel.setInviteOnly(modeSign == '+');
@@ -21,142 +98,57 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
                 return;
             }
         } else if (modeChar == 'l') {
-            if (modeSign == '+') {
-                if (!param.empty()) {
-                    int limit = std::atoi(param.c_str());
-                    channel.setUserLimit(limit);
-                } else {
-                    MessageHandler::sendErrorNotEnoughParams(clientHandler);
-                    return;
-                }
-            } else {
-                channel.removeUserLimit();
+            if (!handleLimitMode(clientHandler, channel, modeSign, param)) {
+                return;
             }
-        } else {
-            MessageHandler::sendErrorModeParams(clientHandler);
-            return;
         }
-        MessageHandler::sendChannelModes(clientHandler, channel, sign, modeStr);
+        MessageHandler::sendChannelModes(clientHandler, channel, std::string(1, modeSign), std::string(1, modeChar));
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 }
 
+void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
+                                  const std::string &param) {
+    const char modeSign = mode[0];
+    std::string sign(1, modeSign);
+
+    if (param.empty()) {
+        std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o :Need to give the nickname of the user";
+        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+        MessageHandler::sendErrorNotEnoughParams(clientHandler);
+        return;
+    }
+    if (ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(param)) {
+        if (!channel.checkIfClientIsInChannel(targetClient)) {
+            std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o " + param + " :User not in channel";
+            MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+            MessageHandler::sendErrorNotInChannel(clientHandler, channel.getName());
+            return;
+        }
+        if (modeSign == '+') {
+            channel.addOperator(targetClient);
+            MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
+        } else {
+            channel.removeOperator(targetClient);
+            MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
+        }
+    } else {
+        std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o " + param + " :No such nick/channel";
+        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+        MessageHandler::sendErrorNoSuchNick(clientHandler);
+    }
+}
+
+bool CommandHandler::isValidModeChar(char modeChar) {
+    return modeChar == 'o' || modeChar == 'i' || modeChar == 't' || modeChar == 'k' || modeChar == 'l';
+}
 
 void CommandHandler::userModeHandler(ClientHandler *clientHandler, const std::string &mode) {
     try {
         clientHandler->getUser().setUserMode(mode);
     } catch (const std::exception &e) {
         throw std::invalid_argument("User not found");
-    }
-}
-
-void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string &command) {
-    std::vector<std::string> parts;
-    splitCommand(command, parts);
-
-    if (parts.size() < 3 || parts[1].empty() || parts[2].empty()) {
-        MessageHandler::sendErrorModeParams(clientHandler);
-        return;
-    }
-
-    std::string mode = parts[2];
-    std::string target = parts[1];
-    std::string param = parts.size() > 3 ? parts[3] : "";
-
-
-    if (mode.size() != 2) {
-        MessageHandler::sendErrorBadMode(clientHandler, mode);
-        return;
-    }
-
-    try {
-        if (target[0] == '#') {
-            Channel &channel = clientHandler->getServer()->getChannel(target);
-            std::string errormsg = "Mode " + channel.getName();
-            if (!channel.checkIfClientIsInChannel(clientHandler)) {
-                errormsg += " :You're not in that channel";
-                MessageHandler::sendMessageToClient(clientHandler, errormsg);
-                return;
-            }
-            if (isValidModeChar(mode[1])) {
-                if (!channel.checkIfClientIsOperator(clientHandler)) {
-                    std::cerr << clientHandler->getUser().getNickname() << " is not an operator, denying request."
-                              << std::endl;
-                    errormsg += " :You're not a channel operator";
-                    MessageHandler::sendMessageToClient(clientHandler, errormsg);
-                    return;
-                }
-            } else {
-                errormsg += " :Unknown mode";
-                MessageHandler::sendMessageToClient(clientHandler, errormsg);
-                return;
-            }
-
-            if (mode[1] == 'o') {
-                std::string target = parts[3];
-                std::cout << "Client " << clientHandler->getNickname() << " requested to change mode " << mode
-                          << " for target " << target << " in channel " << channel.getName() << std::endl;
-                handleOpMode(clientHandler, channel, mode, target);
-            } else {
-                channelModelHandler(clientHandler, channel, mode, param);
-            }
-
-
-        } else {
-            if (target != clientHandler->getUser().getNickname()) {
-                std::cerr << "Can't change mode for other users" << std::endl;
-                MessageHandler::sendErrorNoChangeModeForOther(clientHandler);
-                return;
-            }
-            userModeHandler(clientHandler, mode);
-        }
-    } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
-        MessageHandler::sendErrorNoSuchChannel(clientHandler, target);
-    }
-}
-
-
-void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
-                                  const std::string &target) {
-    std::cout << "Handling op mode for target: " << target << " with mode: " << mode << std::endl;
-    const char modeSign = mode[0];
-    std::string sign(1, modeSign);
-    if (mode[0] == '+') {
-        if (channel.checkIfClientIsOperator(clientHandler)) {
-            ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);
-            if (targetClient) {
-                channel.addOperator(targetClient);
-                MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
-                std::cout << "Client " << targetClient->getNickname() << " is now an operator of channel "
-                          << channel.getName() << std::endl;
-            } else {
-                MessageHandler::sendErrorNoSuchNick(clientHandler, target);
-                std::cerr << "Client " << target << " not found" << std::endl;
-            }
-        } else {
-            MessageHandler::sendErrorNotChannelOperator(clientHandler);
-            std::cerr << "Client " << clientHandler->getNickname() << " is not an operator of channel "
-                      << channel.getName() << std::endl;
-        }
-    } else {
-        if (channel.checkIfClientIsOperator(clientHandler)) {
-            ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(target);
-            if (targetClient) {
-                channel.removeOperator(targetClient);
-                MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
-                std::cout << "Client " << targetClient->getNickname() << " is no longer an operator of channel "
-                          << channel.getName() << std::endl;
-            } else {
-                MessageHandler::sendErrorNoSuchNick(clientHandler, target);
-                std::cerr << "Client " << target << " not found" << std::endl;
-            }
-        } else {
-            MessageHandler::sendErrorNotChannelOperator(clientHandler);
-            std::cerr << "Client " << clientHandler->getNickname() << " is not an operator of channel "
-                      << channel.getName() << std::endl;
-        }
     }
 }
 
@@ -171,7 +163,6 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
             MessageHandler::sendMessageToClient(clientHandler, pwError);
             return false;
         }
-
         if (param.find(' ') != std::string::npos) {
             pwError += ":Password cannot contain spaces";
             MessageHandler::sendMessageToClient(clientHandler, pwError);
@@ -191,16 +182,48 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
             return false;
         }
         channel.setPassword(param);
-        std::cout << "Password set for channel: " << param << std::endl;
         return true;
 
     } else {
         channel.setPassword("");
-        std::cout << "Password removed for channel" << std::endl;
         return true;
     }
 }
 
-bool CommandHandler::isValidModeChar(char modeChar) {
-    return modeChar == 'o' || modeChar == 'i' || modeChar == 't' || modeChar == 'k' || modeChar == 'l';
+bool CommandHandler::handleLimitMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
+                                     const std::string &param) {
+    std::string limitError = "MODE " + channel.getName() + " +l " + param;
+
+    if (modeSign == '+') {
+        if (param.empty()) {
+            limitError += ":Limit cannot be empty";
+            MessageHandler::sendMessageToClient(clientHandler, limitError);
+            return false;
+        }
+        if (param.find(' ') != std::string::npos) {
+            limitError += ":Limit cannot contain spaces";
+            MessageHandler::sendMessageToClient(clientHandler, limitError);
+            return false;
+        }
+        for (std::string::size_type i = 0; i < param.size(); ++i) {
+            char c = param[i];
+            if (!isdigit(c)) {
+                limitError += ":Limit must contain only numeric characters";
+                MessageHandler::sendMessageToClient(clientHandler, limitError);
+                return false;
+            }
+        }
+        int limit = std::atoi(param.c_str());
+        if (limit < 1 || limit > 15) {
+            limitError += ":Limit must be between 1 and 15";
+            MessageHandler::sendMessageToClient(clientHandler, limitError);
+            return false;
+        }
+        channel.setUserLimit(limit);
+        return true;
+
+    } else {
+        channel.removeUserLimit();
+        return true;
+    }
 }

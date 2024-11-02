@@ -70,11 +70,19 @@ private:
     void handleInvite(ClientHandler *clientHandler, const std::string &command);
     void handleKick(ClientHandler *clientHandler, const std::string &command);
     void handleOpMode(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
-                      const std::string &target);
+                      const std::string &param);
     void handleTopic(ClientHandler *clientHandler, const std::string &command);
     void kickingClientFromChannel(ClientHandler *targetClient, Channel &channel);
     bool handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
                             const std::string &param);
+
+    bool verifyClientInChannel(ClientHandler *clientHandler, std::string &channelName);
+    bool verifyClientIsOperator(ClientHandler *clientHandler, Channel &channel);
+    bool validateModeFormat(const std::string &mode);
+    void applyModeToChannel(ClientHandler *clientHandler, Channel &channel, const std::string &mode,
+                            const std::string &param);
+    void handleUserMode(ClientHandler *clientHandler, const std::string &target, const std::string &mode);
+    bool handleLimitMode(ClientHandler *clientHandler, Channel &channel, const char modeSign, const std::string &param);
 };
 
 #endif

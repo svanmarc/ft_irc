@@ -53,6 +53,9 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
     // Ajouter le client à la liste des canaux
     Channel &newChannel = clientHandler->getServer()->getChannel(channelName);
     clientHandler->addChannelToList(channelName);
+    newChannel.removeInvitedClient(clientHandler);
+    clientHandler->setInvited(false);
+
 
     // Envoyer les messages aux autres membres du canal
     MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
@@ -80,7 +83,8 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
     }
 
     if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
-        MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
+        // MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
+        MessageHandler::sendErrorNoSuchNick(clientHandler);
         return;
     }
 

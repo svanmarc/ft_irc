@@ -21,9 +21,12 @@ void MessageHandler::sendErrorNotNickNameGiven(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorNoNickNameGiven(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NONICKNAMEGIVEN, "Error: No nickname given");
 }
-void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
-                                 "Error: " + nickname + " :No such nick/channel");
+// void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname) {
+//     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
+//                                  "Error: " + nickname + " :No such nick/channel");
+// }
+void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, " : No such nick/channel");
 }
 void MessageHandler::sendErrorNickNameTooLong(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_ERRONEUSNICKNAME, "Error: Nickname is too long");
@@ -69,7 +72,7 @@ void MessageHandler::sendErrorNoSuchUser(ClientHandler *clientHandler, const std
 }
 
 void MessageHandler::sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName) {
-    std::string message = "You're not in channel " + channelName;
+    std::string message = "Error: You're not in channel " + channelName;
     sendResponse(clientHandler, IRCConstants::ERR_NOTINCHANNEL, message);
 }
 
@@ -80,14 +83,14 @@ void MessageHandler::sendErrorNoPingParams(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorNoSuchChannel(ClientHandler *clientHandler, const std::string &channelName) {
     //:*.42irc.net 403 tamm2 #ttttt :No such channel
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
-                                 clientHandler->getNickname() + " " + channelName + " :No such channel/user ");
+                                 clientHandler->getNickname() + " " + channelName + "Error: No such channel/user ");
 }
 void MessageHandler::sendErrorNoChangeModeForOther(ClientHandler *clientHandler) {
     //:*.42irc.net 502 tamm2 :Can't change mode for other users
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOTFOROTHERS,
-                                 clientHandler->getNickname() + " :Can't change mode for other users");
+                                 clientHandler->getNickname() + "Error: Can't change mode for other users");
 }
-void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
+void MessageHandler::sendErrorModeNeedMoreParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
 }
 void MessageHandler::sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode) {
