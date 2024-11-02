@@ -130,6 +130,13 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             channel.addOperator(targetClient);
             MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
         } else {
+            if (targetClient == channel.getOwner()) {
+                std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o " + param +
+                                       " :You can't take operator status from the owner";
+                MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+                MessageHandler::sendErrorCantTakeOp(clientHandler);
+                return;
+            }
             channel.removeOperator(targetClient);
             MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
         }

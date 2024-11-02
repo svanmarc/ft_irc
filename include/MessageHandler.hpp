@@ -54,6 +54,7 @@ public:
     static void sendErrorNotEnoughParams(ClientHandler *clientHandler);
     static void sendErrorClientKicked(ClientHandler *clientHandler, const std::string &message);
     static void sendErrorKickOwner(ClientHandler *clientHandler);
+    static void sendErrorCantTakeOp(ClientHandler *clientHandler);
     static void sendErrorBadChannelKey(ClientHandler *clientHandler, const std::string &channelName);
     static void sendErrorChannelFull(ClientHandler *clientHandler, const std::string &channelName);
     static void sendErrorBadFormatPwd(ClientHandler *clientHandler);

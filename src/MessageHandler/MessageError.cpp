@@ -155,6 +155,11 @@ void MessageHandler::sendErrorKickOwner(ClientHandler *clientHandler) {
                                  "Error: You can't kick the owner of the channel");
 }
 
+void MessageHandler::sendErrorCantTakeOp(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_CHANOWNPRIVNEEDED,
+                                 "Error: You can't take operator status from the owner of the channel");
+}
+
 void MessageHandler::sendErrorChannelFull(ClientHandler *clientHandler, const std::string &channelName) {
     std::string message =
             clientHandler->getUser().getNickname() + " " + channelName + " :Cannot join channel (Channel is full)";
