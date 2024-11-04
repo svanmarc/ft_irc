@@ -66,10 +66,13 @@ void MessageHandler::sendEndOfNamesList(ClientHandler *clientHandler, Channel &c
 
 void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, ClientHandler *invitedClient,
                                             Channel &channel) {
+    // Construire le message d'invitation pour l'utilisateur invité
     std::string tempMessage = "INVITE " + invitedClient->getNickname() + " :" + channel.getName();
     std::string inviteMessage = messageWithServerPrefixAndSender(invitingClient, tempMessage);
+    // Envoyer l'invitation à l'utilisateur invité
     sendMessage(invitedClient->getSocket(), inviteMessage);
 
+    // Optionnel : Notifier l'utilisateur qui a envoyé l'invitation
     std::string notifyMessage = "You have invited " + invitedClient->getNickname() + " to " + channel.getName();
     sendMessage(invitingClient->getSocket(), notifyMessage);
 }
@@ -78,8 +81,10 @@ void MessageHandler::sendInviteNotification(ClientHandler *invitingClient, Clien
 void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
                                       const std::string mode) {
 
+    // Construction du message sans crochets
     std::string modeMessage = "MODE " + channel.getName() + " " + modeSign + mode;
 
+    // Ajouter les paramètres pour les modes `k` et `l`
     modeMessage += " :";
     if (mode == "k")
         modeMessage += channel.getPassword();
@@ -89,7 +94,7 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
         modeMessage += ss.str();
     }
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
-    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
     std::cout << "Sent modes for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
 
@@ -102,6 +107,30 @@ void MessageHandler::sendOpMode(ClientHandler *clientHandler, ClientHandler *tar
     std::cout << "Sent operator mode for channel " << channel.getName() << ": " << modeMessage << std::endl;
 }
 
+void MessageHandler::sendChannelList(ClientHandler *clientHandler, Channel &channel) {
+    std::stringstream ss;
+    ss << clientHandler->getNickname() + " " + channel.getName() << " " << static_cast<int>(channel.getNumberOfClients()) << " [modes ::" << channel.getModes() << "] :" + channel.getTopic();
+    sendResponse(clientHandler,322, ss.str());
+}
+
+void MessageHandler::sendEndOfList(ClientHandler *clientHandler) {
+    sendResponse(clientHandler, 323, clientHandler->getNickname() +  ": " + IRCConstants::COLOR_YELLOW + "End of list" + IRCConstants::COLOR_RESET);
+}
+
+void MessageHandler::sendStartOfList(ClientHandler *clientHandler) {
+    sendResponse(clientHandler, 321, clientHandler->getNickname() +  " Channel :Users Name");
+}
+
+void MessageHandler::sendChannelsList(ClientHandler *clientHandler) {
+    sendStartOfList(clientHandler);
+    std::vector<Channel> channels = clientHandler->getServer()->getChannels();
+    sendResponse(clientHandler, 322,clientHandler->getNickname() + ": " + IRCConstants::COLOR_GREEN +  "List of Channels"  + IRCConstants::COLOR_RESET) ;
+    for (std::vector<Channel>::iterator it = channels.begin(); it != channels.end(); ++it) {
+        Channel channel = *it;
+        sendChannelList(clientHandler, channel);
+    }
+    sendEndOfList(clientHandler);
+}
 
 void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std::string &message) {
     std::string msgToSend = message;

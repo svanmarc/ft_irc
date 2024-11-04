@@ -34,16 +34,18 @@ void CommandHandler::handleCommandNoRegister(const std::string &command, ClientH
 }
 
 void CommandHandler::handleCommandRegister(const std::string &command, ClientHandler *clientHandler) {
-    const int nbacceptableCmd = 16;
-    const std::string acceptableCmd[nbacceptableCmd] = {"CAP",    "NICK",  "USER", "USERHOST", "PASS",    "MODE",
-                                                        "WHOIS",  "JOIN",  "PART", "QUIT",     "PRIVMSG", "NOTICE",
-                                                        "INVITE", "TOPIC", "PING", "KICK"};
+    const int nbacceptableCmd = 19;
+    const std::string acceptableCmd[nbacceptableCmd] = {"CAP",   "NICK",   "USER",  "USERHOST", "PASS",    "MODE",
+                                                        "WHOIS", "JOIN",   "PART",  "QUIT",     "PRIVMSG", "NOTICE",
+                                                        "MODE",  "INVITE", "TOPIC", "PING",
+                                                        "KICK", "NAME", "LIST"};
     void (CommandHandler::*p[nbacceptableCmd])(ClientHandler *, const std::string &) = {
-            &CommandHandler::handleCap,    &CommandHandler::handleNick,        &CommandHandler::handleUser,
-            &CommandHandler::handleUser,   &CommandHandler::handlePass,        &CommandHandler::handleMode,
-            &CommandHandler::handleWhois,  &CommandHandler::handleJoinChannel, &CommandHandler::handlePart,
-            &CommandHandler::handleQuit,   &CommandHandler::handlePrivMsg,     &CommandHandler::handlePrivMsg,
-            &CommandHandler::handleInvite, &CommandHandler::handleTopic,       &CommandHandler::handlePing,
-            &CommandHandler::handleKick};
+            &CommandHandler::handleCap,   &CommandHandler::handleNick,        &CommandHandler::handleUser,
+            &CommandHandler::handleUser,  &CommandHandler::handlePass,        &CommandHandler::handleMode,
+            &CommandHandler::handleWhois, &CommandHandler::handleJoinChannel, &CommandHandler::handlePart,
+            &CommandHandler::handleQuit,  &CommandHandler::handlePrivMsg,     &CommandHandler::handlePrivMsg,
+            &CommandHandler::handleMode,  &CommandHandler::handleInvite,      &CommandHandler::handleTopic,
+            &CommandHandler::handlePing,  &CommandHandler::handleKick,       &CommandHandler::handleName,
+            &CommandHandler::handleList};
     CommandHandler::handleCommand_(command, clientHandler, nbacceptableCmd, acceptableCmd, p);
 }

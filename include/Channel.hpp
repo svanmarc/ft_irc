@@ -31,7 +31,7 @@ public:
     void removeClient(const ClientHandler *client);
     bool checkIfClientIsInChannel(ClientHandler *client) const;
     void printAllNicknamesInChannel() const;
-
+    int getNumberOfClients() const;
     // Gestion des opérateurs
     void addOperator(ClientHandler *client);
     void removeOperator(ClientHandler *client);
@@ -56,6 +56,7 @@ public:
     void setPassword(const std::string &password);
     std::string getPassword() const;
     bool isPasswordProtected() const;
+    std::string getModes() const;
     // void setOperatorPrivileges(bool operatorPrivileges);
     // bool getOperatorPrivileges() const;
     void setUserLimit(int userLimit);

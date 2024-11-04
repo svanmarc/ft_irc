@@ -21,12 +21,14 @@ void MessageHandler::sendErrorNotNickNameGiven(ClientHandler *clientHandler) {
 void MessageHandler::sendErrorNoNickNameGiven(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NONICKNAMEGIVEN, "Error: No nickname given");
 }
-// void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname) {
-//     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
-//                                  "Error: " + nickname + " :No such nick/channel");
-// }
+
+void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
+                                 "Error: " + nickname + " :No such nick/channel");
+}
 void MessageHandler::sendErrorNoSuchNick(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK, " : No such nick/channel");
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NOSUCHNICK,
+                                 "Error: No such nick/channel");
 }
 void MessageHandler::sendErrorNickNameTooLong(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_ERRONEUSNICKNAME, "Error: Nickname is too long");
@@ -93,6 +95,21 @@ void MessageHandler::sendErrorNoChangeModeForOther(ClientHandler *clientHandler)
 void MessageHandler::sendErrorModeNeedMoreParams(ClientHandler *clientHandler) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
 }
+void MessageHandler::sendErrorModeParams(ClientHandler *clientHandler) {
+    MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_NEEDMOREPARAMS, "Error: Not enough parameters");
+}
+void MessageHandler::sendErrorModeWithMessage(ClientHandler *clientHandler, const std::string &message,
+                                              const std::string &sign, Channel &channel, const std::string &param) {
+    std::string errorMsg = "MODE " + channel.getName() + " " + sign + " ";
+    if (!param.empty()) {
+        errorMsg += param + " ";
+    }
+    errorMsg += ":"+ IRCConstants::COLOR_RED + message + IRCConstants::COLOR_RESET;
+    MessageHandler::sendMessageToClient(clientHandler, errorMsg);
+    MessageHandler::sendErrorNotEnoughParams(clientHandler);
+}
+
+
 void MessageHandler::sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode) {
     MessageHandler::sendResponse(clientHandler, IRCConstants::ERR_UNKNOWNMODE,
                                  "Error: Mode " + mode + " is already set");

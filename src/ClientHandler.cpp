@@ -13,7 +13,6 @@ void ClientHandler::handlerClient(Server &server) {
     char buffer[1024];
     memset(buffer, 0, sizeof(buffer));
     int bytesRead = read(m_clientSocket, buffer, sizeof(buffer) - 1);
-
     if (bytesRead < 0) {
         // Gestion de l'erreur de lecture
         if (errno != EAGAIN && errno != EWOULDBLOCK) {
@@ -31,7 +30,6 @@ void ClientHandler::handlerClient(Server &server) {
         readCommand(command);
     }
 }
-
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
     std::cout << "Reading command: " << command << std::endl;

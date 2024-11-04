@@ -23,7 +23,7 @@ public:
     static void sendErrorNoAuth(ClientHandler *clientHandler, const std::string &command);
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoNickNameGiven(ClientHandler *clientHandler);
-    // static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
+    static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNoSuchNick(ClientHandler *clientHandler);
     static void sendErrorNickNameTooLong(ClientHandler *clientHandler);
     static void sendErrorNickNameInvalidCharacters(ClientHandler *clientHandler);
@@ -38,6 +38,9 @@ public:
     static void sendErrorNickNameAlreadyExists(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNoSuchUser(ClientHandler *clientHandler, const std::string &nickname);
     static void sendErrorNotInChannel(ClientHandler *clientHandler, const std::string &channelName);
+    static void sendErrorModeParams(ClientHandler *clientHandler);
+    static void sendErrorModeWithMessage(ClientHandler *clientHandler, const std::string &message,
+                                         const std::string &sign, Channel &channel, const std::string &param);
     static void sendErrorNoPingParams(ClientHandler *clientHandler);
     static void sendErrorModeNeedMoreParams(ClientHandler *clientHandler);
     static void sendErrorModeAlreadySet(ClientHandler *clientHandler, const std::string &mode);
@@ -72,12 +75,13 @@ public:
     static void sendAuthentificationSuccess(ClientHandler *clientHandler);
     static void sendMessageToUser(ClientHandler *clientHandler, ClientHandler *clientTarget, const std::string &message,
                                   bool notice);
+    static void sendModeChannel(ClientHandler *clientHandler, Channel &channel);
     static void sendModeChange(ClientHandler *clientHandler, const std::string &mode, const std::string &target);
     static void sendGoodbye(ClientHandler *clientHandler);
 
     // Fichier MessageWhois
-    static void MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhois(ClientHandler *clientHandler, ClientHandler *targetClient);
+    static void MessageWhoisUser(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void MessageWhoisNotFound(ClientHandler *clientHandler, const std::string &targetNickname);
     static void MessageWhoisNoGiven(ClientHandler *clientHandler);
     static void sendPong(ClientHandler *clientHandler);
@@ -92,6 +96,12 @@ public:
     static void sendInviteNotification(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
     static void sendChannelModes(ClientHandler *clientHandler, Channel &channel, const std::string &modeSign,
                                  const std::string mode);
+    static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel);
+    static void sendEndOfList(ClientHandler *clientHandler);
+    static void sendStartOfList(ClientHandler *clientHandler);
+    static void startChannelList(ClientHandler *clientHandler);
+    static void sendChannelList(ClientHandler *clientHandler, Channel &channel);
+    static void sendChannelsList(ClientHandler *clientHandler);
     static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel,
                            const std::string &modeSign);
     static void sendNoTopic(ClientHandler *clientHandler, const Channel &channel);
@@ -99,7 +109,7 @@ public:
 
     // Fichier MessageFormater
     static std::string messageWithServerPrefixAndSender(ClientHandler *clientHandler, std::string &originalMessage);
-
+    static std::string MessageWhoisFormat(ClientHandler *clientHandler, ClientHandler *targetClient);
     static void sendMessageToClient(ClientHandler *clientHandler, const std::string &message);
 };
 

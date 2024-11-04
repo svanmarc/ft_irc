@@ -83,6 +83,9 @@ private:
                             const std::string &param);
     void handleUserMode(ClientHandler *clientHandler, const std::string &target, const std::string &mode);
     bool handleLimitMode(ClientHandler *clientHandler, Channel &channel, const char modeSign, const std::string &param);
+    //fichier CommandName.cpp
+    void handleName(ClientHandler *clientHandler, const std::string &command);
+    void handleList(ClientHandler *clientHandler, const std::string &command);
 };
 
 #endif

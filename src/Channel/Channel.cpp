@@ -56,3 +56,5 @@ void Channel::printAllNicknamesInChannel() const {
     }
     std::cout << std::endl;
 }
+
+int Channel::getNumberOfClients() const { return m_clients.size(); }

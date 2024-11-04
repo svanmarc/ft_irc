@@ -1,4 +1,5 @@
 #include "CommandHandler.hpp"
+#include "IRCConstants.hpp"
 
 void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
@@ -112,18 +113,13 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
                                   const std::string &param) {
     const char modeSign = mode[0];
     std::string sign(1, modeSign);
-
     if (param.empty()) {
-        std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o :Need to give the nickname of the user";
-        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
-        MessageHandler::sendErrorNotEnoughParams(clientHandler);
+        MessageHandler::sendErrorModeWithMessage(clientHandler, "Need to give the nickname of the user", mode, channel, "");
         return;
     }
     if (ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(param)) {
         if (!channel.checkIfClientIsInChannel(targetClient)) {
-            std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o " + param + " :User not in channel";
-            MessageHandler::sendMessageToClient(clientHandler, errorMsg);
-            MessageHandler::sendErrorNotInChannel(clientHandler, channel.getName());
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "User not in channel", mode, channel, param);
             return;
         }
         if (modeSign == '+') {
@@ -131,19 +127,14 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
         } else {
             if (targetClient == channel.getOwner()) {
-                std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o " + param +
-                                       " :You can't take operator status from the owner";
-                MessageHandler::sendMessageToClient(clientHandler, errorMsg);
-                MessageHandler::sendErrorCantTakeOp(clientHandler);
+                MessageHandler::sendErrorModeWithMessage(clientHandler, "You can't take operator status from the owner", mode, channel, param);
                 return;
             }
             channel.removeOperator(targetClient);
             MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
         }
     } else {
-        std::string errorMsg = "MODE " + channel.getName() + " " + sign + "o " + param + " :No such nick/channel";
-        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
-        MessageHandler::sendErrorNoSuchNick(clientHandler);
+        MessageHandler::sendErrorModeWithMessage(clientHandler, "No such nick/channel", mode, channel, param);
     }
 }
 
@@ -161,31 +152,30 @@ void CommandHandler::userModeHandler(ClientHandler *clientHandler, const std::st
 
 bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
                                         const std::string &param) {
-
-    std::string pwError = "MODE " + channel.getName() + " +k " + param;
+    std::ostringstream oss;
+    oss << modeSign << 'k';
+    std::string mode = oss.str();
 
     if (modeSign == '+') {
         if (param.empty()) {
-            pwError += ":Password cannot be empty";
-            MessageHandler::sendMessageToClient(clientHandler, pwError);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Password cannot be empty", mode, channel, param);
             return false;
         }
         if (param.find(' ') != std::string::npos) {
-            pwError += ":Password cannot contain spaces";
-            MessageHandler::sendMessageToClient(clientHandler, pwError);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Password cannot contain spaces", mode, channel, param);
             return false;
         }
         for (std::string::size_type i = 0; i < param.size(); ++i) {
             char c = param[i];
             if (!isalnum(c)) {
-                pwError += ":Password must contain only alphanumeric characters";
-                MessageHandler::sendMessageToClient(clientHandler, pwError);
+                MessageHandler::sendErrorModeWithMessage(clientHandler, "Password must contain only alphanumeric characters",
+                                                         mode, channel, param);
                 return false;
             }
         }
         if (param.size() < 3 || param.size() > 20) {
-            pwError += ":Password must be between 3 and 20 characters";
-            MessageHandler::sendMessageToClient(clientHandler, pwError);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Password must be between 3 and 20 characters",
+                                                     mode, channel, param);
             return false;
         }
         channel.setPassword(param);
