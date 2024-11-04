@@ -60,6 +60,13 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
     // Envoyer les messages aux autres membres du canal
     MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
     MessageHandler::sendNewMemberToChannel(clientHandler, newChannel);
+
+    if (!newChannel.getTopic().empty()) {
+        MessageHandler::sendTopic(clientHandler, newChannel);
+    } else {
+        MessageHandler::sendNoTopic(clientHandler, newChannel);
+    }
+
     MessageHandler::sendCurrentMemberListToNew(clientHandler, newChannel);
     MessageHandler::sendEndOfNamesList(clientHandler, newChannel);
 }

@@ -94,6 +94,8 @@ public:
                                  const std::string mode);
     static void sendOpMode(ClientHandler *clientHandler, ClientHandler *targetClient, Channel &channel,
                            const std::string &modeSign);
+    static void sendNoTopic(ClientHandler *clientHandler, const Channel &channel);
+    static void sendTopic(ClientHandler *clientHandler, const Channel &channel);
 
     // Fichier MessageFormater
     static std::string messageWithServerPrefixAndSender(ClientHandler *clientHandler, std::string &originalMessage);

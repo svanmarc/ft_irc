@@ -108,3 +108,18 @@ void MessageHandler::sendMessageToClient(ClientHandler *clientHandler, const std
     msgToSend = messageWithServerPrefixAndSender(clientHandler, msgToSend);
     sendMessage(clientHandler->getSocket(), msgToSend);
 }
+
+void MessageHandler::sendTopic(ClientHandler *clientHandler, const Channel &channel) {
+    std::string message = clientHandler->getUser().getNickname();
+    message += " " + channel.getName();
+    message += " :" + channel.getTopic();
+    sendResponse(clientHandler, IRCConstants::RPL_TOPIC, message);
+}
+
+// Méthode pour envoyer le message RPL_NOTOPIC (code 331)
+void MessageHandler::sendNoTopic(ClientHandler *clientHandler, const Channel &channel) {
+    std::string message = clientHandler->getUser().getNickname();
+    message += " " + channel.getName();
+    message += " :No topic is set";
+    sendResponse(clientHandler, IRCConstants::RPL_NOTOPIC, message);
+}

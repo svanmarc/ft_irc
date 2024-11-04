@@ -6,7 +6,7 @@ void CommandHandler::handleTopic(ClientHandler *clientHandler, const std::string
     splitCommand(command, parts);
 
     if (parts.size() < 2) {
-        MessageHandler::sendErrorNoSuchChannel(clientHandler, "");  // Erreur si aucun canal n'est spécifié
+        MessageHandler::sendErrorNoSuchChannel(clientHandler, ""); // Erreur si aucun canal n'est spécifié
         return;
     }
 
@@ -14,7 +14,7 @@ void CommandHandler::handleTopic(ClientHandler *clientHandler, const std::string
     std::string newTopic;
 
     if (parts.size() > 2) {
-        newTopic = command.substr(command.find(':') + 1);  // Le nouveau sujet est tout ce qui suit ":"
+        newTopic = command.substr(command.find(':') + 1); // Le nouveau sujet est tout ce qui suit ":"
     }
 
     // Vérifier l'existence du canal
@@ -31,21 +31,24 @@ void CommandHandler::handleTopic(ClientHandler *clientHandler, const std::string
         return;
     }
 
-    // Si aucun sujet n'est fourni, retourne le sujet actuel
-    if (newTopic.empty()) {
-        MessageHandler::sendResponse(clientHandler, IRCConstants::RPL_TOPIC, channel.getTopic());
-        return;
+    // Si un nouveau sujet est défini
+    if (!newTopic.empty()) {
+        if (channel.getTopicProtection() && !channel.checkIfClientIsOperator(clientHandler)) {
+            MessageHandler::sendErrorNotChannelOperator(clientHandler);
+            return;
+        }
+        channel.setTopic(newTopic);
+        std::string topicMessage = ":" + clientHandler->getNickname() + " TOPIC " + channelName + " :" + newTopic;
+        MessageHandler::sendMessageToAllClientsInChannel(channel, topicMessage, clientHandler, true);
+        std::cout << "Topic updated for channel " << channelName << " to: " << newTopic << std::endl;
+    } else {
+        // Si aucun sujet n'est défini, renvoyer l'état actuel du canal
+        if (channel.getTopic().empty()) {
+            MessageHandler::sendNoTopic(clientHandler, channel);
+        } else {
+            MessageHandler::sendTopic(clientHandler, channel);
+            std::cout << "Sending topic to client: " << clientHandler->getUser().getNickname()
+                      << " for channel: " << channel.getName() << " with topic: " << channel.getTopic() << std::endl;
+        }
     }
-
-    // Vérifier le mode `+t` pour les permissions de modification
-    if (channel.getTopicProtection() && !channel.checkIfClientIsOperator(clientHandler)) {
-        MessageHandler::sendErrorNotChannelOperator(clientHandler);
-        return;
-    }
-
-    // Mettre à jour le sujet et informer le canal
-    channel.setTopic(newTopic);
-    std::string topicMessage = ":" + clientHandler->getNickname() + " TOPIC " + channelName + " :" + newTopic;
-    MessageHandler::sendMessageToAllClientsInChannel(channel, topicMessage, clientHandler, true);
-    std::cout << "Topic updated for channel " << channelName << " to: " << newTopic << std::endl;
 }
