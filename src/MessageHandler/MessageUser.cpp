@@ -131,12 +131,12 @@ void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std:
     std::string response = ":";
     response += oldNickName;
     response += "!";
-    response += newNickName;
+    response += clientHandler->getUser().getUsername();
     response += "@";
     response += clientHandler->getServer()->getServerName();
     response += " NICK :";
     response += newNickName;
-    MessageHandler::sendResponse(clientHandler, response);
+    MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 
 void MessageHandler::sendAuthentificationSuccess(ClientHandler *clientHandler) {

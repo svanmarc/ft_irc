@@ -19,8 +19,8 @@ void MessageHandler::MessageWhois(ClientHandler *clientHandler, ClientHandler *t
     std::string userServer = targetClient->getServer()->getServerName();
     std::string realnameTile = " ~" + realname;
 
-    std::string w1 = templagte +  "311 " + nickName + " " +  nickName + realname + realnameTile + " " + userServer + " * :" + realname;
-    std::string w3 = templagte + "312 " + nickName + " " + nickName + serverName + ": ubuntu-linux default configuration";
+    std::string w1 = templagte +  "311 " + nickName + " " +  nickName  + " " + realname + realnameTile + " " + userServer + " * :" + realname;
+    std::string w3 = templagte + "312 " + nickName + " " + nickName  + " " + serverName + ": ubuntu-linux default configuration";
     std::time_t now = std::time(0);
     std::time_t signonTime = clientHandler->getUser().getConnectionTime();
     std::time_t idleTime = std::difftime(now, signonTime);
