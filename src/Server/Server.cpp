@@ -109,19 +109,17 @@ bool Server::checkIfChannelExists(const std::string &name) const {
     }
     return false;
 }
+
 bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
     try {
         if (checkIfChannelExists(name)) {
-            std::cout << YELLOW << "Channel already exists, adding user" << RESET << std::endl;
             // Récupérer une référence au canal existant et ajouter le client
             Channel &existingChannel = getChannel(name);
             if (existingChannel.checkIfClientIsInChannel(newClient)) {
-                std::cerr << RED << "User already in channel" << RESET << std::endl;
                 return false;
             }
             if (existingChannel.getInviteOnly() && !existingChannel.isClientInvited(newClient)) {
                 MessageHandler::sendErrorInviteOnly(newClient, name);
-                std::cerr << RED << "Channel is invite only and client is not invited" << RESET << std::endl;
                 return false;
             }
             existingChannel.addClient(newClient);

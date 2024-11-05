@@ -29,6 +29,7 @@ const std::string BLUE = "\033[34m";
 const std::string MAGENTA = "\033[35m";
 const std::string CYAN = "\033[36m";
 const std::string WHITE = "\033[37m";
+const std::string PINK = "\033[38;5;206m";
 
 
 #endif // IRC_H

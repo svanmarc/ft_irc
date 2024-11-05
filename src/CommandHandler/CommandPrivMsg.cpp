@@ -49,6 +49,9 @@ void CommandHandler::handlePrivMsg(ClientHandler *clientHandler, const std::stri
         }
     }
 
+    std::cout << BLUE << "📩 " << MAGENTA << clientHandler->getNickname() << BLUE << " sent a message to " << MAGENTA
+              << target << RESET << std::endl;
+
     if (!found) {
         std::cerr << RED << "Client not found" << RESET << std::endl;
         MessageHandler::sendErrorNoSuchUser(clientHandler, target);

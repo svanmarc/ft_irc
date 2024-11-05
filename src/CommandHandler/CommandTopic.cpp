@@ -49,4 +49,5 @@ void CommandHandler::handleTopic(ClientHandler *clientHandler, const std::string
             MessageHandler::sendTopic(clientHandler, channel);
         }
     }
+    std::cout << GREEN << "Topic updated for channel " << channelName << " to: " << newTopic << RESET << std::endl;
 }

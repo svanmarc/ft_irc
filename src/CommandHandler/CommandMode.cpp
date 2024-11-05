@@ -98,6 +98,7 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
             }
         }
         MessageHandler::sendChannelModes(clientHandler, channel, std::string(1, modeSign), std::string(1, modeChar));
+        std::cout << PINK << "Mode " << mode << " applied to channel " << channel.getName() << RESET << std::endl;
     } catch (const std::exception &e) {
         std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
     }
@@ -129,6 +130,7 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             channel.removeOperator(targetClient);
             MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
         }
+        std::cout << PINK << "Mode " << mode << " applied to channel " << channel.getName() << RESET << std::endl;
     } else {
         MessageHandler::sendErrorModeWithMessage(clientHandler, "No such nick/channel", mode, channel, param);
     }

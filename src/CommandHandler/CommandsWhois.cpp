@@ -1,69 +1,26 @@
-
 #include "CommandHandler.hpp"
-#include "MessageHandler.hpp"
 
-void CommandHandler::handleUser(ClientHandler *clientHandler, const std::string &command) {
+void CommandHandler::handleWhois(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
-    if (parts.size() < 5) {
-        MessageHandler::sendErrorModeParams(clientHandler);
+    if (parts.size() == 2 && (parts[1].empty() || parts[1] == "CAP")) {
+        std::string errorMsg = "WHOIS : " + IRCConstants::COLOR_RED + "No nickname given" + IRCConstants::COLOR_RESET;
+        MessageHandler::sendResponse(clientHandler, ERR_NEEDMOREPARAMS, errorMsg);
         return;
     }
-    // Vérifier si l'utilisateur est déjà enregistré
-    if (clientHandler->getUser().isRegistered()) {
-        MessageHandler::sendErrorAlreadyRegistered(clientHandler);
-        return;
-    }
-    // Vérifier si le nickname est déjà défini
-    if (clientHandler->getUser().getNickname().empty()) {
-        MessageHandler::sendErrorNotNickNameGiven(clientHandler);
-        return;
-    }
-    std::string username = parts[1];
-    std::string hostname = parts[2];
-    std::string servername = parts[3];
-    std::string realname = parts[4];
-    std::string nickName = clientHandler->getUser().getNickname();
-    clientHandler->getUser().Register(nickName, "", username, realname, hostname, servername);
-    MessageHandler::sendWelcomeMessage(clientHandler);
-}
-
-void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string &command) {
-    std::vector<std::string> parts;
-    splitCommand(command, parts);
-    if (parts.size() < 2) {
-        MessageHandler::sendErrorNoPingParams(clientHandler);
-        return;
-    }
-    const std::string serverName = parts[1];
-    MessageHandler::sendPong(clientHandler);
-}
-
-void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string &command) {
-    if (clientHandler->isAuthenticated()) {
-        return;
-    }
-    std::vector<std::string> parts;
-    splitCommand(command, parts);
-    if (parts.size() < 2 || parts[1].empty()) {
-        MessageHandler::sendErrorNoPasswordGiven(clientHandler);
-        return;
-    }
-    const std::string clientPassword = trim(parts[1]);
-    if (m_server.authenticate(clientPassword)) {
-        clientHandler->setAuthenticated(true);
-        clientHandler->resetAttempts(); // Réinitialisez les tentatives en cas de succès
-        MessageHandler::sendAuthentificationSuccess(clientHandler);
-    } else {
-        clientHandler->incrementAttempts(); // Incrémentez les tentatives
-        if (clientHandler->getAttempts() >= 3) {
-            // Fermez la connexion après 3 échecs
-            MessageHandler::sendErrorTooManyAttempts(clientHandler);
-            close(clientHandler->getSocket());
-        } else {
-            std::ostringstream oss; // Utilisez un ostringstream pour la conversion
-            oss << (3 - clientHandler->getAttempts());
-            MessageHandler::sendErrorIncorrectPassword(clientHandler, oss.str());
+    const std::string targetNickname = trim(parts[1]);
+    std::cout << BLUE << "🕵️ Client " << MAGENTA << clientHandler->getNickname() << BLUE << " requested WHOIS on "
+              << MAGENTA << targetNickname << RESET << std::endl;
+    const std::vector<ClientHandler *> &clients = m_server.getClients(); // Récupérer les clients
+    bool found = false;
+    for (std::vector<ClientHandler *>::const_iterator it = clients.begin(); it != clients.end(); ++it) {
+        if ((*it)->getNickname() == targetNickname) // Vérifier la correspondance du `nickname`
+        {
+            found = true;
+            MessageHandler::MessageWhois(clientHandler, *it);
+            return;
         }
     }
+    if (!found)
+        MessageHandler::MessageWhoisNotFound(clientHandler, targetNickname);
 }

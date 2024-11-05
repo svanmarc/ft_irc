@@ -88,7 +88,7 @@ void MessageHandler::sendChannelModes(ClientHandler *clientHandler, Channel &cha
         modeMessage += ss.str();
     }
     modeMessage = messageWithServerPrefixAndSender(clientHandler, modeMessage);
-    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, false);
+    sendMessageToAllClientsInChannel(channel, modeMessage, clientHandler, true);
 }
 
 

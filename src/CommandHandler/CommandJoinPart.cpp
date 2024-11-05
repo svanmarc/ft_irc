@@ -93,6 +93,7 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
     std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" +
                                clientHandler->getUser().getHostname() + " PART " + channelName + " :" + partMessage;
     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);
+    std::cout << GREEN << clientHandler->getNickname() << " left channel " << channelName << RESET << std::endl;
     clientHandler->leaveChannel(channelName);
     channel.removeClient(clientHandler);
 }
