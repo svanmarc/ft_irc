@@ -37,14 +37,16 @@ void MessageHandler::sendNewMemberToChannel(ClientHandler *clientHandler, Channe
 
 void MessageHandler::sendCurrentMemberListToNew(ClientHandler *clientHandler, Channel &channel) {
     //:*.42irc.net 353 tamm2 = #1 :@tamm2
-    std::string currentUserString;
+    std::string currentUserString = "";
     for (size_t i = 0; i < channel.getClients().size(); i++) {
         ClientHandler *client = channel.getClients()[i];
         if (client == NULL) {
             std::cerr << "Error: Found a null client pointer." << std::endl;
             continue;
         }
-        currentUserString += "@" + client->getUser().getNickname() + " ";
+        std::cout << "Checking if client is operator: " << client->getUser().getNickname() << std::endl;
+        channel.checkIfClientIsOperator(client) ? currentUserString += "@" : currentUserString += "";
+        currentUserString += client->getUser().getNickname() + " ";
     }
     std::string message = clientHandler->getUser().getNickname();
     message += " = ";
