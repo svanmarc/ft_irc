@@ -45,7 +45,9 @@ void CommandHandler::handleList(ClientHandler *clientHandler, const std::string 
     }
 
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
-    MessageHandler::sendResponse(clientHandler, 322,clientHandler->getNickname() + ": " + IRCConstants::COLOR_GREEN +  "Channel ::"  + channelName + IRCConstants::COLOR_RESET) ;
+    MessageHandler::sendResponse(clientHandler, 322,
+                                 clientHandler->getNickname() + ": " + IRCConstants::COLOR_GREEN +
+                                         "Channel ::" + channelName + IRCConstants::COLOR_RESET);
     MessageHandler::sendChannelList(clientHandler, channel);
     MessageHandler::sendEndOfList(clientHandler);
 }

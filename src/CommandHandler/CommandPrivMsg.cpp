@@ -21,16 +21,13 @@ void CommandHandler::handlePrivMsg(ClientHandler *clientHandler, const std::stri
         return;
     }
     std::string message = command.substr(posStartMessg + 1);
-    if (target[0] == '#')
-    {
+    if (target[0] == '#') {
         // Envoi du message à tous les clients dans le canal spécifié
         Channel channel = m_server.getChannel(target);
         if (!channel.checkIfClientIsInChannel(clientHandler)) {
             MessageHandler::sendErrorNotInChannel(clientHandler, target);
             return;
         }
-        //:tamm2!root@IP.hosted-by-42lausanne.ch PRIVMSG #d :slugt
-        std::cout << "Sending message to channel " << target << ": " << message << std::endl;
         std::string formattedMessage = ":" + clientHandler->getNickname();
         formattedMessage += "!" + clientHandler->getUser().getUsername() + "@" + clientHandler->getUser().getHostname();
         formattedMessage += " " + cmd + " " + channel.getName() + " :" + message + "\r\n";
@@ -53,7 +50,7 @@ void CommandHandler::handlePrivMsg(ClientHandler *clientHandler, const std::stri
     }
 
     if (!found) {
-        std::cout << "Error sending message: No such user " << target << std::endl;
+        std::cerr << RED << "Client not found" << RESET << std::endl;
         MessageHandler::sendErrorNoSuchUser(clientHandler, target);
     }
 }

@@ -2,26 +2,26 @@
 #include "CommandHandler.hpp"
 
 
-void Server::ServerWelcomMessage()
-{
+void Server::ServerWelcomMessage() {
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
-    std::cout << "|   \\______   \\_   ___ \\   /   _____/\\_   _____/\\______   \\   \\ /   /" << std::endl;
+    std::cout << GREEN << "|   \\______   \\_   ___ \\   /   _____/\\_   _____/\\______   \\   \\ /   /" << std::endl;
     std::cout << "|   ||       _/    \\  \\/   \\_____  \\  |    __)_  |       _/\\   Y   / " << std::endl;
     std::cout << "|   ||    |   \\     \\____  /        \\ |        \\ |    |   \\ \\     /  " << std::endl;
     std::cout << "|___||____|_  /\\______  / /_______  //_______  / |____|_  /  \\___/   " << std::endl;
-    std::cout << "            \\/        \\/          \\/         \\/         \\/           " << std::endl;
+    std::cout << "            \\/        \\/          \\/         \\/         \\/           " << RESET << std::endl;
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
     std::cout << "                                                        " << std::endl;
-    std::cout << "     🚦 Server is running. Waiting for connections..." << std::endl;
-    std::cout << "     🔐 Password set to: " << m_password << std::endl;
-    std::cout << "     👾 Port " << m_port << "." << std::endl;
-    std::cout << "     😘 Press Ctrl+C to stop." << std::endl;
+    std::cout << CYAN << "     🚦 Server is running. Waiting for connections..." << std::endl;
+    std::cout << CYAN << "     🔐 Password set to: " << YELLOW << m_password << std::endl;
+    std::cout << CYAN << "     👾 Port " << YELLOW << m_port << "." << std::endl;
+    std::cout << CYAN << "     😘 Press Ctrl+C to stop." << RESET << std::endl;
+    std::cout << "\n\n\n" << std::endl;
 }
 
 Server::Server(const int port, const std::string &password) : m_password(password), m_port(port) {
@@ -35,7 +35,9 @@ Server::Server(const int port, const std::string &password) : m_password(passwor
 }
 
 Server::~Server() {
-    stop();
+    if (m_serverSocket >= 0) {
+        stop();
+    }
     if (commandHandler != 0) {
         delete commandHandler;
         commandHandler = 0;
@@ -48,7 +50,7 @@ void Server::start() {
         // Appeler `poll` pour surveiller les sockets de tous les clients
         int const pollCount = poll(&fds[0], fds.size(), -1);
         if (pollCount < 0) {
-            std::cerr << "Error in poll: " << std::strerror(errno) << std::endl;
+            std::cerr << RED << "Error in poll: " << std::strerror(errno) << RESET << std::endl;
             break;
         }
         for (unsigned int i = 0; i < fds.size(); ++i) {
@@ -68,7 +70,11 @@ void Server::start() {
 }
 
 void Server::stop() {
-    std::cout << "🙈 Stopping server..." << std::endl;
+    if (m_isStopped) {
+        return;
+    }
+    m_isStopped = true;
+    std::cout << BLUE << "Stopping server..." << RESET << std::endl;
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if (*it != 0) {
             delete *it;
@@ -83,7 +89,7 @@ void Server::stop() {
         close(m_serverSocket);
         m_serverSocket = -1;
     }
-    std::cout << "Server stopped --- Welcome to the real world. 🌎" << std::endl;
+    std::cout << BLUE << "Server stopped" << RESET << std::endl;
 }
 
 Channel &Server::getChannel(std::string &name) {
@@ -106,16 +112,16 @@ bool Server::checkIfChannelExists(const std::string &name) const {
 bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
     try {
         if (checkIfChannelExists(name)) {
-            std::cout << "Channel already exists, adding user" << std::endl;
+            std::cout << YELLOW << "Channel already exists, adding user" << RESET << std::endl;
             // Récupérer une référence au canal existant et ajouter le client
             Channel &existingChannel = getChannel(name);
             if (existingChannel.checkIfClientIsInChannel(newClient)) {
-                std::cerr << "User already in channel" << std::endl;
+                std::cerr << RED << "User already in channel" << RESET << std::endl;
                 return false;
             }
             if (existingChannel.getInviteOnly() && !existingChannel.isClientInvited(newClient)) {
                 MessageHandler::sendErrorInviteOnly(newClient, name);
-                std::cerr << "Channel is invite only and client is not invited" << std::endl;
+                std::cerr << RED << "Channel is invite only and client is not invited" << RESET << std::endl;
                 return false;
             }
             existingChannel.addClient(newClient);
@@ -128,7 +134,7 @@ bool Server::joinChannel(ClientHandler *newClient, std::string &name) {
         m_channels.push_back(newChannel);
         return true;
     } catch (const std::exception &e) {
-        std::cerr << "Exception: " << e.what() << std::endl;
+        std::cerr << RED << "Exception: " << e.what() << RESET << std::endl;
         return false;
     }
 }
@@ -156,3 +162,5 @@ bool Server::getUserByNickname(const std::string &nickname, ClientHandler *&clie
 
 
 const std::string &Server::getServerName() const { return m_serverName; }
+
+bool Server::isRunning() const { return !m_isStopped; }

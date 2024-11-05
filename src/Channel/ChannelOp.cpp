@@ -2,7 +2,10 @@
 
 void Channel::addOperator(ClientHandler *client) {
     if (checkIfClientIsOperator(client)) {
-        std::cerr << "Client " << client->getNickname() << " is already an operator of channel " << m_name << std::endl;
+        if (client != m_owner) {
+            std::cerr << RED << "Client " << client->getNickname() << " is already an operator of channel " << m_name
+                      << RESET << std::endl;
+        }
         return;
     }
     m_operators.push_back(client);
@@ -10,24 +13,24 @@ void Channel::addOperator(ClientHandler *client) {
     if (!isClientInvited(client)) {
         inviteClient(client);
     }
-    std::cout << "Client " << client->getNickname() << " is now an operator of channel " << m_name << std::endl;
 }
 
 void Channel::removeOperator(ClientHandler *client) {
     if (client == m_owner) {
-        std::cerr << "Client " << client->getNickname() << " is the owner of channel " << m_name << std::endl;
+        std::cerr << RED << "Client " << client->getNickname() << " is the owner of channel " << m_name << RESET
+                  << std::endl;
         return;
     }
     std::vector<ClientHandler *>::iterator it = std::find(m_operators.begin(), m_operators.end(), client);
     if (it != m_operators.end()) {
         m_operators.erase(it);
         client->setOperator(false);
-        std::cout << "Client " << client->getNickname() << " removed from operators of channel " << m_name << std::endl;
         if (isClientInvited(client)) {
             removeInvitedClient(client);
         }
     } else {
-        std::cerr << "Client " << client->getNickname() << " is not an operator of channel " << m_name << std::endl;
+        std::cerr << RED << "Client " << client->getNickname() << " is not an operator of channel " << m_name << RESET
+                  << std::endl;
     }
 }
 

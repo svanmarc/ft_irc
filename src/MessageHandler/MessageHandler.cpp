@@ -27,11 +27,11 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
                 // L'appel a été interrompu par un signal, on réessaie
                 continue;
             }
-            std::cerr << "Error: Failed to send message to client. errnum: " << errno << " (" << strerror(errno) << ")"
-                      << std::endl;
+            std::cerr << RED << "Error: Failed to send message to client. errnum: " << errno << " (" << strerror(errno)
+                      << ")" << RESET << std::endl;
             return;
         } else if (bytesSent == 0) {
-            std::cerr << "Connection closed by peer" << std::endl;
+            std::cerr << RED << "Connection closed by peer" << RESET << std::endl;
             return;
         }
 
@@ -53,8 +53,8 @@ void MessageHandler::sendResponse(ClientHandler *clientHandler, int code, const 
     MessageHandler::sendMessage(clientHandler->getSocket(), response);
 }
 
-void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &message, ClientHandler *sender, bool notice) {
-    //:tamm2_!root@IP.hosted-by-42lausanne.ch NOTICE tamm2 :tu es dans la merde
+void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &message, ClientHandler *sender,
+                                 bool notice) {
     const std::string targetnickname = target->getUser().getNickname();
     std::string msgType = "PRIVMSG";
     if (notice) {
@@ -63,7 +63,7 @@ void MessageHandler::sendUserMsg(ClientHandler *target, const std::string &messa
 
     std::string response = ":" + sender->getUser().getNickname();
     response += "!" + sender->getUser().getUsername() + "@" + sender->getUser().getHostname();
-    response +=  " " + msgType + " " + targetnickname + " :" + message + "\r\n";
+    response += " " + msgType + " " + targetnickname + " :" + message + "\r\n";
     sendMessage(target->getSocket(), response);
 }
 

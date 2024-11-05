@@ -99,7 +99,7 @@ void CommandHandler::channelModelHandler(ClientHandler *clientHandler, Channel &
         }
         MessageHandler::sendChannelModes(clientHandler, channel, std::string(1, modeSign), std::string(1, modeChar));
     } catch (const std::exception &e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << RED << "Error: " << e.what() << RESET << std::endl;
     }
 }
 
@@ -108,7 +108,8 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
     const char modeSign = mode[0];
     std::string sign(1, modeSign);
     if (param.empty()) {
-        MessageHandler::sendErrorModeWithMessage(clientHandler, "Need to give the nickname of the user", mode, channel, "");
+        MessageHandler::sendErrorModeWithMessage(clientHandler, "Need to give the nickname of the user", mode, channel,
+                                                 "");
         return;
     }
     if (ClientHandler *targetClient = clientHandler->getServer()->findClientByNickname(param)) {
@@ -157,14 +158,15 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
             return false;
         }
         if (param.find(' ') != std::string::npos) {
-            MessageHandler::sendErrorModeWithMessage(clientHandler, "Password cannot contain spaces", mode, channel, param);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Password cannot contain spaces", mode, channel,
+                                                     param);
             return false;
         }
         for (std::string::size_type i = 0; i < param.size(); ++i) {
             char c = param[i];
             if (!isalnum(c)) {
-                MessageHandler::sendErrorModeWithMessage(clientHandler, "Password must contain only alphanumeric characters",
-                                                         mode, channel, param);
+                MessageHandler::sendErrorModeWithMessage(
+                        clientHandler, "Password must contain only alphanumeric characters", mode, channel, param);
                 return false;
             }
         }
@@ -190,27 +192,26 @@ bool CommandHandler::handleLimitMode(ClientHandler *clientHandler, Channel &chan
 
     if (modeSign == '+') {
         if (param.empty()) {
-            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit cannot be empty",
-                                                     mode, channel, param);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit cannot be empty", mode, channel, param);
             return false;
         }
         if (param.find(' ') != std::string::npos) {
-            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit cannot contain spaces",
-                                                     mode, channel, param);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit cannot contain spaces", mode, channel,
+                                                     param);
             return false;
         }
         for (std::string::size_type i = 0; i < param.size(); ++i) {
             char c = param[i];
             if (!isdigit(c)) {
                 MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit must contain only numeric characters",
-                                                     mode, channel, param);
+                                                         mode, channel, param);
                 return false;
             }
         }
         int limit = std::atoi(param.c_str());
         if (limit < 1 || limit > 15) {
-            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit must be between 1 and 15",
-                                                     mode, channel, param);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit must be between 1 and 15", mode, channel,
+                                                     param);
             return false;
         }
         channel.setUserLimit(limit);

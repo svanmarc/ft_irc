@@ -12,22 +12,16 @@ std::vector<ClientHandler *> Channel::getClients() const { return m_clients; }
 
 void Channel::addClient(ClientHandler *client) {
     if (checkIfClientIsInChannel(client)) {
-        std::cerr << "User already in channel" << std::endl;
+        std::cerr << RED << "User already in channel" << RESET << std::endl;
         return;
     }
     m_clients.push_back(client);
 }
 void Channel::removeClient(const ClientHandler *client) {
-    std::cout << "Removing client " << client->getNickname() << " from channel " << m_name << std::endl;
-
-    // Utilisation de std::find pour simplifier la recherche
     std::vector<ClientHandler *>::iterator it = std::find(m_clients.begin(), m_clients.end(), client);
 
     if (it != m_clients.end()) {
         m_clients.erase(it);
-        std::cout << "Client " << client->getNickname() << " removed from channel " << m_name << std::endl;
-    } else {
-        std::cout << "Client " << client->getNickname() << " not found in channel " << m_name << std::endl;
     }
 }
 
@@ -50,11 +44,11 @@ bool Channel::checkIfClientIsInChannel(ClientHandler *client) const {
 }
 
 void Channel::printAllNicknamesInChannel() const {
-    std::cout << "Nicknames in channel " << m_name << ": ";
+    std::cout << BLUE << "Nicknames in channel " << m_name << ": ";
     for (std::vector<ClientHandler *>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it) {
-        std::cout << (*it)->getNickname() << " ";
+        std::cout << MAGENTA << (*it)->getNickname() << " ";
     }
-    std::cout << std::endl;
+    std::cout << RESET << std::endl;
 }
 
 int Channel::getNumberOfClients() const { return m_clients.size(); }

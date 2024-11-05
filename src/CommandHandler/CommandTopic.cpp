@@ -40,15 +40,13 @@ void CommandHandler::handleTopic(ClientHandler *clientHandler, const std::string
         channel.setTopic(newTopic);
         std::string topicMessage = ":" + clientHandler->getNickname() + " TOPIC " + channelName + " :" + newTopic;
         MessageHandler::sendMessageToAllClientsInChannel(channel, topicMessage, clientHandler, true);
-        std::cout << "Topic updated for channel " << channelName << " to: " << newTopic << std::endl;
+        std::cout << GREEN << "Topic updated for channel " << channelName << " to: " << newTopic << RESET << std::endl;
     } else {
         // Si aucun sujet n'est défini, renvoyer l'état actuel du canal
         if (channel.getTopic().empty()) {
             MessageHandler::sendNoTopic(clientHandler, channel);
         } else {
             MessageHandler::sendTopic(clientHandler, channel);
-            std::cout << "Sending topic to client: " << clientHandler->getUser().getNickname()
-                      << " for channel: " << channel.getName() << " with topic: " << channel.getTopic() << std::endl;
         }
     }
 }

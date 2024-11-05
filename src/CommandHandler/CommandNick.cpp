@@ -53,8 +53,5 @@ void CommandHandler::handleNick(ClientHandler *clientHandler, const std::string 
     // Si l'utilisateur a changé de pseudo, notifier les autres utilisateurs
     if (!oldNickname.empty()) {
         MessageHandler::sendChangeNickName(clientHandler, oldNickname, newNickname);
-        std::cout << "Nickname changed from " << oldNickname << " to " << newNickname << std::endl;
-    } else {
-        std::cout << "New nickname: " << newNickname << " registered." << std::endl;
     }
 }

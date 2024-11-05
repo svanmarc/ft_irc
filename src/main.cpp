@@ -9,31 +9,33 @@ Server *serverInstance = NULL;
 // Gestionnaire de signaux
 void signalHandler(int signal) {
     if (serverInstance == NULL) {
-        std::cerr << "Server not initialized. Exiting..." << std::endl;
+        std::cerr << RED << "Server not initialized. Exiting..." << RESET << std::endl;
         return;
     }
 
     if (signal == SIGINT || signal == SIGTERM) {
-        std::cout << "\nReceived signal (" << signal << "). Stopping server..." << std::endl;
-        serverInstance->stop();
-        std::cout << "Server stopped. Exiting..." << std::endl;
+        std::cout << BLUE << "\n🛰️ Received signal (" << signal << ")...." << RESET << std::endl;
+        if (serverInstance->isRunning()) {
+            serverInstance->stop();
+        }
+        std::cout << BLUE << "Exiting...\nWelcome to the real world. 🌎" << RESET << std::endl;
         delete serverInstance;
         serverInstance = NULL;
         exit(0);
     } else {
-        std::cerr << "Received unknown signal (" << signal << "). Ignoring..." << std::endl;
+        std::cerr << RED << "Received unknown signal (" << signal << "). Ignoring..." << RESET << std::endl;
     }
 }
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
-        std::cerr << "Usage: ./ircserv <port> <password>" << std::endl;
+        std::cerr << RED << "Usage: ./ircserv <port> <password>" << RESET << std::endl;
         return 1;
     }
 
     const int port = std::atoi(argv[1]);
     if (port <= 0 || port > 65535) {
-        std::cerr << "Invalid port number. Must be between 1 and 65535." << std::endl;
+        std::cerr << RED << "Invalid port number. Must be between 1 and 65535." << RESET << std::endl;
         return 1;
     }
 
@@ -48,7 +50,7 @@ int main(int argc, char *argv[]) {
         // Démarrer le serveur
         serverInstance->start();
     } catch (const std::exception &e) {
-        std::cerr << "Server error: " << e.what() << std::endl;
+        std::cerr << RED << "Server error: " << e.what() << RESET << std::endl;
         delete serverInstance;
         return 1;
     }

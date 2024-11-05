@@ -25,19 +25,18 @@ void CommandHandler::handleUser(ClientHandler *clientHandler, const std::string 
     std::string realname = parts[4];
     std::string nickName = clientHandler->getUser().getNickname();
     clientHandler->getUser().Register(nickName, "", username, realname, hostname, servername);
-    std::cout << "Sending welcome message: ..." << std::endl;
     MessageHandler::sendWelcomeMessage(clientHandler);
 }
 
 void CommandHandler::handlePing(ClientHandler *clientHandler, const std::string &command) {
-     std::vector<std::string> parts;
-     splitCommand(command, parts);
-     if (parts.size() < 2) {
-         MessageHandler::sendErrorNoPingParams(clientHandler);
-         return;
-     }
-     const std::string serverName = parts[1];
-     MessageHandler::sendPong(clientHandler);
+    std::vector<std::string> parts;
+    splitCommand(command, parts);
+    if (parts.size() < 2) {
+        MessageHandler::sendErrorNoPingParams(clientHandler);
+        return;
+    }
+    const std::string serverName = parts[1];
+    MessageHandler::sendPong(clientHandler);
 }
 
 void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string &command) {
@@ -51,7 +50,6 @@ void CommandHandler::handlePass(ClientHandler *clientHandler, const std::string 
         return;
     }
     const std::string clientPassword = trim(parts[1]);
-    std::cout << "Client password: " << clientPassword << std::endl;
     if (m_server.authenticate(clientPassword)) {
         clientHandler->setAuthenticated(true);
         clientHandler->resetAttempts(); // Réinitialisez les tentatives en cas de succès

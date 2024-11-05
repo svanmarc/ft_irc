@@ -11,7 +11,7 @@ void Server::setupSocket(const int port) {
     if (bindSocket(port) < 0) // Utiliser le port pour attacher le socket
         throw std::runtime_error("Failed to bind server socket to port");
     if (listen(m_serverSocket, 10) < 0) {
-        std::cerr << "Failed to listen on server socket" << std::endl;
+        std::cerr << RED << "Failed to listen on server socket" << RESET << std::endl;
         close(m_serverSocket);
         throw std::runtime_error("Failed to listen on server socket");
     }
@@ -21,13 +21,13 @@ void Server::setupSocket(const int port) {
 int Server::createSocket() {
     const int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
-        std::cerr << "Failed to create server socket: " << std::strerror(errno) << std::endl;
+        std::cerr << RED << "Failed to create server socket: " << std::strerror(errno) << RESET << std::endl;
         return -1;
     }
 
     // Rendre le socket non-bloquant
     if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
-        std::cerr << "Failed to set non-blocking socket: " << std::strerror(errno) << std::endl;
+        std::cerr << RED << "Failed to set non-blocking socket: " << std::strerror(errno) << RESET << std::endl;
         close(sock);
         return -1;
     }
@@ -41,12 +41,12 @@ int Server::setSocketOptions() const {
     int opt = 1;
     // Configure SO_REUSEADDR pour réutiliser l'adresse immédiatement
     if (setsockopt(m_serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
-        std::cerr << "Failed to set SO_REUSEADDR: " << std::strerror(errno) << std::endl;
+        std::cerr << RED << "Failed to set SO_REUSEADDR: " << std::strerror(errno) << RESET << std::endl;
         return -1;
     }
     // Configurer SO_KEEPALIVE pour détecter les déconnexions
     if (setsockopt(m_serverSocket, SOL_SOCKET, SO_KEEPALIVE, &opt, sizeof(opt)) < 0) {
-        std::cerr << "Failed to set SO_KEEPALIVE: " << std::strerror(errno) << std::endl;
+        std::cerr << RED << "Failed to set SO_KEEPALIVE: " << std::strerror(errno) << RESET << std::endl;
         return -1;
     }
     return 0;
@@ -58,7 +58,7 @@ int Server::bindSocket(int port) {
     m_serverAddress.sin_addr.s_addr = INADDR_ANY;
     m_serverAddress.sin_port = htons(port);
     if (bind(m_serverSocket, reinterpret_cast<sockaddr *>(&m_serverAddress), sizeof(m_serverAddress)) < 0) {
-        std::cerr << "Failed to bind socket to port: " << std::strerror(errno) << std::endl;
+        std::cerr << RED << "Failed to bind socket to port: " << std::strerror(errno) << RESET << std::endl;
         return -1;
     }
     return 0;

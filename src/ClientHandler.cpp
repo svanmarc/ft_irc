@@ -4,10 +4,7 @@
 ClientHandler::ClientHandler(int const socket, Server *serverRef) :
     m_clientSocket(socket), m_server(serverRef), m_attempts(0), m_isOperator(false), m_isInvited(false) {}
 
-ClientHandler::~ClientHandler() {
-    close(m_clientSocket);
-    std::cout << "Socket " << m_clientSocket << " closed" << std::endl;
-}
+ClientHandler::~ClientHandler() { close(m_clientSocket); }
 
 void ClientHandler::handlerClient(Server &server) {
     char buffer[1024];
@@ -16,23 +13,21 @@ void ClientHandler::handlerClient(Server &server) {
     if (bytesRead < 0) {
         // Gestion de l'erreur de lecture
         if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            std::cerr << "Error reading from client socket: " << strerror(errno) << std::endl;
+            std::cerr << RED << "Error reading from client socket: " << strerror(errno) << RESET << std::endl;
             server.handleClientDisconnect(m_clientSocket);
         }
     } else if (bytesRead == 0) {
         // Le client s'est déconnecté proprement
-        std::cerr << "Client disconnected." << std::endl;
+        std::cerr << RED << "Client disconnected." << RESET << std::endl;
         server.handleClientDisconnect(m_clientSocket);
     } else {
         // Lecture réussie, traiter la commande reçue
         std::string command(buffer);
-        std::cout << "Received command: " << command << std::endl;
         readCommand(command);
     }
 }
 void ClientHandler::readCommand(const std::string &command) {
     CommandHandler commandHandler(*m_server);
-    std::cout << "Reading command: " << command << std::endl;
     std::istringstream commandStream(command);
     std::string singleCommand;
 
@@ -84,7 +79,6 @@ void ClientHandler::leaveChannel(const std::string &channel) {
     for (std::vector<std::string>::iterator it = channels.begin(); it != channels.end(); ++it) {
         if (*it == channel) {
             channels.erase(it);
-            std::cout << "Client " << getNickname() << " a quitté le canal " << channel << std::endl;
             break;
         }
     }

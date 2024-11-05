@@ -41,7 +41,8 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
 
     } catch (const std::runtime_error &e) {
         // Si le canal n'existe pas encore, nous allons le créer
-        std::cout << "Channel not found. Creating new channel." << std::endl;
+        std::cout << BLUE << "client " << MAGENTA << clientHandler->getNickname() << BLUE << " created channel "
+                  << MAGENTA << channelName << RESET << std::endl;
     }
 
     // Validation de l'état de la connexion au canal
@@ -54,7 +55,7 @@ void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::
     clientHandler->addChannelToList(channelName);
     newChannel.removeInvitedClient(clientHandler);
     clientHandler->setInvited(false);
-
+    std::cout << GREEN << clientHandler->getNickname() << " joined channel " << channelName << RESET << std::endl;
 
     // Envoyer les messages aux autres membres du canal
     MessageHandler::sendWelcomeToChannel(clientHandler, newChannel);
@@ -89,12 +90,9 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
         return;
     }
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
-    std::string leaveMessage = ":" + clientHandler->getNickname() + "!"
-                               + clientHandler->getUser().getUsername() + "@"
-                               + clientHandler->getUser().getHostname() + " PART "
-                               + channelName + " :" + partMessage;
+    std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" +
+                               clientHandler->getUser().getHostname() + " PART " + channelName + " :" + partMessage;
     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);
     clientHandler->leaveChannel(channelName);
     channel.removeClient(clientHandler);
-    std::cout << "👋Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
 }

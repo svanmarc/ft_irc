@@ -21,14 +21,14 @@ void CommandHandler::handleQuit(ClientHandler *clientHandler, const std::string 
         Channel &channel = clientHandler->getServer()->getChannel(*it);
         std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() +
                                    "@" + clientHandler->getUser().getHostname() + " QUIT :" + quitMessage;
-        std::cout << "---- Sending quit message: " << leaveMessage << std::endl;
         MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);
 
         // Retirer le client du canal
         channel.removeClient(clientHandler);
         clientHandler->leaveChannel(*it);
     }
+    std::cout << BLUE << "🛫 Client " << MAGENTA << clientHandler->getNickname() << BLUE << " has quit" << RESET
+              << std::endl;
 
     m_server.handleClientDisconnect(clientHandler->getSocket());
-    std::cout << "handleQuit: Déconnexion terminée pour le client " << clientHandler->getNickname() << std::endl;
 }

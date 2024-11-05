@@ -4,6 +4,7 @@
 #include "ClientHandler.hpp"
 #include "Irc.hpp"
 
+
 class CommandHandler;
 
 class Server {
@@ -26,6 +27,7 @@ public:
     bool authenticate(const std::string &clientPassword) const;
     ClientHandler *findClientByNickname(const std::string &nickname) const;
     std::time_t getStartTime() const;
+    bool isRunning() const;
 
 private:
     int m_serverSocket;
@@ -38,6 +40,7 @@ private:
     std::vector<Channel> m_channels;
     std::string m_serverName;
     std::time_t m_startTime;
+    bool m_isStopped;
 
     // Fonctions pour les sockets
     void setupSocket(int port);
