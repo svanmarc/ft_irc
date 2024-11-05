@@ -3,12 +3,10 @@
 void CommandHandler::handleInvite(ClientHandler *clientHandler, const std::string &command) {
     std::vector<std::string> parts;
     splitCommand(command, parts);
-
     if (parts.size() < 2) {
         MessageHandler::sendErrorNoTarget(clientHandler);
         return;
     }
-
     std::string target = trim(parts[1]);
     std::string param = (parts.size() > 2) ? trim(parts[2]) : "";
 

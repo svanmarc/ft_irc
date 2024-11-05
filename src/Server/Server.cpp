@@ -1,7 +1,30 @@
 #include "Server.hpp"
 #include "CommandHandler.hpp"
 
-Server::Server(const int port, const std::string &password) : m_password(password) {
+
+void Server::ServerWelcomMessage()
+{
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "|   \\______   \\_   ___ \\   /   _____/\\_   _____/\\______   \\   \\ /   /" << std::endl;
+    std::cout << "|   ||       _/    \\  \\/   \\_____  \\  |    __)_  |       _/\\   Y   / " << std::endl;
+    std::cout << "|   ||    |   \\     \\____  /        \\ |        \\ |    |   \\ \\     /  " << std::endl;
+    std::cout << "|___||____|_  /\\______  / /_______  //_______  / |____|_  /  \\___/   " << std::endl;
+    std::cout << "            \\/        \\/          \\/         \\/         \\/           " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "                                                        " << std::endl;
+    std::cout << "     🚦 Server is running. Waiting for connections..." << std::endl;
+    std::cout << "     🔐 Password set to: " << m_password << std::endl;
+    std::cout << "     👾 Port " << m_port << "." << std::endl;
+    std::cout << "     😘 Press Ctrl+C to stop." << std::endl;
+}
+
+Server::Server(const int port, const std::string &password) : m_password(password), m_port(port) {
     m_serverName = "irc.svanmarc_mrabat";
     setupSocket(port);
     commandHandler = new CommandHandler(*this);
@@ -20,7 +43,7 @@ Server::~Server() {
 }
 
 void Server::start() {
-    std::cout << "Server is running. Waiting for connections..." << std::endl;
+    ServerWelcomMessage();
     while (true) {
         // Appeler `poll` pour surveiller les sockets de tous les clients
         int const pollCount = poll(&fds[0], fds.size(), -1);
@@ -45,7 +68,7 @@ void Server::start() {
 }
 
 void Server::stop() {
-    std::cout << "Stopping server..." << std::endl;
+    std::cout << "🙈 Stopping server..." << std::endl;
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if (*it != 0) {
             delete *it;
@@ -60,7 +83,7 @@ void Server::stop() {
         close(m_serverSocket);
         m_serverSocket = -1;
     }
-    std::cout << "Server stopped --- Welcome to the real world." << std::endl;
+    std::cout << "Server stopped --- Welcome to the real world. 🌎" << std::endl;
 }
 
 Channel &Server::getChannel(std::string &name) {

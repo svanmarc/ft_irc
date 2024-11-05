@@ -140,7 +140,9 @@ void MessageHandler::sendChangeNickName(ClientHandler *clientHandler, const std:
 }
 
 void MessageHandler::sendAuthentificationSuccess(ClientHandler *clientHandler) {
-    MessageHandler::sendResponse(clientHandler, "Authentification success");
+    std::string response = IRCConstants::COLOR_GREEN +  "AUTHENTIFICATION SUCCESS"
+                           + IRCConstants::COLOR_RESET;
+    MessageHandler::sendResponse(clientHandler, response);
 }
 void MessageHandler::sendMessageToUser(ClientHandler *clientHandlerSender, ClientHandler *clientTarget,
                                        const std::string &message, bool notice) {

@@ -18,8 +18,6 @@ void CommandHandler::handleCommand_(const std::string &command, ClientHandler *c
     }
     if (!clientHandler->isAuthenticated())
         MessageHandler::sendErrorNoAuth(clientHandler, cmdParsed);
-    else
-        std::cout << "Unknown command: " << command << "parsed : |" << cmdParsed << "|" << std::endl;
 }
 
 

@@ -5,10 +5,10 @@
 void Server::acceptClient() {
     int const clientSocket = accept(m_serverSocket, NULL, NULL);
     if (clientSocket < 0) {
-        std::cerr << "Failed to accept client connection: " << std::strerror(errno) << std::endl;
+        std::cerr << "😨 Failed to accept client connection: " << std::strerror(errno) << std::endl;
         return;
     }
-    std::cout << "New client connected." << std::endl;
+    std::cout << "🆕 New client connected." << std::endl;
     // Ajouter le nouveau client au vecteur `fds` pour que `poll` le surveille
     struct pollfd const newClientPollFD = {clientSocket, POLLIN, 0};
     fds.push_back(newClientPollFD);
@@ -39,25 +39,17 @@ void Server::handleClient(const int clientSocket) {
         return;
     }
     std::string message(buffer);
-    std::cout << "#---------- Client command: " << message << "------------#" << std::endl;
-    /*for (unsigned int i = 0; i < clients.size(); ++i) {
-        if (clients[i]->getSocket() == clientSocket) {
-            commandHandler->handleCommand(message, clients[i]);
-            break;
-        }
-    }*/
 }
 
 // Retirer un client du vecteur `clients`
 void Server::removeClient(const int clientSocket) {
-    std::cout << "Removing client with socket " << clientSocket << " from server" << std::endl;
+    std::cout << "🚚 Removing client with socket " << clientSocket << " from server" << std::endl;
     // Trouver et supprimer le client
     for (std::vector<ClientHandler *>::iterator it = clients.begin(); it != clients.end(); ++it) {
         if ((*it)->getSocket() == clientSocket) {
             close(clientSocket);
             delete *it;
             clients.erase(it);
-            std::cout << "Client removed from server" << std::endl;
             break;
         }
     }
@@ -65,7 +57,6 @@ void Server::removeClient(const int clientSocket) {
     for (std::vector<struct pollfd>::iterator it = fds.begin(); it != fds.end(); ++it) {
         if (it->fd == clientSocket) {
             fds.erase(it);
-            std::cout << "Socket removed from fds" << std::endl;
             break;
         }
     }
@@ -99,19 +90,11 @@ bool Server::authenticate(const std::string &clientPassword) const { return chec
 void Server::handleClientDisconnect(int clientSocket) {
     ClientHandler *client = findClient(clientSocket);
     if (client != NULL) {
-        std::cout << "Client " << client->getNickname() << " disconnected" << std::endl;
-
-        // Libérer le pseudo (s'il est défini)
-        std::string nickname = client->getNickname();
-        if (!nickname.empty()) {
-            std::cout << "Releasing nickname: " << nickname << std::endl;
-        }
-
+        std::cout << "️⚠️ Client " << client->getNickname() << " disconnected" << std::endl;
         // Retirer le client de tous les canaux
         for (std::vector<Channel>::iterator it = m_channels.begin(); it != m_channels.end(); ++it) {
             it->removeClient(client);
         }
-
         // Supprimer le client du serveur
         removeClient(clientSocket);
     }

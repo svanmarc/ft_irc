@@ -2,7 +2,6 @@
 #include "CommandHandler.hpp"
 
 void CommandHandler::handleJoinChannel(ClientHandler *clientHandler, const std::string &command) {
-    std::cout << "Handling JOIN command: " << command << " from " << clientHandler->getNickname() << std::endl;
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 2) {
@@ -80,30 +79,22 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
         MessageHandler::sendErrorNoTarget(clientHandler);
         return;
     }
-
     std::string channelName = trim(parts[1]);
-
-    // Extraire le message après le symbole ':', s'il existe
     std::string partMessage = "Left the channel";
     if (parts.size() > 2) {
         partMessage = command.substr(command.find(':') + 1);
     }
-
     if (!clientHandler->getServer()->checkIfChannelExists(channelName)) {
-        // MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
-        MessageHandler::sendErrorNoSuchNick(clientHandler);
+        MessageHandler::sendErrorNoSuchNick(clientHandler, channelName);
         return;
     }
-
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
-    std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" +
-                               clientHandler->getUser().getHostname() + " PART " + channelName + " :" + partMessage;
-
+    std::string leaveMessage = ":" + clientHandler->getNickname() + "!"
+                               + clientHandler->getUser().getUsername() + "@"
+                               + clientHandler->getUser().getHostname() + " PART "
+                               + channelName + " :" + partMessage;
     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);
-
     clientHandler->leaveChannel(channelName);
-
     channel.removeClient(clientHandler);
-
     std::cout << "👋Client " << clientHandler->getNickname() << " has left channel " << channelName << std::endl;
 }

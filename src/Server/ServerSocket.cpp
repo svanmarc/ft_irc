@@ -15,7 +15,6 @@ void Server::setupSocket(const int port) {
         close(m_serverSocket);
         throw std::runtime_error("Failed to listen on server socket");
     }
-    std::cout << "Server started on port " << port << std::endl;
 }
 
 // Créer le socket du serveur

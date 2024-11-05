@@ -6,7 +6,7 @@ void CommandHandler::handleUser(ClientHandler *clientHandler, const std::string 
     std::vector<std::string> parts;
     splitCommand(command, parts);
     if (parts.size() < 5) {
-        MessageHandler::sendErrorNoUserParams(clientHandler);
+        MessageHandler::sendErrorModeParams(clientHandler);
         return;
     }
     // Vérifier si l'utilisateur est déjà enregistré

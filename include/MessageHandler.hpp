@@ -24,7 +24,6 @@ public:
     static void sendErrorNotNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoNickNameGiven(ClientHandler *clientHandler);
     static void sendErrorNoSuchNick(ClientHandler *clientHandler, const std::string &nickname);
-    static void sendErrorNoSuchNick(ClientHandler *clientHandler);
     static void sendErrorNickNameTooLong(ClientHandler *clientHandler);
     static void sendErrorNickNameInvalidCharacters(ClientHandler *clientHandler);
     static void sendErrorNoUserParams(ClientHandler *clientHandler);

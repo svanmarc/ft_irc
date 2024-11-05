@@ -31,6 +31,7 @@ private:
     int m_serverSocket;
     sockaddr_in m_serverAddress;
     std::string m_password;
+    int m_port;
     std::vector<ClientHandler *> clients;
     std::vector<struct pollfd> fds;
     CommandHandler *commandHandler;
@@ -43,6 +44,7 @@ private:
     int setSocketOptions() const;
     int bindSocket(int port);
     static int createSocket();
+    void ServerWelcomMessage();
 
     // fonctions pour les clients
     void acceptClient();

@@ -34,7 +34,7 @@ void CommandHandler::handleList(ClientHandler *clientHandler, const std::string 
         return;
     }
     if (parts.size() != 2) {
-        MessageHandler::sendErrorNotEnoughParams(clientHandler);
+        MessageHandler::sendErrorModeParams(clientHandler);
         return;
     }
 

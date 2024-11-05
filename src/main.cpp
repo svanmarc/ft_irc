@@ -42,14 +42,9 @@ int main(int argc, char *argv[]) {
     try {
         // Créer l'instance locale du serveur
         serverInstance = new Server(port, serverPassword);
-        std::cout << "Password set to: " << serverPassword << std::endl;
-
         // Configurer les signaux après la création de l'instance du serveur
         std::signal(SIGINT, signalHandler); // Intercepter Ctrl+C
         std::signal(SIGTERM, signalHandler); // Intercepter `kill`
-
-        std::cout << "Server started on port " << port << ". Press Ctrl+C to stop." << std::endl;
-
         // Démarrer le serveur
         serverInstance->start();
     } catch (const std::exception &e) {

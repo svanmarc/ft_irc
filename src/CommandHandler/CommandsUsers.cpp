@@ -5,7 +5,9 @@ void CommandHandler::handleWhois(ClientHandler *clientHandler, const std::string
     splitCommand(command, parts);
     std::cout << parts[1] << std::endl;
     if (parts.size() == 2 && (parts[1].empty() || parts[1] == "CAP")) {
-        MessageHandler::sendResponse(clientHandler, ERR_NEEDMOREPARAMS, "WHOIS :No nickname given");
+        std::string errorMsg = "WHOIS : " + IRCConstants::COLOR_RED
+                               + "No nickname given" + IRCConstants::COLOR_RESET;
+        MessageHandler::sendResponse(clientHandler, ERR_NEEDMOREPARAMS, errorMsg);
         return;
     }
     const std::string targetNickname = trim(parts[1]);

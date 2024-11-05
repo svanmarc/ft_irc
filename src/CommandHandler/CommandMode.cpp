@@ -6,12 +6,8 @@ void CommandHandler::handleMode(ClientHandler *clientHandler, const std::string 
     splitCommand(command, parts);
 
     if (parts.size() < 3) {
-        std::string errorMsg = "Mode :Not enough parameters";
-        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
-        MessageHandler::sendErrorModeNeedMoreParams(clientHandler);
         return;
     }
-
     std::string target = parts[1];
     std::string mode = parts[2];
     std::string param = parts.size() > 3 ? parts[3] : "";
@@ -55,8 +51,6 @@ bool CommandHandler::verifyClientInChannel(ClientHandler *clientHandler, std::st
 
 bool CommandHandler::verifyClientIsOperator(ClientHandler *clientHandler, Channel &channel) {
     if (!channel.checkIfClientIsOperator(clientHandler)) {
-        std::string errorMsg = "Mode " + channel.getName() + " :You're not a channel operator";
-        MessageHandler::sendMessageToClient(clientHandler, errorMsg);
         MessageHandler::sendErrorNotChannelOperator(clientHandler);
         return false;
     }
@@ -127,7 +121,8 @@ void CommandHandler::handleOpMode(ClientHandler *clientHandler, Channel &channel
             MessageHandler::sendOpMode(clientHandler, targetClient, channel, sign);
         } else {
             if (targetClient == channel.getOwner()) {
-                MessageHandler::sendErrorModeWithMessage(clientHandler, "You can't take operator status from the owner", mode, channel, param);
+                MessageHandler::sendErrorModeWithMessage(clientHandler, "You can't take operator status from the owner",
+                                                         mode, channel, param);
                 return;
             }
             channel.removeOperator(targetClient);
@@ -189,31 +184,33 @@ bool CommandHandler::handlePasswordMode(ClientHandler *clientHandler, Channel &c
 
 bool CommandHandler::handleLimitMode(ClientHandler *clientHandler, Channel &channel, const char modeSign,
                                      const std::string &param) {
-    std::string limitError = "MODE " + channel.getName() + " +l " + param;
+    std::ostringstream oss;
+    oss << modeSign << 'l';
+    std::string mode = oss.str();
 
     if (modeSign == '+') {
         if (param.empty()) {
-            limitError += ":Limit cannot be empty";
-            MessageHandler::sendMessageToClient(clientHandler, limitError);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit cannot be empty",
+                                                     mode, channel, param);
             return false;
         }
         if (param.find(' ') != std::string::npos) {
-            limitError += ":Limit cannot contain spaces";
-            MessageHandler::sendMessageToClient(clientHandler, limitError);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit cannot contain spaces",
+                                                     mode, channel, param);
             return false;
         }
         for (std::string::size_type i = 0; i < param.size(); ++i) {
             char c = param[i];
             if (!isdigit(c)) {
-                limitError += ":Limit must contain only numeric characters";
-                MessageHandler::sendMessageToClient(clientHandler, limitError);
+                MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit must contain only numeric characters",
+                                                     mode, channel, param);
                 return false;
             }
         }
         int limit = std::atoi(param.c_str());
         if (limit < 1 || limit > 15) {
-            limitError += ":Limit must be between 1 and 15";
-            MessageHandler::sendMessageToClient(clientHandler, limitError);
+            MessageHandler::sendErrorModeWithMessage(clientHandler, "Limit must be between 1 and 15",
+                                                     mode, channel, param);
             return false;
         }
         channel.setUserLimit(limit);
