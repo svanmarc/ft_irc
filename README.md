@@ -72,3 +72,6 @@ the [protocol](https://datatracker.ietf.org/doc/html/rfc1459#section-4.4.2).
     - `o`: Give/take channel operator privilege
     - `l`: Set/remove the user limit to the channel
 
+#### Demonstration
+
+![IRC Demo](img/ircdemo.gif)
