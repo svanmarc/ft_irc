@@ -64,9 +64,9 @@ void MessageHandler::sendWelcomeMessage(ClientHandler *clientHandler) {
 
     // Server capabilities (005)
     std::string capabilities[] = {
-        "RFC2812 PREFIX=(ov)@+ CHANTYPES=#&!+ MODES=3 CHANLIMIT=#&!+:21 NICKLEN=15 TOPICLEN=255 KICKLEN=255 MAXLIST=beIR:64 CHANNELLEN=50",
-        "IDCHAN=!:5 CHANMODES=beIR,k,l,imnpstaqr",
-        "PENALTY FNC EXCEPTS=e INVEX=I CASEMAPPING=ascii NETWORK=ExampleNet"
+        "RFC2812 PREFIX=(o)@+ CHANTYPES=# MODES=3 CHANLIMIT=#&!+:21 NICKLEN=15 TOPICLEN=255 KICKLEN=255 MAXLIST=beIR:64 CHANNELLEN=50",
+        "IDCHAN=!:5 CHANMODES=o,k,l,it CASEMAPPING=ascii",
+        "PENALTY FNC EXCEPTS=e INVEX=I NETWORK=42Perpignan"
     };
 
     for (size_t i = 0; i < 3; ++i) {
