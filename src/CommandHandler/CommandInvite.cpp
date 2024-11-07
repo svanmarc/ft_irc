@@ -51,8 +51,6 @@ void CommandHandler::handleInvite(ClientHandler *clientHandler, const std::strin
 
         channel.inviteClient(targetClient);
         MessageHandler::sendInviteNotification(clientHandler, targetClient, channel);
-        std::string message = ":" + clientHandler->getNickname() + " INVITE " + target + " " + channelName + "\r\n";
-        MessageHandler::sendMessageToAllClientsInChannel(channel, message, clientHandler, targetClient);
     } else {
         std::string errormsg = "INVITE " + target;
         errormsg += " :No such nick/channel";

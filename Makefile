@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./include
 SRC = $(shell find src -name '*.cpp')
 OBJ = $(patsubst src/%.cpp, obj/%.o, $(SRC))
-NAME = build/ircserv
+NAME = ircserv
 
 all: $(NAME)
 

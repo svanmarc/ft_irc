@@ -19,6 +19,7 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
     const char *buffer = finalMessage.c_str();
     size_t length = finalMessage.size();
 
+
     while (totalSent < length) {
         ssize_t bytesSent = send(socket, buffer + totalSent, length - totalSent, 0);
 
@@ -37,6 +38,7 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
 
         totalSent += bytesSent;
     }
+        std::cout << buffer << std::endl;
 }
 
 
