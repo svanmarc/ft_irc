@@ -22,15 +22,16 @@ void ClientHandler::handlerClient(Server &server) {
         server.handleClientDisconnect(m_clientSocket);
     } else {
         // Lecture réussie, traiter la commande reçue
-        std::string command(buffer);
-        readCommand(command);
+        m_commandPartial += std::string(buffer, bytesRead);
+        readCommand();
     }
 }
-void ClientHandler::readCommand(const std::string &command) {
+void ClientHandler::readCommand() {
     CommandHandler commandHandler(*m_server);
-    std::istringstream commandStream(command);
+    std::istringstream commandStream(m_commandPartial);
     std::string singleCommand;
-
+    if (m_commandPartial[m_commandPartial.size() - 1] != '\n')
+        return;
     while (std::getline(commandStream, singleCommand, '\n')) {
         // Supprimer '\r' à la fin de la commande
         if (!singleCommand.empty() && singleCommand[singleCommand.size() - 1] == '\r') {
@@ -45,6 +46,9 @@ void ClientHandler::readCommand(const std::string &command) {
             commandHandler.handleCommandRegister(singleCommand, this);
         }
     }
+    if (!m_commandPartial.empty() && m_commandPartial[m_commandPartial.size() - 1] == '\n')
+            m_commandPartial.erase();
+
 }
 
 // Méthode pour obtenir le socket du client

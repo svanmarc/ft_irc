@@ -38,7 +38,6 @@ void MessageHandler::sendMessage(int socket, const std::string &message) {
 
         totalSent += bytesSent;
     }
-        std::cout << buffer << std::endl;
 }
 
 

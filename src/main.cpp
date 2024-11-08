@@ -12,7 +12,6 @@ void signalHandler(int signal) {
         std::cerr << RED << "Server not initialized. Exiting..." << RESET << std::endl;
         return;
     }
-
     if (signal == SIGINT || signal == SIGTERM) {
         std::cout << BLUE << "\n🛰️ Received signal (" << signal << ")...." << RESET << std::endl;
         if (serverInstance->isRunning()) {

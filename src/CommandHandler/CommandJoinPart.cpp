@@ -90,6 +90,10 @@ void CommandHandler::handlePart(ClientHandler *clientHandler, const std::string 
         return;
     }
     Channel &channel = clientHandler->getServer()->getChannel(channelName);
+    if (!channel.checkIfClientIsInChannel(clientHandler)){
+        MessageHandler::sendErrorNotInChannel(clientHandler, channelName);
+        return;
+    }
     std::string leaveMessage = ":" + clientHandler->getNickname() + "!" + clientHandler->getUser().getUsername() + "@" +
                                clientHandler->getUser().getHostname() + " PART " + channelName + " :" + partMessage;
     MessageHandler::sendMessageToAllClientsInChannel(channel, leaveMessage, clientHandler, true);

@@ -19,7 +19,7 @@ public:
 
     // Communication avec le client et gestion des commandes
     void handlerClient(Server &server);
-    void readCommand(const std::string &command);
+    void readCommand();
 
     // Gestion de l'authentification
     bool isAuthenticated() const;
@@ -56,6 +56,8 @@ private:
     std::vector<std::string> channels; // Liste des canaux que le client a rejoints
     bool m_isOperator; // Indique si le client est un opérateur
     bool m_isInvited; // Indique si le client est invité dans un canal
+    std::string m_commandPartial;
+    
 };
 
 #endif
